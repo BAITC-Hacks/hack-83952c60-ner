@@ -2,11 +2,13 @@ import type { ValidSimulationResult } from '../src/engine/types';
 import { DISTRICT_LIST } from '../src/data/districts';
 import { INDICATOR_LIST } from '../src/data/indicators';
 import { MEASURES, MEASURE_LIST, SYNERGIES, INCOMPATIBILITIES } from '../src/data/measures';
+import { buildAnalysisFacts } from './facts';
 
 /** All facts sent to the model are computed on the server from the shared dataset. */
 export function buildAnalysisContext(simulation: ValidSimulationResult, question?: string) {
   return {
     scenarioKind: 'Учебная модель Астаны на фиксированных синтетических данных, не прогноз реального города.',
+    evidence: buildAnalysisFacts(simulation),
     horizonQuarters: 8,
     budget: {
       available: 100,

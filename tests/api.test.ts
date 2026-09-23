@@ -3,6 +3,7 @@ import request from 'supertest';
 import { createApp } from '../server/app';
 import { analyzeSimulation, createOpenAIProvider, type AnalysisProvider } from '../server/analysis';
 import { buildAnalysisContext } from '../server/context';
+import { buildAnalysisFacts } from '../server/facts';
 import { runSimulation } from '../src/engine/simulator';
 import { generateAIAnalysis } from '../src/ai/analyzer';
 import type { SelectedDecision, ValidSimulationResult } from '../src/engine/types';
@@ -15,28 +16,33 @@ const decisions: SelectedDecision[] = [
   { measureId: 'M5', districtId: 'saryarka' },
 ];
 const simulation = runSimulation(decisions) as ValidSimulationResult;
+const evidence = buildAnalysisFacts(simulation);
 
-function validProviderOutput(answer: string | null = null) {
+function validProviderOutput(withAnswer = false, facts = evidence) {
   return {
-    analysis: {
-      ...generateAIAnalysis(simulation),
-      executiveSummary: 'Модель объясняет данные, рассчитанные сервером.',
-    },
-    answer,
+    summaryFactIds: facts.summaryIds.slice(0, 2),
+    strengthFactIds: facts.strengthIds.slice(0, 3),
+    riskFactIds: facts.riskIds.slice(0, 3),
+    recommendationFactIds: facts.recommendationIds.slice(0, 3),
+    answerFactIds: withAnswer ? facts.summaryIds.slice(0, 2) : [],
+    answerSupported: withAnswer,
   };
 }
 
 describe('POST /api/analyze', () => {
   it('calculates the scenario on the server and returns validated model output', async () => {
-    const provider = vi.fn<AnalysisProvider>().mockResolvedValue(JSON.stringify(validProviderOutput('Улучшение связано с социальными мерами в Нуре.')));
+    const selected = validProviderOutput(true);
+    const provider = vi.fn<AnalysisProvider>().mockResolvedValue(JSON.stringify(selected));
     const app = createApp({ apiKey: '', provider, model: 'test-model' });
     const response = await request(app).post('/api/analyze').send({ decisions, question: ' Почему вырос Score? ' });
     expect(response.status).toBe(200);
     expect(response.headers['cache-control']).toBe('no-store');
     expect(response.body.source).toBe('llm');
     expect(response.body.reason).toBeUndefined();
-    expect(response.body.answer).toBe('Улучшение связано с социальными мерами в Нуре.');
-    expect(response.body.analysis.executiveSummary).toBe('Модель объясняет данные, рассчитанные сервером.');
+    expect(response.body.answer).toBe(selected.answerFactIds.map((id) => evidence.facts[id]).join(' '));
+    expect(response.body.analysis.executiveSummary).toBe(selected.summaryFactIds.map((id) => evidence.facts[id]).join(' '));
+    expect(response.body.analysis.districtHighlights).toEqual(JSON.parse(JSON.stringify(evidence.districtHighlights)));
+    expect(response.body.analysis.akimatRatingVerdict).toBe(evidence.verdict);
     expect(response.body.simulation.finalScore).toBeCloseTo(56.54307, 6);
     expect(response.body.simulation.validation.totalCost).toBe(95);
     expect(provider).toHaveBeenCalledTimes(1);
@@ -120,23 +126,44 @@ describe('POST /api/analyze', () => {
   });
 
   it.each([
-    'not JSON',
-    null,
-    { analysis: { executiveSummary: 'Incomplete' }, answer: null },
-    { ...validProviderOutput(), analysis: { ...validProviderOutput().analysis, strengths: [42] } },
-    { ...validProviderOutput(), analysis: { ...validProviderOutput().analysis, districtHighlights: [] } },
-    { ...validProviderOutput(), analysis: { ...validProviderOutput().analysis, districtHighlights: Array(5).fill({ district: 'Нура', verdict: 'Рост' }) } },
-  ])('falls back when provider returns invalid response %j', async (output) => {
+    { name: 'invalid JSON', output: 'not JSON' },
+    { name: 'null output', output: null },
+    { name: 'old unrestricted prose', output: { analysis: { executiveSummary: 'Нура S1=0' }, answer: null } },
+    { name: 'empty summary', output: { ...validProviderOutput(), summaryFactIds: [] } },
+    { name: 'prototype fact ID', output: { ...validProviderOutput(), summaryFactIds: ['toString'] } },
+    { name: 'invented critical warning', output: { ...validProviderOutput(), riskFactIds: ['nura.S1.below40'] } },
+    { name: 'invented duplicate replacement', output: { ...validProviderOutput(), recommendationFactIds: ['replace-M8-with-M7'] } },
+    { name: 'wrong value type', output: { ...validProviderOutput(), strengthFactIds: [42] } },
+    { name: 'repeated summary facts', output: { ...validProviderOutput(), summaryFactIds: [evidence.summaryIds[0], evidence.summaryIds[0]] } },
+    { name: 'more than three strengths', output: { ...validProviderOutput(), strengthFactIds: Array(4).fill(evidence.strengthIds[0]) } },
+    { name: 'unrequested answer', output: validProviderOutput(true) },
+    { name: 'freeform prose injection', output: { ...validProviderOutput(), answer: 'UNTRUSTED_MODEL_PROSE_100_POINTS' } },
+  ])('falls back for $name', async ({ output }) => {
     const provider = vi.fn<AnalysisProvider>().mockResolvedValue(output);
     const response = await request(createApp({ apiKey: '', provider })).post('/api/analyze').send({ decisions });
     expect(response.status).toBe(200);
     expect(response.body.source).toBe('rules');
     expect(response.body.reason).toBe('invalid_response');
+    expect(response.text).not.toContain('UNTRUSTED_MODEL_PROSE_100_POINTS');
+    expect(response.body.simulation.finalScore).toBeCloseTo(56.54307, 6);
+    expect(response.body.simulation.finalCritCount).toBe(0);
   });
 
-  it('requires a valid answer when the request includes a question', async () => {
+  it('explains when the model finds no supported answer without inventing one', async () => {
     const provider = vi.fn<AnalysisProvider>().mockResolvedValue(validProviderOutput());
-    const response = await request(createApp({ apiKey: '', provider })).post('/api/analyze').send({ decisions, question: 'Почему?' });
+    const response = await request(createApp({ apiKey: '', provider })).post('/api/analyze').send({ decisions, question: 'Сколько ДТП случилось вчера?' });
+    expect(response.body.source).toBe('llm');
+    expect(response.body.answer).toContain('недостаточно фактов');
+  });
+
+  it.each([
+    { ...validProviderOutput(), answerSupported: true },
+    { ...validProviderOutput(true), answerSupported: false },
+    { ...validProviderOutput(true), answerFactIds: ['constructor'] },
+    { ...validProviderOutput(true), answerFactIds: [evidence.summaryIds[0], evidence.summaryIds[0]] },
+  ])('rejects inconsistent or invented answer evidence %#', async (output) => {
+    const provider = vi.fn<AnalysisProvider>().mockResolvedValue(output);
+    const response = await request(createApp({ apiKey: '', provider })).post('/api/analyze').send({ decisions, question: 'Почему вырос Score?' });
     expect(response.body.source).toBe('rules');
     expect(response.body.reason).toBe('invalid_response');
   });
@@ -164,7 +191,7 @@ describe('POST /api/analyze', () => {
     const changedSimulation = runSimulation(changed) as ValidSimulationResult;
     const provider: AnalysisProvider = (context) => context.decisions[4].districtId === 'saryarka'
       ? new Promise((resolve) => { finishFirst = resolve; })
-      : Promise.resolve(validProviderOutput());
+      : Promise.resolve(validProviderOutput(false, context.evidence));
     const first = analyzeSimulation(simulation, { provider, model: 'test-model' });
     const second = await analyzeSimulation(changedSimulation, { provider, model: 'test-model' });
     finishFirst(validProviderOutput());
@@ -223,18 +250,19 @@ describe('server status', () => {
   });
 });
 
-describe('Responses API output contract', () => {
+describe('Responses API evidence contract', () => {
   it.each([
-    { name: 'requires an answer to a question', question: 'Почему вырос Score?', answer: 'Социальные меры улучшили показатели Нуры.' },
-    { name: 'requires null when no question was asked', question: undefined, answer: null },
-  ])('$name', async ({ question, answer }) => {
+    { name: 'permits only known answer facts for a question', question: 'Почему вырос Score?' },
+    { name: 'requires an empty answer when no question was asked', question: undefined },
+  ])('$name', async ({ question }) => {
+    const selection = validProviderOutput(Boolean(question));
     let outgoing: Record<string, any> | undefined;
     const mockedFetch = vi.fn(async (_input: unknown, init?: RequestInit) => {
       outgoing = JSON.parse(init?.body as string);
       return new Response(JSON.stringify({
         id: 'resp_test', object: 'response', status: 'completed',
         output: [{ type: 'message', role: 'assistant', status: 'completed', content: [
-          { type: 'output_text', text: JSON.stringify(validProviderOutput(answer)), annotations: [] },
+          { type: 'output_text', text: JSON.stringify(selection), annotations: [] },
         ] }],
       }), { status: 200, headers: { 'Content-Type': 'application/json' } });
     });
@@ -245,14 +273,19 @@ describe('Responses API output contract', () => {
       expect(mockedFetch).toHaveBeenCalledTimes(1);
       expect(outgoing?.text.format.type).toBe('json_schema');
       expect(outgoing?.text.format.strict).toBe(true);
-      const answerSchema = outgoing?.text.format.schema.properties.answer;
+      const schema = outgoing?.text.format.schema;
+      const answerSchema = schema.properties.answerFactIds;
+      expect(schema.additionalProperties).toBe(false);
+      expect(schema.properties.summaryFactIds.items.enum).toEqual(evidence.summaryIds);
+      expect(schema.properties.recommendationFactIds.items.enum).toEqual(evidence.recommendationIds);
+      expect(schema.properties.analysis).toBeUndefined();
+      expect(schema.properties.answer).toBeUndefined();
       if (question) {
-        // Regression: the former static schema allowed null, and the live model used it.
-        expect(answerSchema.type).toBe('string');
-        expect(answerSchema.pattern).toBe('\\S');
-        expect(result.answer).toBe(answer);
+        expect(answerSchema.items.enum).toEqual(Object.keys(evidence.facts));
+        expect(result.answer).toBe(selection.answerFactIds.map((id) => evidence.facts[id]).join(' '));
       } else {
-        expect(answerSchema.type).toBe('null');
+        expect(answerSchema.maxItems).toBe(0);
+        expect(schema.properties.answerSupported.enum).toEqual([false]);
         expect(result.answer).toBeUndefined();
       }
       expect(result.source).toBe('llm');

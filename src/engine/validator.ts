@@ -1,6 +1,7 @@
 import { DirectionId, DistrictId, SelectedDecision, ValidationResult } from './types';
 import { MEASURES, INCOMPATIBILITIES } from '../data/measures';
 import { DISTRICTS } from '../data/districts';
+import { DIRECTIONS } from '../data/indicators';
 
 export const TOTAL_BUDGET = 100;
 export const REQUIRED_DECISIONS_COUNT = 5;
@@ -72,7 +73,7 @@ export function validateDecisions(input: unknown, options: ValidationOptions = {
   }
   for (const [direction, count] of Object.entries(directionCounts)) {
     if (count > MAX_MEASURES_PER_DIRECTION) {
-      errors.push(`Превышен лимит мер по направлению «${direction}»: выбрано ${count} мер (разрешено максимум ${MAX_MEASURES_PER_DIRECTION}).`);
+      errors.push(`Превышен лимит мер по направлению «${DIRECTIONS[direction as DirectionId].nameRu}»: выбрано ${count} мер (разрешено максимум ${MAX_MEASURES_PER_DIRECTION}).`);
     }
   }
 
