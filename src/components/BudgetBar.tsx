@@ -57,7 +57,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
         </div>
 
         {/* 5 Decisions Slots Status */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             {t("Принято решений:")}{' '}<strong>{decisions.length}/{REQUIRED_DECISIONS_COUNT}</strong>
           </span>
@@ -193,6 +193,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
+                  flexWrap: 'wrap',
                   background: 'rgba(59, 130, 246, 0.12)',
                   border: '1px solid rgba(59, 130, 246, 0.3)',
                   padding: '4px 10px',

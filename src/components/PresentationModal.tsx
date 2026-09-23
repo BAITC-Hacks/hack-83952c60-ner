@@ -20,7 +20,7 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
   useLanguage();
   const [copied, setCopied] = React.useState(false);
 
-  if (!isOpen) return null;
+  if (!isOpen || !simulation.isValid) return null;
 
   const analysis = generateAIAnalysis(simulation);
 
@@ -193,7 +193,7 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
           <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.2)', padding: '14px', borderRadius: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: '#38bdf8', marginBottom: '4px' }}>
               <Sparkles size={14} />
-              <span>{t("Резюме AI-Аналитика:")}{' '}</span>
+              <span>{t("Резюме по правилам:")}</span>
             </div>
             <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: 1.5 }}>
               {analysis.executiveSummary}
@@ -208,6 +208,7 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
 
 /** Uses the current locale for both the report headings and its dynamic content. */
 export function buildPresentationReport(simulation: SimulationResult): string {
+  if (!simulation.isValid) return simulation.validation.errors.join('\n');
   const analysis = generateAIAnalysis(simulation);
   return t("ОТЧЕТ АКИМА ГОРОДА АСТАНЫ «АКИМ НА 5 ЧАСОВ»\n--------------------------------------------------\nИтоговый Astana Quality of Life Score: {0} (прирост: +{1} к базовому уровню 52.56)\nБюджет: израсходовано {2} из 100 у.е. (остаток: {3} у.е.)\nСлабейший район: {4} (балл: {5})\nКритические провалы (<40): {6}\n\nПРИНЯТЫЕ РЕШЕНИЯ (5 МЕР):\n{7}\n\nАКТИВНЫЕ СИНЕРГИИ:\n{8}\n\nОЦЕНКА УПРАВЛЕНЧЕСКОГО СТИЛЯ:\n{9}\n\nСИЛЬНЫЕ СТОРОНЫ:\n{10}\n\nСКРЫТЫЕ РИСКИ И КОМПРОМИССЫ:\n{11}\n", [simulation.finalScore.toFixed(2), simulation.scoreDelta.toFixed(2), simulation.validation.totalCost, simulation.validation.remainingBudget, DISTRICTS[simulation.weakestDistrictId]?.nameRu, simulation.finalMinDistrictScore.toFixed(2), simulation.finalCritCount, simulation.decisions.map((d, i) => {
   const m = MEASURES[d.measureId];

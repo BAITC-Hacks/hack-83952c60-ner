@@ -11,6 +11,7 @@ interface HeaderProps {
   onOpenCrisis: () => void;
   onOpenPresentation: () => void;
   crisisActive: boolean;
+  enableExperiments: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -20,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCrisis,
   onOpenPresentation,
   crisisActive,
+  enableExperiments,
 }) => {
   const language = useLanguage();
   // 5-hour countdown timer simulation (5:00:00)
@@ -71,7 +73,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span style={{ fontSize: '24px' }}>🏛️</span>
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
               <h1 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#f8fafc' }}>
                 {t("«Аким на 5 часов»")}</h1>
               <span className="badge badge-blue">{t("AI-СИМУЛЯТОР АСТАНЫ")}</span>
@@ -114,13 +116,22 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={handleBenchmarkPreset}
             className="btn-secondary"
-            title={t("Загрузить контрольный эталонный набор из ТЗ (Score ~56.5)")}
+            title={t("Загрузить контрольный набор из ТЗ (Score 56,54)")}
             style={{ fontSize: '0.8rem', padding: '7px 12px' }}
           >
             <Sparkles size={15} color="#38bdf8" />
             {t("Эталон ТЗ")}</button>
 
           <button
+            onClick={onOpenCompare}
+            className="btn-secondary"
+            title={t("Сохранить сценарий и сравнить варианты бюджета")}
+            style={{ fontSize: '0.8rem', padding: '7px 12px' }}
+          >
+            <Award size={15} color="#a78bfa" />
+            {t("Сценарии")}{' '}</button>
+
+          {enableExperiments && <><button
             onClick={onOpenCrisis}
             className={`btn-secondary ${crisisActive ? 'badge-amber' : ''}`}
             title={t("Смоделировать неожиданное городское событие / форс-мажор")}
@@ -131,27 +142,19 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           <button
-            onClick={onOpenCompare}
-            className="btn-secondary"
-            title={t("Сравнение команд и сценариев (A/B тестирование)")}
-            style={{ fontSize: '0.8rem', padding: '7px 12px' }}
-          >
-            <Award size={15} color="#a78bfa" />
-            {t("Команды")}</button>
-
-          <button
             onClick={onOpenPresentation}
             className="btn-primary"
             title={t("Сгенерировать краткую презентацию решения Акима")}
             style={{ fontSize: '0.8rem', padding: '7px 14px' }}
           >
             <FileText size={15} />
-            {t("Презентация")}</button>
+            {t("Презентация")}{' '}</button></>}
 
           <button
             onClick={onReset}
             className="btn-secondary"
             title={t("Сбросить все решения")}
+            aria-label={t("Сбросить все решения")}
             style={{ padding: '7px 10px' }}
           >
             <RotateCcw size={15} color="#94a3b8" />

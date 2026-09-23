@@ -28,7 +28,9 @@ const subscribe = (listener: () => void) => {
 export const useLanguage = () => useSyncExternalStore(subscribe, getLanguage, getLanguage);
 
 export function translate(source: string, locale: Language, params: readonly unknown[] = []): string {
-  const text = locale === 'ru' ? russianLabels[source] ?? source : catalog[source]?.[locale] ?? source;
+  const text = locale === 'ru'
+    ? (Object.hasOwn(russianLabels, source) ? russianLabels[source] : source)
+    : (Object.hasOwn(catalog, source) ? catalog[source][locale] : source);
   return text.replace(/\{(\d+)\}/g, (match, index) => {
     if (Number(index) >= params.length) return match;
     const value = params[Number(index)];

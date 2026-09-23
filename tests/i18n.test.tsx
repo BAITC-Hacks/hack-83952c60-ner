@@ -43,8 +43,8 @@ describe('localization', () => {
     const main = render(<App />);
     expect(main).toContain(t('«Аким на 5 часов»'));
     for (const measure of MEASURE_LIST) expect(main).toContain(t(measure.nameRu));
-    const compare = render(<CompareModal isOpen onClose={() => {}} currentSim={simulation} onLoadScenario={() => {}} />);
-    expect(compare).toContain(t('Эталон ТЗ (Benchmark Team)'));
+    const compare = render(<CompareModal isOpen onClose={() => {}} currentSim={simulation} onLoadScenario={() => {}} scenarios={[]} onSaveScenario={() => true} onDeleteScenario={() => {}} hasExperimentalEvents={false} notices={[]} />);
+    expect(compare).toContain(t('Личная библиотека решений и подробное сравнение'));
     const crisis = render(<CrisisModal isOpen onClose={() => {}} activeEvents={CITY_EVENTS} onToggleEvent={() => {}} />);
     for (const event of CITY_EVENTS) expect(crisis).toContain(t(event.titleRu));
     const presentation = render(<PresentationModal isOpen onClose={() => {}} simulation={simulation} />);
@@ -57,7 +57,7 @@ describe('localization', () => {
       expect(visible.match(/[А-Яа-яЁё]+/g)).toBeNull();
       expect(report.match(/[А-Яа-яЁё]+/g)).toBeNull();
     }
-    const errors = validateDecisions([],language).errors;
+    const errors = validateDecisions([],{language}).errors;
     expect(errors[0]).toBe(translate('Требуется принять ровно {0} управленческих решений (сейчас выбрано: {1}).',language,[5,0]));
   });
 

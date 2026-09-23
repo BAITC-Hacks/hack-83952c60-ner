@@ -36,7 +36,7 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
   return (
     <div className="glass-panel" style={{ padding: '20px' }}>
       
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
         <div>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
             {t("Аналитика 10 показателей (До и После)")}</h3>
@@ -57,7 +57,7 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
       </div>
 
       {/* Grid of indicators */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '12px' }}>
         {INDICATOR_LIST.map((ind) => {
           const baseVal = targetDistrict.initialIndicators[ind.id];
           const currVal = targetDistrict.finalIndicators[ind.id];

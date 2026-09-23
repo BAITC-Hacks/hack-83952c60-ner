@@ -1,152 +1,65 @@
 import { getLanguage, Language, translate } from '../i18n';
 import { AIAnalysis, SimulationResult } from '../engine/types';
 import { DISTRICTS } from '../data/districts';
-import { INDICATORS } from '../data/indicators';
+import { INDICATORS, INDICATOR_LIST } from '../data/indicators';
 import { MEASURES } from '../data/measures';
-import { validateDecisions } from '../engine/validator';
 
+const signed = (value: number) => `${value > 0 ? '+' : ''}${value.toFixed(2)}`;
+
+/** Deterministic fallback; this function does not call a language model. */
 export function generateAIAnalysis(sim: SimulationResult, language: Language = getLanguage()): AIAnalysis {
   const t = (source: string, params: readonly unknown[] = []) => translate(source, language, params);
   if (!sim.isValid) {
     return {
-      executiveSummary: t("Сценарий невалиден. Математический движок отклонил набор решений из-за нарушения регламентных ограничений бюджета или несовместимости проектов."),
+      executiveSummary: t("Итоговый Score не рассчитан: сначала составьте допустимый набор из пяти решений."),
       strengths: [],
-      risksAndTradeoffs: validateDecisions(sim.decisions, language).errors,
+      risksAndTradeoffs: sim.validation.errors,
       districtHighlights: [],
-      actionableRecommendations: [
-        t("Скорректируйте бюджет так, чтобы сумма расходов не превышала 100 у.е."),
-        t("Убедитесь, что выбрано ровно 5 решений и не более 2 в одном направлении."),
-        t("Устраните конфликты несовместимости (например, BRT vs LRT или земельные наложения)."),
-      ],
-      akimatRatingVerdict: t("Решение заблокировано регламентом"),
+      actionableRecommendations: [t("Исправьте указанные ограничения и повторите анализ.")],
+      akimatRatingVerdict: t("Сценарий не завершён"),
     };
   }
-
   const strengths: string[] = [];
-  const risks: string[] = [];
-  const districtHighlights: Array<{ district: string; verdict: string; criticalWarning?: string }> = [];
-
-  const { finalScore, baseScore, scoreDelta, finalCritCount, baseCritCount, weakestDistrictId } = sim;
-  const weakestDistrictName = t(DISTRICTS[weakestDistrictId]?.nameRu) || weakestDistrictId;
-
-  // 1. Evaluate Critical Deficits (N_crit)
-  if (finalCritCount === 0 && baseCritCount > 0) {
-    strengths.push(
-      t("Ликвидация критических провалов: Полностью устранены показатели с оценкой ниже 40 баллов в районе Нура (были S1: 38, S2: 35), что сняло штраф -{0} балла с общегородского рейтинга.", [baseCritCount])
-    );
-  } else if (finalCritCount > 0) {
-    risks.push(
-      t("Критический дефицит базовых сервисов: В городе сохраняется {0} показатель(я) с оценкой ниже 40 баллов. Каждый такой провал накладывает жесткий штраф (-1.0 балл за каждый) на итоговый Astana Quality of Life Score.", [finalCritCount])
-    );
-  }
-
-  // 2. Evaluate Weakest District Pull
-  const nuraDist = sim.districts.nura;
-  if (nuraDist.scoreDelta > 3.0) {
-    strengths.push(
-      t("Сглаживание пространственного неравенства: Район Нура получил мощный импульс (+{0} балла), что подняло минимальную планку качества жизни в городе с 49.18 до {1}.", [nuraDist.scoreDelta.toFixed(2), sim.finalMinDistrictScore.toFixed(2)])
-    );
-  } else if (nuraDist.scoreDelta <= 0.5) {
-    risks.push(
-      t("Игнорирование отстающего района: Район Нура практически не получил точечных инвестиций (+{0}). Так как формула Score отдает 30% веса наименее благополучному району, это сдерживает итоговый результат всего мегаполиса.", [nuraDist.scoreDelta.toFixed(2)])
-    );
-  }
-
-  // 3. Synergies evaluation
-  if (sim.activeSynergies.length > 0) {
-    strengths.push(
-      t("Реализация синергетических эффектов: Активировано {0} синергии(й). Согласованные межведомственные меры дали дополнительный прирост показателей без увеличения финансовых затрат.", [sim.activeSynergies.length])
-    );
-  } else {
-    risks.push(
-      t("Упущенная синергия: В выбранном наборе нет взаимоусиливающих мер (например, M10 Safe City + M12 iKomek или M1 Bus Lanes + M2 Умные светофоры), что означает недополученные бонусы.")
-    );
-  }
-
-  // 4. Direction balance & lag evaluation
-  const decisions = sim.decisions;
-  const longLagDecisions = decisions.filter((d) => (MEASURES[d.measureId]?.lag || 0) >= 4);
-  const quickWinDecisions = decisions.filter((d) => (MEASURES[d.measureId]?.lag || 0) <= 1);
-
-  if (longLagDecisions.length >= 2) {
-    risks.push(
-      t("Длинный инвестиционный горизонт: {0} меры имеют лаг внедрения 4 квартала. В рамках 2-летнего горизонта (8 кварталов) реализуется лишь 50% их потенциала.", [longLagDecisions.length])
-    );
-  }
-
-  if (quickWinDecisions.length >= 2) {
-    strengths.push(
-      t("Быстрый эффект (Quick Wins): Выбрано {0} мер с лагом 1 квартал, эффект от которых горожане ощутят уже в первые 3 месяца (реализация 87.5% мощности).", [quickWinDecisions.length])
-    );
-  }
-
-  // 5. District-by-district highlights
-  for (const [dId, dRes] of Object.entries(sim.districts)) {
-    const dName = t(dRes.nameRu);
-    const delta = dRes.scoreDelta;
-    let verdict = '';
-    let warning: string | undefined = undefined;
-
-    if (dRes.criticalIndicators.length > 0) {
-      warning = t("Внимание: критические дефициты в метриках: {0}", [dRes.criticalIndicators.map((i) => t(INDICATORS[i].nameRu)).join(', ')]);
-    }
-
-    if (delta >= 4.0) {
-      verdict = t("Лидер прорыва (+{0}): значительный рост городской среды и закрытие узких мест.", [delta.toFixed(2)]);
-    } else if (delta >= 1.5) {
-      verdict = t("Умеренное развитие (+{0}): стабильное улучшение качества жизни.", [delta.toFixed(2)]);
-    } else if (delta > 0) {
-      verdict = t("Косвенный прирост (+{0}): в основном за счет общегородских сервисов.", [delta.toFixed(2)]);
-    } else {
-      verdict = t("Стагнация (+0.00): район не затронут прямыми или общегородскими мерами.");
-    }
-
-    districtHighlights.push({
-      district: dName,
-      verdict,
-      criticalWarning: warning,
-    });
-  }
-
-  // 6. Actionable recommendations
+  const risksAndTradeoffs: string[] = [];
   const actionableRecommendations: string[] = [];
-  if (finalCritCount > 0) {
-    actionableRecommendations.push(
-      t("Первоочередная мера: Инвестируйте в социальную инфраструктуру Нуры (M7 Школа/детсад или M8 Поликлиника), чтобы ликвидировать штрафы N_crit.")
-    );
+  const weakest = t(DISTRICTS[sim.weakestDistrictId].nameRu);
+  if (sim.scoreDelta > 0) {
+    strengths.push(t("Городской Score вырос на {0} относительно исходных условий.", [signed(sim.scoreDelta)]));
+  } else if (sim.scoreDelta < 0) {
+    risksAndTradeoffs.push(t("Городской Score снизился на {0} относительно исходных условий.", [Math.abs(sim.scoreDelta).toFixed(2)]));
   }
-  if (sim.validation.remainingBudget >= 12) {
-    actionableRecommendations.push(
-      t("Свободный бюджет {0} у.е.: Доступны резервы, которые можно задействовать для более капиталоемких мер (например, M5 Газификация или M10 Safe City).", [sim.validation.remainingBudget])
-    );
-  }
-  if (sim.activeSynergies.length === 0) {
-    actionableRecommendations.push(
-      t("Попробуйте включить связку «M10 Освещение Safe City» (район) + «M12 Единая платформа iKomek» (город) — это даст бесплатный бонус +2 к безопасности B1.")
-    );
-  }
-
-  // 7. Executive summary & Akimat rating
-  let akimatRatingVerdict = '';
-  let executiveSummary = '';
-
-  if (finalScore >= 56.5) {
-    akimatRatingVerdict = t("Стратег инклюзивного развития (Класс A)");
-    executiveSummary = t("Высокоэффективный сбалансированный сценарий. Прирост Astana Quality of Life Score составил +{0} (итоговый балл: {1}). Устранены глубокие инфраструктурные разрывы, реализована социальная защита отстающих районов при сохранении бюджетной дисциплины (израсходовано {2}/100 у.е.).", [scoreDelta.toFixed(2), finalScore.toFixed(2), sim.validation.totalCost]);
-  } else if (finalScore >= 54.0) {
-    akimatRatingVerdict = t("Прагматичный управленец (Класс B)");
-    executiveSummary = t("Добротный рабочий сценарий с положительной динамикой (+{0} к базовому уровню). Достигнуты точечные улучшения, однако потенциал оптимизации и синергии использован не полностью.", [scoreDelta.toFixed(2)]);
+  if (sim.finalCritCount === 0) {
+    strengths.push(t("Показателей ниже 40 не осталось. Штраф за критические значения: 0 (в базе: {0}).", [sim.baseCritCount]));
   } else {
-    akimatRatingVerdict = t("Локальный фокус / Высокие риски (Класс C)");
-    executiveSummary = t("Сценарий имеет диспропорции (+{0}). Сохраняются нерешенные критические дефициты в уязвимых районах, из-за чего штрафные коэффициенты снижают итоговый городской рейтинг.", [scoreDelta.toFixed(2)]);
+    risksAndTradeoffs.push(t("Осталось критических показателей: {0}. Штраф в формуле Score: {1}.", [sim.finalCritCount, sim.finalCritCount]));
+    for (const pair of sim.criticalPairs) {
+      actionableRecommendations.push(t("При пересмотре мер обратите внимание на район {0}: {1} — {2}. Проверяйте замену в пределах пяти решений и бюджета.", [DISTRICTS[pair.districtId].nameRu, INDICATORS[pair.indicatorId].nameRu, pair.value.toFixed(2)]));
+    }
   }
-
+  const minDelta = sim.finalMinDistrictScore - sim.baseMinDistrictScore;
+  if (minDelta > 0) strengths.push(t("Минимальная районная оценка выросла на {0}. Текущий слабейший район — {1} ({2}).", [signed(minDelta), weakest, sim.finalMinDistrictScore.toFixed(2)]));
+  for (const synergy of sim.activeSynergies) strengths.push(t("{0}. Её бонус не уменьшается лагом.", [t(synergy).replace(/[.!]+$/, '')]));
+  const districtHighlights = Object.values(sim.districts).map((district) => {
+    const negative = INDICATOR_LIST.filter((indicator) => district.indicatorDeltas[indicator.id] < 0);
+    if (negative.length) risksAndTradeoffs.push(t("{0}: снизились {1}.", [district.nameRu, negative.map((indicator) => `${indicator.id} (${signed(district.indicatorDeltas[indicator.id])})`).join(', ')]));
+    return {
+      district: t(district.nameRu),
+      verdict: t("Оценка {0} → {1}; изменение {2}.", [district.initialDistrictScore.toFixed(2), district.finalDistrictScore.toFixed(2), signed(district.scoreDelta)]),
+      ...(district.criticalIndicators.length ? {
+        criticalWarning: t("Ниже 40: {0}.", [district.criticalIndicators.map((id) => t(INDICATORS[id].nameRu)).join(', ')]),
+      } : {}),
+    };
+  });
+  const longLag = sim.decisions.filter((decision) => MEASURES[decision.measureId].lag >= 4);
+  if (longLag.length) risksAndTradeoffs.push(t("{0}: лаг 4 квартала; за горизонт модели учитывается 50% полного эффекта.", [longLag.map((decision) => decision.measureId).join(', ')]));
+  if (sim.validation.remainingBudget > 0) actionableRecommendations.push(t("Остаток {0} у.е. не даёт бонуса и не штрафуется. Сравнивайте допустимые замены по рассчитанному результату; шестую меру добавлять нельзя.", [sim.validation.remainingBudget]));
+  if (!sim.activeSynergies.length) actionableRecommendations.push(t("В наборе нет активных синергий. При сравнении замен учитывайте связки M1+M2, M10+M12 и M5+M6 вместе с их стоимостью и ограничениями."));
   return {
-    executiveSummary,
+    executiveSummary: t("Score: {0}; изменение к базе: {1}. Потрачено {2} из 100 у.е. Слабейший район: {3}. Критических показателей: {4}. Это расчёт по синтетической модели на восемь кварталов.", [sim.finalScore.toFixed(2), signed(sim.scoreDelta), sim.validation.totalCost, weakest, sim.finalCritCount]),
     strengths,
-    risksAndTradeoffs: risks,
+    risksAndTradeoffs,
     districtHighlights,
     actionableRecommendations,
-    akimatRatingVerdict,
+    akimatRatingVerdict: sim.finalCritCount === 0 ? t("Критические дефициты устранены") : t("Есть критические дефициты"),
   };
 }
