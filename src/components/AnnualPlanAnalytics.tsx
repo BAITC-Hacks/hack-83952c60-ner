@@ -110,7 +110,7 @@ export const AnnualPlanAnalytics: React.FC<AnnualPlanAnalyticsProps> = ({ plan, 
                   <g key={index} className={index === selectedYear ? 'annual-plan__point annual-plan__point--selected' : 'annual-plan__point'}>
                     {index === selectedYear && <circle className="annual-plan__halo" cx={x(index)} cy={y(value)} r="12" />}
                     <circle cx={x(index)} cy={y(value)} r={index === selectedYear ? 5 : 4} />
-                    <text className="annual-plan__point-value" x={x(index)} y={y(value) - 18} textAnchor="middle">{score(value)}</text>
+                    <text className="annual-plan__point-value" x={x(index)} y={y(value) - 18} textAnchor={index === 0 ? 'start' : index === 3 ? 'end' : 'middle'}>{score(value)}</text>
                     <text className="annual-plan__point-label" x={x(index)} y="229" textAnchor="middle">{index === 0 ? t('База') : t('Год {0}', [index])}</text>
                   </g>
                 ))}

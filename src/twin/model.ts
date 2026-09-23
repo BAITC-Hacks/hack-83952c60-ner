@@ -6,7 +6,7 @@ export const DIRECTIONS: DirectionId[] = ['transport', 'ecology', 'social', 'saf
 export const LABELS: Record<DirectionId, string> = { transport: 'Транспорт', ecology: 'Экология', social: 'Социальные услуги', safety: 'Безопасность', services: 'ЖКХ' };
 // Money: fictional units; capacity: residents served; condition and quality: 0–100.
 export const CONFIG = {
-  version: 1, horizon: 60, population: 1_000_000, initialBudget: 2400,
+  version: 1, horizon: 60, population: 2_000_000, initialBudget: 2400,
   revenuePerResident: 0.00042, operatingPerResident: 0.000075,
   growth: 0.0018, growthQualityReference: 60, growthQualityFactor: 0.00002,
   wear: 0.22, repair: 0.65, congestionPenalty: 0.12, minimumTransportCondition: 0.1,

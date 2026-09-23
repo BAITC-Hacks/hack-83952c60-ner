@@ -58,7 +58,7 @@ export function generateAIAnalysis(sim: SimulationResult, language: Language = g
     for (const decision of longLag) {
       const lag = MEASURES[decision.measureId].lag;
       const effectFactor = Math.min(1, Math.max(0, (horizonQuarters - lag) / 8));
-      if (effectFactor < 1) risksAndTradeoffs.push(t("{0}: лаг {1} квартала; за {2} кварталов учитывается {3}% полного эффекта.", [decision.measureId, lag, horizonQuarters, effectFactor * 100]));
+      if (effectFactor < 1) risksAndTradeoffs.push(t("{0}: лаг {1} квартала; за {2} кв. учитывается {3}% полного эффекта.", [decision.measureId, lag, horizonQuarters, effectFactor * 100]));
     }
   }
   if (sim.validation.remainingBudget > 0) actionableRecommendations.push(t("Остаток {0} у.е. не даёт бонуса и не штрафуется. Сравнивайте допустимые замены по рассчитанному результату; шестую меру добавлять нельзя.", [sim.validation.remainingBudget]));
@@ -66,7 +66,7 @@ export function generateAIAnalysis(sim: SimulationResult, language: Language = g
   return {
     executiveSummary: horizonQuarters === 8
       ? t("Score: {0}; изменение к базе: {1}. Потрачено {2} из 100 у.е. Слабейший район: {3}. Критических показателей: {4}. Это расчёт по синтетической модели на восемь кварталов.", [sim.finalScore.toFixed(2), signed(sim.scoreDelta), sim.validation.totalCost, weakest, sim.finalCritCount])
-      : t("Score: {0}; изменение к базе: {1}. Потрачено {2} из 100 у.е. Слабейший район: {3}. Критических показателей: {4}. Это расчёт по синтетической модели на {5} кварталов.", [sim.finalScore.toFixed(2), signed(sim.scoreDelta), sim.validation.totalCost, weakest, sim.finalCritCount, horizonQuarters]),
+      : t("Score: {0}; изменение к базе: {1}. Потрачено {2} из 100 у.е. Слабейший район: {3}. Критических показателей: {4}. Это расчёт по синтетической модели на {5} кв.", [sim.finalScore.toFixed(2), signed(sim.scoreDelta), sim.validation.totalCost, weakest, sim.finalCritCount, horizonQuarters]),
     strengths,
     risksAndTradeoffs,
     districtHighlights,

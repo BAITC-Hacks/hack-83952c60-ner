@@ -41,7 +41,7 @@ describe('POST /api/analyze', () => {
     expect(response.body.simulation.finalScore).toBeCloseTo(expected.finalScore, 8);
     expect(response.body.simulation.finalCritCount).toBe(expected.finalCritCount);
     expect(provider.mock.calls[0][0].horizonQuarters).toBe(year * 4);
-    expect(response.body.analysis.executiveSummary).toContain(`на ${year * 4} кварталов`);
+    expect(response.body.analysis.executiveSummary).toContain(`на ${year * 4} кв.`);
   });
 
   it.each([0, 4, -1, 1.5, '1', null, true, {}, []])('rejects invalid analysis year %j', async (year) => {
@@ -259,9 +259,9 @@ describe('server-owned model context', () => {
     expect(first.isValid).toBe(true);
     expect(buildAnalysisContext(first).synergies.some((synergy) => synergy.measures[0] === 'M5')).toBe(false);
     expect(buildAnalysisContext(third).synergies.some((synergy) => synergy.measures[0] === 'M5')).toBe(true);
-    expect(generateAIAnalysis(first).executiveSummary).toContain('на 4 кварталов');
-    expect(generateAIAnalysis(first).risksAndTradeoffs).toContain('M6: лаг 4 квартала; за 4 кварталов учитывается 0% полного эффекта.');
-    expect(generateAIAnalysis(third).executiveSummary).toContain('на 12 кварталов');
+    expect(generateAIAnalysis(first).executiveSummary).toContain('на 4 кв.');
+    expect(generateAIAnalysis(first).risksAndTradeoffs).toContain('M6: лаг 4 квартала; за 4 кв. учитывается 0% полного эффекта.');
+    expect(generateAIAnalysis(third).executiveSummary).toContain('на 12 кв.');
     expect(generateAIAnalysis(third).risksAndTradeoffs.some((risk) => risk.includes('50%'))).toBe(false);
   });
 

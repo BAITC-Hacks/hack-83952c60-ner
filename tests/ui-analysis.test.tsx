@@ -170,7 +170,9 @@ describe('scenario selection', () => {
     expect(screen.getByRole('button', { name: 'Сценарии' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Эталон ТЗ' }));
     expect(screen.getByText('5/5')).toBeTruthy();
-    expect(screen.getByText('56,54')).toBeTruthy();
+    const annualTable = screen.getByRole('table', { name: 'Результаты и бюджет по годам' });
+    const secondYear = within(annualTable).getByRole('row', { name: /Год 2/ });
+    expect(within(secondYear).getByRole('cell', { name: '56,54' })).toBeTruthy();
     expect((screen.getByRole('button', { name: 'Выбрать M1' }) as HTMLButtonElement).disabled).toBe(true);
     expect(screen.getByRole('button', { name: 'Выбрать M1' }).title).toMatch(/^При добавлении:/);
     expect(within(screen.getByTestId('measure-M6')).getByText('Возможная синергия с M5')).toBeTruthy();
@@ -178,7 +180,7 @@ describe('scenario selection', () => {
     expect(screen.queryByText('saryarka')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Сбросить все решения' }));
     expect(screen.getByText('0/5')).toBeTruthy();
-    expect(screen.queryByText('56,54')).toBeNull();
+    expect(screen.queryAllByText('56,54')).toHaveLength(0);
   }, 15000);
 
   it('blocks the third measure of a direction using the shared validator', () => {

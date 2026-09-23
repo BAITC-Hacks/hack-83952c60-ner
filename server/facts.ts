@@ -32,7 +32,7 @@ export function buildAnalysisFacts(sim: ValidSimulationResult): AnalysisFacts {
     facts[id] = text;
     category?.push(id);
   };
-  add('score', `Score изменился с ${number(sim.baseScore)} до ${number(sim.finalScore)} (${signed(sim.scoreDelta)}). Это результат синтетической модели на ${horizonQuarters} кварталов.`, summaryIds);
+  add('score', `Score изменился с ${number(sim.baseScore)} до ${number(sim.finalScore)} (${signed(sim.scoreDelta)}). Это результат синтетической модели на ${horizonQuarters} кв.`, summaryIds);
   add('budget', `Выбрано пять решений на ${sim.validation.totalCost} из 100 у.е.; остаток ${sim.validation.remainingBudget} у.е. не даёт бонуса и не штрафуется.`, summaryIds);
   add('city_average', `Средневзвешенная оценка города: ${number(sim.baseCityAverage)} → ${number(sim.finalCityAverage)}. Её изменение добавляет ${signed(0.7 * (sim.finalCityAverage - sim.baseCityAverage))} к Score.`, summaryIds);
   add('minimum', `Оценка слабейшего района: ${number(sim.baseMinDistrictScore)} → ${number(sim.finalMinDistrictScore)}. Текущий слабейший район — ${DISTRICTS[sim.weakestDistrictId].nameRu}; изменение минимальной оценки даёт ${signed(0.3 * (sim.finalMinDistrictScore - sim.baseMinDistrictScore))} к Score.`, summaryIds);
@@ -57,7 +57,7 @@ export function buildAnalysisFacts(sim: ValidSimulationResult): AnalysisFacts {
   for (const decision of sim.decisions) {
     const measure = MEASURES[decision.measureId];
     const effectFactor = Math.min(1, Math.max(0, (horizonQuarters - measure.lag) / 8));
-    add(`measure_${measure.id}`, `${measure.id} «${measure.nameRu}», ${decision.districtId ? DISTRICTS[decision.districtId].nameRu : 'все шесть районов'}: стоимость ${measure.cost} у.е., лаг ${measure.lag} кварталов, за ${horizonQuarters} кварталов реализуется ${(effectFactor * 100).toFixed(1)}% полного эффекта.`);
+    add(`measure_${measure.id}`, `${measure.id} «${measure.nameRu}», ${decision.districtId ? DISTRICTS[decision.districtId].nameRu : 'все шесть районов'}: стоимость ${measure.cost} у.е., лаг ${measure.lag} кв., за ${horizonQuarters} кв. реализуется ${(effectFactor * 100).toFixed(1)}% полного эффекта.`);
   }
   for (const [index, suggestion] of findBestImprovements(sim.decisions, horizonQuarters).entries()) {
     const nextDecisions = sim.decisions.map((decision) => decision.measureId === suggestion.removeMeasureId ? suggestion.addDecision : decision);

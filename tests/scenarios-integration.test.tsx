@@ -86,7 +86,8 @@ describe('persistent scenarios in the application', () => {
     dialog = openLibrary();
     fireEvent.click(within(row(dialog, 'Эталон сохранённый')).getByRole('button', { name: /Загрузить/ }));
     expect(screen.queryByRole('dialog')).toBeNull();
-    expect(screen.getByText('56,54')).toBeTruthy();
+    const annualTable = screen.getByText('Результаты и бюджет по годам').closest('table')!;
+    expect(within(annualTable).getByText('56,54')).toBeTruthy();
     expect(readDraft().decisions).toEqual(benchmark);
 
     // The loaded snapshot is a copy: subsequent edits only change the draft.
