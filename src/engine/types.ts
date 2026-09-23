@@ -1,6 +1,6 @@
 // Domain types for Astana City Management AI Simulator
 
-export type DistrictId = 'esil' | 'almaty' | 'saryarka' | 'baikonur' | 'nura';
+export type DistrictId = 'esil' | 'almaty' | 'saryarka' | 'baikonur' | 'nura' | 'saraishyk';
 
 export type DirectionId = 'transport' | 'ecology' | 'social' | 'safety' | 'services';
 

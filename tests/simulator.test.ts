@@ -18,6 +18,16 @@ function simulate(decisions: SelectedDecision[], events: CityEvent[] = []): Vali
 }
 
 describe('Astana Quality of Life Score engine', () => {
+  it('includes six districts with normalized weights and independent Saraishyk measures', () => {
+    expect(DISTRICT_LIST).toHaveLength(6);
+    expect(DISTRICT_LIST.reduce((sum, district) => sum + district.populationShare, 0)).toBeCloseTo(1, 10);
+    const result = simulate(reference.map((decision) => decision.measureId === 'M7'
+      ? { ...decision, districtId: 'saraishyk' } : decision));
+    expect(result.districts.saraishyk.indicatorDeltas.S1).toBe(10);
+    expect(result.districts.almaty.indicatorDeltas.S1).toBe(0);
+    expect(result.districts.saraishyk.indicatorDeltas.C2).toBe(4.375);
+  });
+
   it('calculates exact baseline components without rounding intermediate results', () => {
     const base = calculateBaseScore();
     expect(Math.abs(base.baseScore - 52.55768)).toBeLessThanOrEqual(1e-6);

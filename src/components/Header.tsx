@@ -98,7 +98,8 @@ export const Header: React.FC<HeaderProps> = ({
           <Clock size={18} color="#38bdf8" />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-dim)', fontWeight: 700 }}>
-              {t("Смена Акима (5 часов)")}</span>
+              {t('Смена акима города (5 часов)')}
+            </span>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: '#38bdf8' }}>
               {formatTime(secondsRemaining)}
             </span>

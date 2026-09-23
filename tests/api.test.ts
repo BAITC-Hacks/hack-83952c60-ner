@@ -211,7 +211,7 @@ describe('server-owned model context', () => {
     expect(school.rawEffects).toEqual({ S1: 16 });
     expect(school.realizedEffectsBeforeClipping).toEqual({ S1: 10 });
     const cityMeasure = context.decisions.find((decision) => decision.measureId === 'M12')!;
-    expect(cityMeasure.targetDistricts).toHaveLength(5);
+    expect(cityMeasure.targetDistricts).toHaveLength(6);
     expect(context.synergies).toEqual([expect.objectContaining({ measures: ['M10', 'M12'], targetDistricts: ['nura'], fixedBonus: { B1: 2 } })]);
     expect(context.criticalIndicatorsBefore).toHaveLength(2);
     expect(context.criticalIndicatorsAfter).toHaveLength(0);

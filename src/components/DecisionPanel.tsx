@@ -286,7 +286,8 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                   </select>
                 ) : (
                   <div style={{ flex: 1, fontSize: '0.72rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                    {t("Все 5 районов города")}</div>
+                    {t("Все 6 районов города")}
+                  </div>
                 )}
 
                 {isSelected ? (

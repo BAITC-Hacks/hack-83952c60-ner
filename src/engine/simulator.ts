@@ -114,6 +114,7 @@ export function runSimulation(
     saryarka: { ...DISTRICTS.saryarka.indicators },
     baikonur: { ...DISTRICTS.baikonur.indicators },
     nura: { ...DISTRICTS.nura.indicators },
+    saraishyk: { ...DISTRICTS.saraishyk.indicators },
   };
 
   // 1. Apply measures with lag: factor = (8 - L) / 8

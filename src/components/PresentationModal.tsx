@@ -158,7 +158,7 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {simulation.decisions.map((d, i) => {
                 const m = MEASURES[d.measureId];
-                const target = d.districtId ? t(DISTRICTS[d.districtId]?.nameRu) : t("Все 5 районов (Город)");
+                const target = d.districtId ? t(DISTRICTS[d.districtId]?.nameRu) : t('Все 6 районов (Город)');
                 return (
                   <div
                     key={i}

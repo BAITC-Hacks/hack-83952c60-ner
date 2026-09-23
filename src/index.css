@@ -390,3 +390,8 @@ button:focus-visible, select:focus-visible, textarea:focus-visible {
 .journey a { color: #7dd3fc; }
 .journey a.btn-primary { color: #fff; text-decoration: none; margin-bottom: 12px; }
 @media (max-width: 760px) { .journey-grid { grid-template-columns: minmax(0, 1fr); } .journey { padding: 18px; } }
+
+.council-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 16px; margin-top: 20px; }
+.council-card { padding: 16px; border: 1px solid var(--border-color, #334155); border-radius: 12px; background: rgba(255,255,255,.025); }
+.council-card .btn-secondary { white-space: normal; text-align: left; }
+.council-report { margin-top: 16px; border-top: 1px solid #334155; padding-top: 12px; }
