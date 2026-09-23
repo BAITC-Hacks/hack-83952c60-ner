@@ -258,7 +258,7 @@ export class ParticleSwarm {
       representedPopulation: this.simulation.particles.length * POPULATION_SCALE,
       fps: this.motion.matches || document.hidden || !this.running ? 0 : Math.round(this.fps),
       frameCostMs: Math.round(this.frameCost * 100) / 100,
-      congestedParticles: congested, dpr: this.dpr, reducedMotion: this.motion.matches,
+      congestedParticles: congested, dpr: Math.round(this.dpr * 100) / 100, reducedMotion: this.motion.matches,
     };
   }
 

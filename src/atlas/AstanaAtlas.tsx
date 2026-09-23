@@ -4,8 +4,11 @@ import type { Map as LibreMap } from 'maplibre-gl';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { MapLibreOverlay } from '@deck.gl/maplibre';
 import { ColumnLayer, GeoJsonLayer } from '@deck.gl/layers';
-import { ArrowLeft, ArrowUpRight, Box, Building2, Check, ChevronRight, Crosshair, Database, Download, Eye, EyeOff, GraduationCap, HeartPulse, Layers3, Map, MapPin, Minus, Plus, Search, SlidersHorizontal, Trees, Upload, Waves, X } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Box, Building2, Check, ChevronRight, Crosshair, Database, Download, Eye, EyeOff, GraduationCap, HeartPulse, Layers3, Map, MapPin, Minus, Pause, Play, Plus, Search, SlidersHorizontal, Trees, Upload, Users, Waves, X } from 'lucide-react';
 import { AMENITIES, ASTANA_CENTER, CITY_BOUNDS, COLORS, CATEGORIES, densityCells, downloadGeoJSON, featureName, geometryBounds, parseGeoJSON, type AtlasDataset, type AtlasFeature, type Category, type DensityCell } from './data';
+import { AtlasSwarmSimulation } from './swarm';
+import { animateAtlasSwarm } from './swarmLayer';
+import { PARTICLE_COUNT, POPULATION_SCALE } from '../population/data';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './atlas.css';
 
@@ -45,6 +48,8 @@ export default function AstanaAtlas() {
   const [base, setBase] = useState<Record<BaseLayer, boolean>>({ buildings: true, roads: true, green: true, water: true, labels: true });
   const [categories, setCategories] = useState<Record<Category, boolean>>({ education: true, health: true });
   const [mode, setMode] = useState<'points' | 'density'>('points'), [is3D, setIs3D] = useState(true), [opacity, setOpacity] = useState(.85);
+  const [showSwarm, setShowSwarm] = useState(true), [swarmPaused, setSwarmPaused] = useState(false);
+  const swarm = useRef<AtlasSwarmSimulation | null>(null);
   const [camera, setCamera] = useState({ lon: ASTANA_CENTER[0], lat: ASTANA_CENTER[1], zoom: 13.1 });
   const [sidebar, setSidebar] = useState(() => window.innerWidth > 800);
   const filtered = useMemo(() => (dataset?.features ?? []).filter(f => categories[f.properties.category as Category] && (!query.trim() || `${featureName(f)} ${f.properties['addr:street'] ?? ''} ${AMENITIES[String(f.properties.amenity)] ?? ''}`.toLocaleLowerCase('ru').includes(query.trim().toLocaleLowerCase('ru')))), [dataset, categories, query]);
@@ -144,8 +149,10 @@ export default function AstanaAtlas() {
       onClick: info => { if (info.object) setSelected({ feature: info.object, source: imported?.name ?? 'GeoJSON' }); return true; },
     });
     const highlight = new GeoJsonLayer({ id: 'atlas-selection', data: selected ? { type: 'FeatureCollection', features: [selected.feature] } : { type: 'FeatureCollection', features: [] }, pickable: false, filled: true, stroked: true, getFillColor: [122, 247, 216, 60], getLineColor: [144, 255, 221, 255], lineWidthMinPixels: 3, pointRadiusMinPixels: 10 });
-    overlay.current.setProps({ layers: [poi, density, custom, highlight], getTooltip: ({ object }) => object ? { text: object.type === 'Feature' ? featureName(object) : `${object.count} объектов · ячейка ≈ 500 м`, style: { backgroundColor: '#15252c', color: '#edfff9', fontSize: '12px' } } : null });
-  }, [filtered, cells, mode, opacity, is3D, imported, importVisible, selected, ready]);
+    overlay.current.setProps({ getTooltip: ({ object }) => object ? { text: object.type === 'Feature' ? featureName(object) : `${object.count} объектов · ячейка ≈ 500 м`, style: { backgroundColor: '#15252c', color: '#edfff9', fontSize: '12px' } } : null });
+    swarm.current ??= new AtlasSwarmSimulation();
+    return animateAtlasSwarm(overlay.current, [poi, density, custom, highlight], swarm.current, { visible: showSwarm, paused: swarmPaused, opacity });
+  }, [filtered, cells, mode, opacity, is3D, imported, importVisible, selected, ready, showSwarm, swarmPaused]);
 
   const fitCity = () => mapRef.current?.fitBounds(CITY_BOUNDS, { padding: 45, duration: 1000, pitch: 0, bearing: 0 });
   const focusFeature = (feature: AtlasFeature) => {
@@ -187,6 +194,12 @@ export default function AstanaAtlas() {
         <div className="at-tabs" role="tablist" aria-label="Инструменты карты"><button role="tab" aria-selected={tab === 'layers'} onClick={() => setTab('layers')}><Layers3 size={15} /> Слои</button><button role="tab" aria-selected={tab === 'data'} onClick={() => setTab('data')}><Database size={15} /> Данные</button></div>
         <div className="at-side-scroll">
           {tab === 'layers' ? <>
+            <div className="at-section-label">НАСЕЛЕНИЕ <span>СЦЕНАРНАЯ МОДЕЛЬ</span></div>
+            <div className="at-swarm-settings">
+              <button className={`at-layer ${showSwarm ? '' : 'at-muted-layer'}`} aria-label="Рой жителей" aria-pressed={showSwarm} onClick={() => setShowSwarm(v => !v)}><span className="at-layer-icon at-swarm-icon"><Users size={18} /></span><span><b>Рой жителей</b><small>{number(PARTICLE_COUNT)} частиц на улицах города</small></span>{showSwarm ? <Eye size={15} /> : <EyeOff size={15} />}</button>
+              <div className="at-swarm-actions"><span>1 частица ≈ {number(POPULATION_SCALE)} жителей</span><button disabled={!showSwarm} onClick={() => setSwarmPaused(v => !v)} aria-label={swarmPaused ? 'Продолжить движение роя' : 'Приостановить движение роя'}>{swarmPaused ? <Play size={12} /> : <Pause size={12} />}{swarmPaused ? 'Продолжить' : 'Пауза'}</button></div>
+              <p>Сценарная визуализация на улицах OSM, не данные о реальных поездках.</p>
+            </div>
             <div className="at-section-label">БАЗОВАЯ КАРТА <span>OSM / VECTOR</span></div>
             <div className="at-layer-list at-basemap">{BASE_LAYERS.map(({ id, label, detail, color, icon: Icon }) => <button className={`at-layer ${base[id] ? '' : 'at-muted-layer'}`} key={id} title={detail} aria-pressed={base[id]} onClick={() => { setBase(s => ({ ...s, [id]: !s[id] })); setSelected(null); }}><span className="at-layer-icon" style={{ color }}><Icon size={17} /></span><span><b>{label}</b><small>{detail}</small></span>{base[id] ? <Eye size={15} /> : <EyeOff size={15} />}</button>)}</div>
             <div className="at-section-label">ИНФРАСТРУКТУРА <span>{dataset ? number(dataset.features.length) : '…'} ОБЪЕКТОВ</span></div>

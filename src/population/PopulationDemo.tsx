@@ -26,7 +26,7 @@ function PopulationDemo() {
     }));
     const trafficLoad = {
       bridges: base.trafficLoad.bridges.map(b => ({ ...b, loadRatio: crisis ? 1.9 : .65, delayMinutes: crisis ? 50 : 0 })),
-      districtLoad: { ...base.trafficLoad.districtLoad, nura: crisis ? 1.6 : .8 },
+      districtLoad: Object.fromEntries(base.districts.map(d => [d.id, crisis ? 1.6 : .8])),
     };
     return { ...base, districts, trafficLoad, pulse: calculateCityPulse(base.agents, { hour, districts, trafficLoad }) };
   }, [hour, scenario]);
