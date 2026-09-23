@@ -1,0 +1,2152 @@
+[
+  {
+    "id": "esil-01",
+    "name": "Ерлан Сейтов",
+    "age": 41,
+    "homeDistrict": "esil",
+    "workDistrict": "esil",
+    "profession": "государственный служащий",
+    "hasChildren": true,
+    "childrenAges": [
+      7,
+      12
+    ],
+    "stress": 52,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "transport",
+      "schools",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Есиль. К девяти нужен в ведомстве; сначала отвозит младшего на занятия. Районный контекст: высокий доход, дефицит школ, избыток офисов.",
+    "speechStyle": "Сдержанно, но с сухой иронией; ценит конкретные сроки.",
+    "focusGroup": true
+  },
+  {
+    "id": "esil-02",
+    "name": "Айгерим Омарова",
+    "age": 33,
+    "homeDistrict": "esil",
+    "workDistrict": "esil",
+    "profession": "мама в декрете",
+    "hasChildren": true,
+    "childrenAges": [
+      2,
+      8
+    ],
+    "stress": 42,
+    "currentAction": "везёт детей в школу",
+    "transport": "school",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "heating",
+      "transport"
+    ],
+    "routes": [
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Есиль. По профессии бухгалтер. Ждёт место в саду, возит старшего в школу и считает семейный бюджет. Районный контекст: высокий доход, дефицит школ, избыток офисов.",
+    "speechStyle": "Быстро и прямо, как в родительском чате, без канцелярита.",
+    "focusGroup": true
+  },
+  {
+    "id": "esil-03",
+    "name": "Данияр Исаев",
+    "age": 46,
+    "homeDistrict": "esil",
+    "workDistrict": "esil",
+    "profession": "таксист",
+    "hasChildren": true,
+    "childrenAges": [
+      10
+    ],
+    "stress": 58,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "gas",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "school"
+      },
+      {
+        "from": "esil",
+        "to": "baikonur",
+        "purpose": "market",
+        "bridgeId": "east"
+      }
+    ],
+    "biography": "Живёт в районе Есиль. Работает в утренние пики; простой на мосту уменьшает дневной доход. Районный контекст: высокий доход, дефицит школ, избыток офисов.",
+    "speechStyle": "Разговорно, с иронией водителя; сравнивает время с выручкой.",
+    "focusGroup": false
+  },
+  {
+    "id": "esil-04",
+    "name": "Светлана Морозова",
+    "age": 73,
+    "homeDistrict": "esil",
+    "workDistrict": "esil",
+    "profession": "пенсионер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 37,
+    "currentAction": "дома",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "heating",
+      "transport",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Есиль. Ездит в поликлинику и на рынок, проверяет батареи перед морозами. Районный контекст: высокий доход, дефицит школ, избыток офисов.",
+    "speechStyle": "Коротко, житейски; обсуждает батареи и чат КСК.",
+    "focusGroup": false
+  },
+  {
+    "id": "esil-05",
+    "name": "Аружан Касымова",
+    "age": 20,
+    "homeDistrict": "esil",
+    "workDistrict": "almaty",
+    "profession": "студент",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 39,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "transport",
+      "leisure",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "esil",
+        "to": "almaty",
+        "purpose": "school",
+        "bridgeId": "central"
+      },
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "leisure"
+      }
+    ],
+    "biography": "Живёт в районе Есиль. Совмещает пары с подработкой; рассчитывает на автобус и тёплую остановку. Районный контекст: высокий доход, дефицит школ, избыток офисов.",
+    "speechStyle": "Легко и остро, естественный городской сленг без карикатуры.",
+    "focusGroup": true
+  },
+  {
+    "id": "esil-06",
+    "name": "Тимур Ахметов",
+    "age": 36,
+    "homeDistrict": "esil",
+    "workDistrict": "esil",
+    "profession": "владелец кофейни",
+    "hasChildren": true,
+    "childrenAges": [
+      6
+    ],
+    "stress": 60,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "services",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "school"
+      },
+      {
+        "from": "esil",
+        "to": "baikonur",
+        "purpose": "market",
+        "bridgeId": "east"
+      }
+    ],
+    "biography": "Живёт в районе Есиль. Открывает кофейню до восьми, зависит от поставок и пешеходного потока. Районный контекст: высокий доход, дефицит школ, избыток офисов.",
+    "speechStyle": "Предпринимательская ирония; замечает покупателей и коммунальные счета.",
+    "focusGroup": true
+  },
+  {
+    "id": "esil-07",
+    "name": "Гульнара Есенова",
+    "age": 48,
+    "homeDistrict": "esil",
+    "workDistrict": "esil",
+    "profession": "школьный учитель",
+    "hasChildren": true,
+    "childrenAges": [
+      14
+    ],
+    "stress": 52,
+    "currentAction": "везёт детей в школу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Есиль. Ведёт две смены; после уроков помогает собственному подростку. Районный контекст: высокий доход, дефицит школ, избыток офисов.",
+    "speechStyle": "Спокойно, предметно; говорит о классах, сменах и детях.",
+    "focusGroup": false
+  },
+  {
+    "id": "esil-08",
+    "name": "Виктор Ким",
+    "age": 41,
+    "homeDistrict": "esil",
+    "workDistrict": "esil",
+    "profession": "мастер СТО",
+    "hasChildren": true,
+    "childrenAges": [
+      5,
+      11
+    ],
+    "stress": 57,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "gas",
+      "services",
+      "transport",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "school"
+      },
+      {
+        "from": "esil",
+        "to": "baikonur",
+        "purpose": "market",
+        "bridgeId": "east"
+      }
+    ],
+    "biography": "Живёт в районе Есиль. Ездит за запчастями на рынок, зимой часто помогает заглохшим машинам. Районный контекст: высокий доход, дефицит школ, избыток офисов.",
+    "speechStyle": "Прямо и практично, с рабочим юмором.",
+    "focusGroup": false
+  },
+  {
+    "id": "esil-09",
+    "name": "Мадина Алиева",
+    "age": 29,
+    "homeDistrict": "esil",
+    "workDistrict": "esil",
+    "profession": "медсестра",
+    "hasChildren": true,
+    "childrenAges": [
+      4
+    ],
+    "stress": 30,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "heating",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "esil",
+        "to": "esil",
+        "purpose": "work"
+      }
+    ],
+    "biography": "Живёт в районе Есиль. Работает посменно; после ночной смены забирает ребёнка из сада. Районный контекст: высокий доход, дефицит школ, избыток офисов.",
+    "speechStyle": "Устало, но доброжелательно; ценит надёжность транспорта.",
+    "focusGroup": true
+  },
+  {
+    "id": "esil-10",
+    "name": "Руслан Беков",
+    "age": 26,
+    "homeDistrict": "esil",
+    "workDistrict": "almaty",
+    "profession": "курьер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 47,
+    "currentAction": "едет на работу",
+    "transport": "car",
+    "income": "low",
+    "interests": [
+      "transport",
+      "gas",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "esil",
+        "to": "almaty",
+        "purpose": "work",
+        "bridgeId": "central"
+      }
+    ],
+    "biography": "Живёт в районе Есиль. Возит заказы между берегами, доход зависит от числа доставок. Районный контекст: высокий доход, дефицит школ, избыток офисов.",
+    "speechStyle": "Коротко и энергично; считает потерянные минуты.",
+    "focusGroup": false
+  },
+  {
+    "id": "saryarka-01",
+    "name": "Нурлан Жумабаев",
+    "age": 40,
+    "homeDistrict": "saryarka",
+    "workDistrict": "esil",
+    "profession": "государственный служащий",
+    "hasChildren": true,
+    "childrenAges": [
+      7,
+      12
+    ],
+    "stress": 70,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "transport",
+      "schools",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "saryarka",
+        "to": "esil",
+        "purpose": "work",
+        "bridgeId": "west"
+      },
+      {
+        "from": "saryarka",
+        "to": "saryarka",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Сарыарка. К девяти нужен в ведомстве; сначала отвозит младшего на занятия. Районный контекст: старый фонд, школы у дома, дефицит тепла.",
+    "speechStyle": "Сдержанно, но с сухой иронией; ценит конкретные сроки.",
+    "focusGroup": false
+  },
+  {
+    "id": "saryarka-02",
+    "name": "Анна Павлова",
+    "age": 33,
+    "homeDistrict": "saryarka",
+    "workDistrict": "saryarka",
+    "profession": "мама в декрете",
+    "hasChildren": true,
+    "childrenAges": [
+      2,
+      8
+    ],
+    "stress": 52,
+    "currentAction": "везёт детей в школу",
+    "transport": "school",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "heating",
+      "transport"
+    ],
+    "routes": [
+      {
+        "from": "saryarka",
+        "to": "saryarka",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Сарыарка. По профессии бухгалтер. Ждёт место в саду, возит старшего в школу и считает семейный бюджет. Районный контекст: старый фонд, школы у дома, дефицит тепла.",
+    "speechStyle": "Быстро и прямо, как в родительском чате, без канцелярита.",
+    "focusGroup": true
+  },
+  {
+    "id": "saryarka-03",
+    "name": "Азамат Тулеев",
+    "age": 45,
+    "homeDistrict": "saryarka",
+    "workDistrict": "esil",
+    "profession": "таксист",
+    "hasChildren": true,
+    "childrenAges": [
+      10
+    ],
+    "stress": 43,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "gas",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "saryarka",
+        "to": "esil",
+        "purpose": "work",
+        "bridgeId": "west"
+      },
+      {
+        "from": "saryarka",
+        "to": "saryarka",
+        "purpose": "school"
+      },
+      {
+        "from": "saryarka",
+        "to": "baikonur",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Сарыарка. Работает в утренние пики; простой на мосту уменьшает дневной доход. Районный контекст: старый фонд, школы у дома, дефицит тепла.",
+    "speechStyle": "Разговорно, с иронией водителя; сравнивает время с выручкой.",
+    "focusGroup": true
+  },
+  {
+    "id": "saryarka-04",
+    "name": "Зоя Петрова",
+    "age": 72,
+    "homeDistrict": "saryarka",
+    "workDistrict": "saryarka",
+    "profession": "пенсионер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 42,
+    "currentAction": "дома",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "heating",
+      "transport",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "saryarka",
+        "to": "saryarka",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Сарыарка. Ездит в поликлинику и на рынок, проверяет батареи перед морозами. Районный контекст: старый фонд, школы у дома, дефицит тепла.",
+    "speechStyle": "Коротко, житейски; обсуждает батареи и чат КСК.",
+    "focusGroup": true
+  },
+  {
+    "id": "saryarka-05",
+    "name": "Жанель Уразова",
+    "age": 22,
+    "homeDistrict": "saryarka",
+    "workDistrict": "esil",
+    "profession": "студент",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 44,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "transport",
+      "leisure",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "saryarka",
+        "to": "esil",
+        "purpose": "school",
+        "bridgeId": "west"
+      },
+      {
+        "from": "saryarka",
+        "to": "esil",
+        "purpose": "leisure",
+        "bridgeId": "west"
+      }
+    ],
+    "biography": "Живёт в районе Сарыарка. Совмещает пары с подработкой; рассчитывает на автобус и тёплую остановку. Районный контекст: старый фонд, школы у дома, дефицит тепла.",
+    "speechStyle": "Легко и остро, естественный городской сленг без карикатуры.",
+    "focusGroup": false
+  },
+  {
+    "id": "saryarka-06",
+    "name": "Самат Оспанов",
+    "age": 35,
+    "homeDistrict": "saryarka",
+    "workDistrict": "baikonur",
+    "profession": "владелец кофейни",
+    "hasChildren": true,
+    "childrenAges": [
+      6
+    ],
+    "stress": 59,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "services",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "saryarka",
+        "to": "baikonur",
+        "purpose": "work"
+      },
+      {
+        "from": "saryarka",
+        "to": "saryarka",
+        "purpose": "school"
+      },
+      {
+        "from": "saryarka",
+        "to": "baikonur",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Сарыарка. Открывает кофейню до восьми, зависит от поставок и пешеходного потока. Районный контекст: старый фонд, школы у дома, дефицит тепла.",
+    "speechStyle": "Предпринимательская ирония; замечает покупателей и коммунальные счета.",
+    "focusGroup": false
+  },
+  {
+    "id": "saryarka-07",
+    "name": "Ольга Белова",
+    "age": 46,
+    "homeDistrict": "saryarka",
+    "workDistrict": "esil",
+    "profession": "школьный учитель",
+    "hasChildren": true,
+    "childrenAges": [
+      14
+    ],
+    "stress": 51,
+    "currentAction": "везёт детей в школу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "saryarka",
+        "to": "esil",
+        "purpose": "work",
+        "bridgeId": "west"
+      },
+      {
+        "from": "saryarka",
+        "to": "saryarka",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Сарыарка. Ведёт две смены; после уроков помогает собственному подростку. Районный контекст: старый фонд, школы у дома, дефицит тепла.",
+    "speechStyle": "Спокойно, предметно; говорит о классах, сменах и детях.",
+    "focusGroup": true
+  },
+  {
+    "id": "saryarka-08",
+    "name": "Серик Нуров",
+    "age": 43,
+    "homeDistrict": "saryarka",
+    "workDistrict": "saryarka",
+    "profession": "мастер СТО",
+    "hasChildren": true,
+    "childrenAges": [
+      5,
+      11
+    ],
+    "stress": 65,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "gas",
+      "services",
+      "transport",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "saryarka",
+        "to": "saryarka",
+        "purpose": "work"
+      },
+      {
+        "from": "saryarka",
+        "to": "saryarka",
+        "purpose": "school"
+      },
+      {
+        "from": "saryarka",
+        "to": "baikonur",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Сарыарка. Ездит за запчастями на рынок, зимой часто помогает заглохшим машинам. Районный контекст: старый фонд, школы у дома, дефицит тепла.",
+    "speechStyle": "Прямо и практично, с рабочим юмором.",
+    "focusGroup": true
+  },
+  {
+    "id": "saryarka-09",
+    "name": "Динара Садыкова",
+    "age": 31,
+    "homeDistrict": "saryarka",
+    "workDistrict": "baikonur",
+    "profession": "медсестра",
+    "hasChildren": true,
+    "childrenAges": [
+      4
+    ],
+    "stress": 36,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "heating",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "saryarka",
+        "to": "baikonur",
+        "purpose": "work"
+      }
+    ],
+    "biography": "Живёт в районе Сарыарка. Работает посменно; после ночной смены забирает ребёнка из сада. Районный контекст: старый фонд, школы у дома, дефицит тепла.",
+    "speechStyle": "Устало, но доброжелательно; ценит надёжность транспорта.",
+    "focusGroup": false
+  },
+  {
+    "id": "saryarka-10",
+    "name": "Илья Волков",
+    "age": 26,
+    "homeDistrict": "saryarka",
+    "workDistrict": "saryarka",
+    "profession": "курьер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 66,
+    "currentAction": "едет на работу",
+    "transport": "car",
+    "income": "low",
+    "interests": [
+      "transport",
+      "gas",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "saryarka",
+        "to": "saryarka",
+        "purpose": "work"
+      }
+    ],
+    "biography": "Живёт в районе Сарыарка. Возит заказы между берегами, доход зависит от числа доставок. Районный контекст: старый фонд, школы у дома, дефицит тепла.",
+    "speechStyle": "Коротко и энергично; считает потерянные минуты.",
+    "focusGroup": false
+  },
+  {
+    "id": "almaty-01",
+    "name": "Марат Кенжебаев",
+    "age": 40,
+    "homeDistrict": "almaty",
+    "workDistrict": "esil",
+    "profession": "государственный служащий",
+    "hasChildren": true,
+    "childrenAges": [
+      7,
+      12
+    ],
+    "stress": 37,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "transport",
+      "schools",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "almaty",
+        "to": "esil",
+        "purpose": "work",
+        "bridgeId": "central"
+      },
+      {
+        "from": "almaty",
+        "to": "almaty",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Алматы. К девяти нужен в ведомстве; сначала отвозит младшего на занятия. Районный контекст: высокая плотность, маятниковая миграция.",
+    "speechStyle": "Сдержанно, но с сухой иронией; ценит конкретные сроки.",
+    "focusGroup": true
+  },
+  {
+    "id": "almaty-02",
+    "name": "Алия Турсунова",
+    "age": 34,
+    "homeDistrict": "almaty",
+    "workDistrict": "almaty",
+    "profession": "мама в декрете",
+    "hasChildren": true,
+    "childrenAges": [
+      2,
+      8
+    ],
+    "stress": 57,
+    "currentAction": "везёт детей в школу",
+    "transport": "school",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "heating",
+      "transport"
+    ],
+    "routes": [
+      {
+        "from": "almaty",
+        "to": "almaty",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Алматы. По профессии бухгалтер. Ждёт место в саду, возит старшего в школу и считает семейный бюджет. Районный контекст: высокая плотность, маятниковая миграция.",
+    "speechStyle": "Быстро и прямо, как в родительском чате, без канцелярита.",
+    "focusGroup": false
+  },
+  {
+    "id": "almaty-03",
+    "name": "Алексей Васильев",
+    "age": 46,
+    "homeDistrict": "almaty",
+    "workDistrict": "esil",
+    "profession": "таксист",
+    "hasChildren": true,
+    "childrenAges": [
+      10
+    ],
+    "stress": 61,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "gas",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "almaty",
+        "to": "esil",
+        "purpose": "work",
+        "bridgeId": "central"
+      },
+      {
+        "from": "almaty",
+        "to": "almaty",
+        "purpose": "school"
+      },
+      {
+        "from": "almaty",
+        "to": "baikonur",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Алматы. Работает в утренние пики; простой на мосту уменьшает дневной доход. Районный контекст: высокая плотность, маятниковая миграция.",
+    "speechStyle": "Разговорно, с иронией водителя; сравнивает время с выручкой.",
+    "focusGroup": true
+  },
+  {
+    "id": "almaty-04",
+    "name": "Роза Сафарова",
+    "age": 71,
+    "homeDistrict": "almaty",
+    "workDistrict": "almaty",
+    "profession": "пенсионер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 53,
+    "currentAction": "дома",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "heating",
+      "transport",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "almaty",
+        "to": "almaty",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Алматы. Ездит в поликлинику и на рынок, проверяет батареи перед морозами. Районный контекст: высокая плотность, маятниковая миграция.",
+    "speechStyle": "Коротко, житейски; обсуждает батареи и чат КСК.",
+    "focusGroup": false
+  },
+  {
+    "id": "almaty-05",
+    "name": "Адиль Мусин",
+    "age": 20,
+    "homeDistrict": "almaty",
+    "workDistrict": "saryarka",
+    "profession": "студент",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 57,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "transport",
+      "leisure",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "almaty",
+        "to": "saryarka",
+        "purpose": "school"
+      },
+      {
+        "from": "almaty",
+        "to": "esil",
+        "purpose": "leisure",
+        "bridgeId": "central"
+      }
+    ],
+    "biography": "Живёт в районе Алматы. Совмещает пары с подработкой; рассчитывает на автобус и тёплую остановку. Районный контекст: высокая плотность, маятниковая миграция.",
+    "speechStyle": "Легко и остро, естественный городской сленг без карикатуры.",
+    "focusGroup": true
+  },
+  {
+    "id": "almaty-06",
+    "name": "Диас Оразов",
+    "age": 37,
+    "homeDistrict": "almaty",
+    "workDistrict": "saraishyk",
+    "profession": "владелец кофейни",
+    "hasChildren": true,
+    "childrenAges": [
+      6
+    ],
+    "stress": 56,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "services",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "almaty",
+        "to": "saraishyk",
+        "purpose": "work",
+        "bridgeId": "east"
+      },
+      {
+        "from": "almaty",
+        "to": "almaty",
+        "purpose": "school"
+      },
+      {
+        "from": "almaty",
+        "to": "baikonur",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Алматы. Открывает кофейню до восьми, зависит от поставок и пешеходного потока. Районный контекст: высокая плотность, маятниковая миграция.",
+    "speechStyle": "Предпринимательская ирония; замечает покупателей и коммунальные счета.",
+    "focusGroup": true
+  },
+  {
+    "id": "almaty-07",
+    "name": "Елена Соколова",
+    "age": 47,
+    "homeDistrict": "almaty",
+    "workDistrict": "esil",
+    "profession": "школьный учитель",
+    "hasChildren": true,
+    "childrenAges": [
+      14
+    ],
+    "stress": 56,
+    "currentAction": "везёт детей в школу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "almaty",
+        "to": "esil",
+        "purpose": "work",
+        "bridgeId": "central"
+      },
+      {
+        "from": "almaty",
+        "to": "almaty",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Алматы. Ведёт две смены; после уроков помогает собственному подростку. Районный контекст: высокая плотность, маятниковая миграция.",
+    "speechStyle": "Спокойно, предметно; говорит о классах, сменах и детях.",
+    "focusGroup": false
+  },
+  {
+    "id": "almaty-08",
+    "name": "Бауыржан Алимов",
+    "age": 43,
+    "homeDistrict": "almaty",
+    "workDistrict": "almaty",
+    "profession": "мастер СТО",
+    "hasChildren": true,
+    "childrenAges": [
+      5,
+      11
+    ],
+    "stress": 47,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "gas",
+      "services",
+      "transport",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "almaty",
+        "to": "almaty",
+        "purpose": "work"
+      },
+      {
+        "from": "almaty",
+        "to": "almaty",
+        "purpose": "school"
+      },
+      {
+        "from": "almaty",
+        "to": "baikonur",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Алматы. Ездит за запчастями на рынок, зимой часто помогает заглохшим машинам. Районный контекст: высокая плотность, маятниковая миграция.",
+    "speechStyle": "Прямо и практично, с рабочим юмором.",
+    "focusGroup": false
+  },
+  {
+    "id": "almaty-09",
+    "name": "Сауле Исакова",
+    "age": 31,
+    "homeDistrict": "almaty",
+    "workDistrict": "esil",
+    "profession": "медсестра",
+    "hasChildren": true,
+    "childrenAges": [
+      4
+    ],
+    "stress": 44,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "heating",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "almaty",
+        "to": "esil",
+        "purpose": "work",
+        "bridgeId": "central"
+      }
+    ],
+    "biography": "Живёт в районе Алматы. Работает посменно; после ночной смены забирает ребёнка из сада. Районный контекст: высокая плотность, маятниковая миграция.",
+    "speechStyle": "Устало, но доброжелательно; ценит надёжность транспорта.",
+    "focusGroup": false
+  },
+  {
+    "id": "almaty-10",
+    "name": "Дамир Котов",
+    "age": 28,
+    "homeDistrict": "almaty",
+    "workDistrict": "almaty",
+    "profession": "курьер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 63,
+    "currentAction": "едет на работу",
+    "transport": "car",
+    "income": "low",
+    "interests": [
+      "transport",
+      "gas",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "almaty",
+        "to": "almaty",
+        "purpose": "work"
+      }
+    ],
+    "biography": "Живёт в районе Алматы. Возит заказы между берегами, доход зависит от числа доставок. Районный контекст: высокая плотность, маятниковая миграция.",
+    "speechStyle": "Коротко и энергично; считает потерянные минуты.",
+    "focusGroup": true
+  },
+  {
+    "id": "baikonur-01",
+    "name": "Бекзат Рахимов",
+    "age": 39,
+    "homeDistrict": "baikonur",
+    "workDistrict": "almaty",
+    "profession": "государственный служащий",
+    "hasChildren": true,
+    "childrenAges": [
+      7,
+      12
+    ],
+    "stress": 55,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "transport",
+      "schools",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "baikonur",
+        "to": "almaty",
+        "purpose": "work"
+      },
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Байконур. К девяти нужен в ведомстве; сначала отвозит младшего на занятия. Районный контекст: промзоны, частный сектор, зависимость от газа и азс.",
+    "speechStyle": "Сдержанно, но с сухой иронией; ценит конкретные сроки.",
+    "focusGroup": false
+  },
+  {
+    "id": "baikonur-02",
+    "name": "Мария Федорова",
+    "age": 32,
+    "homeDistrict": "baikonur",
+    "workDistrict": "baikonur",
+    "profession": "мама в декрете",
+    "hasChildren": true,
+    "childrenAges": [
+      2,
+      8
+    ],
+    "stress": 60,
+    "currentAction": "везёт детей в школу",
+    "transport": "school",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "heating",
+      "transport"
+    ],
+    "routes": [
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Байконур. По профессии бухгалтер. Ждёт место в саду, возит старшего в школу и считает семейный бюджет. Районный контекст: промзоны, частный сектор, зависимость от газа и азс.",
+    "speechStyle": "Быстро и прямо, как в родительском чате, без канцелярита.",
+    "focusGroup": true
+  },
+  {
+    "id": "baikonur-03",
+    "name": "Арман Досов",
+    "age": 44,
+    "homeDistrict": "baikonur",
+    "workDistrict": "baikonur",
+    "profession": "таксист",
+    "hasChildren": true,
+    "childrenAges": [
+      10
+    ],
+    "stress": 68,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "gas",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "work"
+      },
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "school"
+      },
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Байконур. Работает в утренние пики; простой на мосту уменьшает дневной доход. Районный контекст: промзоны, частный сектор, зависимость от газа и азс.",
+    "speechStyle": "Разговорно, с иронией водителя; сравнивает время с выручкой.",
+    "focusGroup": true
+  },
+  {
+    "id": "baikonur-04",
+    "name": "Бибигуль Нуртаева",
+    "age": 71,
+    "homeDistrict": "baikonur",
+    "workDistrict": "baikonur",
+    "profession": "пенсионер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 57,
+    "currentAction": "дома",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "heating",
+      "transport",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Байконур. Ездит в поликлинику и на рынок, проверяет батареи перед морозами. Районный контекст: промзоны, частный сектор, зависимость от газа и азс.",
+    "speechStyle": "Коротко, житейски; обсуждает батареи и чат КСК.",
+    "focusGroup": true
+  },
+  {
+    "id": "baikonur-05",
+    "name": "Ирина Орлова",
+    "age": 22,
+    "homeDistrict": "baikonur",
+    "workDistrict": "saraishyk",
+    "profession": "студент",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 34,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "transport",
+      "leisure",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "baikonur",
+        "to": "saraishyk",
+        "purpose": "school",
+        "bridgeId": "east"
+      },
+      {
+        "from": "baikonur",
+        "to": "esil",
+        "purpose": "leisure",
+        "bridgeId": "east"
+      }
+    ],
+    "biography": "Живёт в районе Байконур. Совмещает пары с подработкой; рассчитывает на автобус и тёплую остановку. Районный контекст: промзоны, частный сектор, зависимость от газа и азс.",
+    "speechStyle": "Легко и остро, естественный городской сленг без карикатуры.",
+    "focusGroup": false
+  },
+  {
+    "id": "baikonur-06",
+    "name": "Ерасыл Сагинов",
+    "age": 36,
+    "homeDistrict": "baikonur",
+    "workDistrict": "baikonur",
+    "profession": "владелец кофейни",
+    "hasChildren": true,
+    "childrenAges": [
+      6
+    ],
+    "stress": 44,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "services",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "work"
+      },
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "school"
+      },
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Байконур. Открывает кофейню до восьми, зависит от поставок и пешеходного потока. Районный контекст: промзоны, частный сектор, зависимость от газа и азс.",
+    "speechStyle": "Предпринимательская ирония; замечает покупателей и коммунальные счета.",
+    "focusGroup": true
+  },
+  {
+    "id": "baikonur-07",
+    "name": "Ляззат Токтарова",
+    "age": 47,
+    "homeDistrict": "baikonur",
+    "workDistrict": "esil",
+    "profession": "школьный учитель",
+    "hasChildren": true,
+    "childrenAges": [
+      14
+    ],
+    "stress": 59,
+    "currentAction": "везёт детей в школу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "baikonur",
+        "to": "esil",
+        "purpose": "work",
+        "bridgeId": "east"
+      },
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Байконур. Ведёт две смены; после уроков помогает собственному подростку. Районный контекст: промзоны, частный сектор, зависимость от газа и азс.",
+    "speechStyle": "Спокойно, предметно; говорит о классах, сменах и детях.",
+    "focusGroup": true
+  },
+  {
+    "id": "baikonur-08",
+    "name": "Андрей Ли",
+    "age": 43,
+    "homeDistrict": "baikonur",
+    "workDistrict": "esil",
+    "profession": "мастер СТО",
+    "hasChildren": true,
+    "childrenAges": [
+      5,
+      11
+    ],
+    "stress": 58,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "gas",
+      "services",
+      "transport",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "baikonur",
+        "to": "esil",
+        "purpose": "work",
+        "bridgeId": "east"
+      },
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "school"
+      },
+      {
+        "from": "baikonur",
+        "to": "baikonur",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Байконур. Ездит за запчастями на рынок, зимой часто помогает заглохшим машинам. Районный контекст: промзоны, частный сектор, зависимость от газа и азс.",
+    "speechStyle": "Прямо и практично, с рабочим юмором.",
+    "focusGroup": false
+  },
+  {
+    "id": "baikonur-09",
+    "name": "Асем Калиева",
+    "age": 30,
+    "homeDistrict": "baikonur",
+    "workDistrict": "saryarka",
+    "profession": "медсестра",
+    "hasChildren": true,
+    "childrenAges": [
+      4
+    ],
+    "stress": 56,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "heating",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "baikonur",
+        "to": "saryarka",
+        "purpose": "work"
+      }
+    ],
+    "biography": "Живёт в районе Байконур. Работает посменно; после ночной смены забирает ребёнка из сада. Районный контекст: промзоны, частный сектор, зависимость от газа и азс.",
+    "speechStyle": "Устало, но доброжелательно; ценит надёжность транспорта.",
+    "focusGroup": false
+  },
+  {
+    "id": "baikonur-10",
+    "name": "Санжар Амиров",
+    "age": 27,
+    "homeDistrict": "baikonur",
+    "workDistrict": "esil",
+    "profession": "курьер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 58,
+    "currentAction": "едет на работу",
+    "transport": "car",
+    "income": "low",
+    "interests": [
+      "transport",
+      "gas",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "baikonur",
+        "to": "esil",
+        "purpose": "work",
+        "bridgeId": "east"
+      }
+    ],
+    "biography": "Живёт в районе Байконур. Возит заказы между берегами, доход зависит от числа доставок. Районный контекст: промзоны, частный сектор, зависимость от газа и азс.",
+    "speechStyle": "Коротко и энергично; считает потерянные минуты.",
+    "focusGroup": false
+  },
+  {
+    "id": "nura-01",
+    "name": "Аскар Байжанов",
+    "age": 40,
+    "homeDistrict": "nura",
+    "workDistrict": "esil",
+    "profession": "государственный служащий",
+    "hasChildren": true,
+    "childrenAges": [
+      7,
+      12
+    ],
+    "stress": 74,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "transport",
+      "schools",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "nura",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "nura",
+        "to": "esil",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Нура. К девяти нужен в ведомстве; сначала отвозит младшего на занятия. Районный контекст: молодые семьи, критический дефицит школ и садов.",
+    "speechStyle": "Сдержанно, но с сухой иронией; ценит конкретные сроки.",
+    "focusGroup": true
+  },
+  {
+    "id": "nura-02",
+    "name": "Дана Муратова",
+    "age": 32,
+    "homeDistrict": "nura",
+    "workDistrict": "nura",
+    "profession": "мама в декрете",
+    "hasChildren": true,
+    "childrenAges": [
+      2,
+      8
+    ],
+    "stress": 80,
+    "currentAction": "везёт детей в школу",
+    "transport": "school",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "heating",
+      "transport"
+    ],
+    "routes": [
+      {
+        "from": "nura",
+        "to": "nura",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Нура. По профессии бухгалтер. Ждёт место в саду, возит старшего в школу и считает семейный бюджет. Районный контекст: молодые семьи, критический дефицит школ и садов.",
+    "speechStyle": "Быстро и прямо, как в родительском чате, без канцелярита.",
+    "focusGroup": true
+  },
+  {
+    "id": "nura-03",
+    "name": "Ринат Кабиров",
+    "age": 44,
+    "homeDistrict": "nura",
+    "workDistrict": "saryarka",
+    "profession": "таксист",
+    "hasChildren": true,
+    "childrenAges": [
+      10
+    ],
+    "stress": 65,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "gas",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "nura",
+        "to": "saryarka",
+        "purpose": "work",
+        "bridgeId": "west"
+      },
+      {
+        "from": "nura",
+        "to": "esil",
+        "purpose": "school"
+      },
+      {
+        "from": "nura",
+        "to": "baikonur",
+        "purpose": "market",
+        "bridgeId": "central"
+      }
+    ],
+    "biography": "Живёт в районе Нура. Работает в утренние пики; простой на мосту уменьшает дневной доход. Районный контекст: молодые семьи, критический дефицит школ и садов.",
+    "speechStyle": "Разговорно, с иронией водителя; сравнивает время с выручкой.",
+    "focusGroup": true
+  },
+  {
+    "id": "nura-04",
+    "name": "Валентина Ершова",
+    "age": 73,
+    "homeDistrict": "nura",
+    "workDistrict": "nura",
+    "profession": "пенсионер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 65,
+    "currentAction": "дома",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "heating",
+      "transport",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "nura",
+        "to": "nura",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Нура. Ездит в поликлинику и на рынок, проверяет батареи перед морозами. Районный контекст: молодые семьи, критический дефицит школ и садов.",
+    "speechStyle": "Коротко, житейски; обсуждает батареи и чат КСК.",
+    "focusGroup": true
+  },
+  {
+    "id": "nura-05",
+    "name": "Нурай Сулейменова",
+    "age": 21,
+    "homeDistrict": "nura",
+    "workDistrict": "esil",
+    "profession": "студент",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 50,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "transport",
+      "leisure",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "nura",
+        "to": "esil",
+        "purpose": "school"
+      },
+      {
+        "from": "nura",
+        "to": "esil",
+        "purpose": "leisure"
+      }
+    ],
+    "biography": "Живёт в районе Нура. Совмещает пары с подработкой; рассчитывает на автобус и тёплую остановку. Районный контекст: молодые семьи, критический дефицит школ и садов.",
+    "speechStyle": "Легко и остро, естественный городской сленг без карикатуры.",
+    "focusGroup": true
+  },
+  {
+    "id": "nura-06",
+    "name": "Алихан Муханов",
+    "age": 37,
+    "homeDistrict": "nura",
+    "workDistrict": "esil",
+    "profession": "владелец кофейни",
+    "hasChildren": true,
+    "childrenAges": [
+      6
+    ],
+    "stress": 56,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "services",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "nura",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "nura",
+        "to": "nura",
+        "purpose": "school"
+      },
+      {
+        "from": "nura",
+        "to": "baikonur",
+        "purpose": "market",
+        "bridgeId": "central"
+      }
+    ],
+    "biography": "Живёт в районе Нура. Открывает кофейню до восьми, зависит от поставок и пешеходного потока. Районный контекст: молодые семьи, критический дефицит школ и садов.",
+    "speechStyle": "Предпринимательская ирония; замечает покупателей и коммунальные счета.",
+    "focusGroup": false
+  },
+  {
+    "id": "nura-07",
+    "name": "Камила Серикова",
+    "age": 46,
+    "homeDistrict": "nura",
+    "workDistrict": "saryarka",
+    "profession": "школьный учитель",
+    "hasChildren": true,
+    "childrenAges": [
+      14
+    ],
+    "stress": 83,
+    "currentAction": "везёт детей в школу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "nura",
+        "to": "saryarka",
+        "purpose": "work",
+        "bridgeId": "west"
+      },
+      {
+        "from": "nura",
+        "to": "esil",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Нура. Ведёт две смены; после уроков помогает собственному подростку. Районный контекст: молодые семьи, критический дефицит школ и садов.",
+    "speechStyle": "Спокойно, предметно; говорит о классах, сменах и детях.",
+    "focusGroup": false
+  },
+  {
+    "id": "nura-08",
+    "name": "Павел Егоров",
+    "age": 41,
+    "homeDistrict": "nura",
+    "workDistrict": "esil",
+    "profession": "мастер СТО",
+    "hasChildren": true,
+    "childrenAges": [
+      5,
+      11
+    ],
+    "stress": 68,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "gas",
+      "services",
+      "transport",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "nura",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "nura",
+        "to": "nura",
+        "purpose": "school"
+      },
+      {
+        "from": "nura",
+        "to": "baikonur",
+        "purpose": "market",
+        "bridgeId": "central"
+      }
+    ],
+    "biography": "Живёт в районе Нура. Ездит за запчастями на рынок, зимой часто помогает заглохшим машинам. Районный контекст: молодые семьи, критический дефицит школ и садов.",
+    "speechStyle": "Прямо и практично, с рабочим юмором.",
+    "focusGroup": false
+  },
+  {
+    "id": "nura-09",
+    "name": "Назым Есенова",
+    "age": 30,
+    "homeDistrict": "nura",
+    "workDistrict": "esil",
+    "profession": "медсестра",
+    "hasChildren": true,
+    "childrenAges": [
+      4
+    ],
+    "stress": 55,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "heating",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "nura",
+        "to": "esil",
+        "purpose": "work"
+      }
+    ],
+    "biography": "Живёт в районе Нура. Работает посменно; после ночной смены забирает ребёнка из сада. Районный контекст: молодые семьи, критический дефицит школ и садов.",
+    "speechStyle": "Устало, но доброжелательно; ценит надёжность транспорта.",
+    "focusGroup": false
+  },
+  {
+    "id": "nura-10",
+    "name": "Ермек Касенов",
+    "age": 27,
+    "homeDistrict": "nura",
+    "workDistrict": "almaty",
+    "profession": "курьер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 54,
+    "currentAction": "едет на работу",
+    "transport": "car",
+    "income": "low",
+    "interests": [
+      "transport",
+      "gas",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "nura",
+        "to": "almaty",
+        "purpose": "work",
+        "bridgeId": "west"
+      }
+    ],
+    "biography": "Живёт в районе Нура. Возит заказы между берегами, доход зависит от числа доставок. Районный контекст: молодые семьи, критический дефицит школ и садов.",
+    "speechStyle": "Коротко и энергично; считает потерянные минуты.",
+    "focusGroup": false
+  },
+  {
+    "id": "saraishyk-01",
+    "name": "Канат Ибраев",
+    "age": 40,
+    "homeDistrict": "saraishyk",
+    "workDistrict": "saraishyk",
+    "profession": "государственный служащий",
+    "hasChildren": true,
+    "childrenAges": [
+      7,
+      12
+    ],
+    "stress": 55,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "transport",
+      "schools",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "saraishyk",
+        "to": "saraishyk",
+        "purpose": "work"
+      },
+      {
+        "from": "saraishyk",
+        "to": "saraishyk",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Сарайшык. К девяти нужен в ведомстве; сначала отвозит младшего на занятия. Районный контекст: новостройки, нехватка базовой инфраструктуры.",
+    "speechStyle": "Сдержанно, но с сухой иронией; ценит конкретные сроки.",
+    "focusGroup": true
+  },
+  {
+    "id": "saraishyk-02",
+    "name": "Зарина Абдиева",
+    "age": 33,
+    "homeDistrict": "saraishyk",
+    "workDistrict": "saraishyk",
+    "profession": "мама в декрете",
+    "hasChildren": true,
+    "childrenAges": [
+      2,
+      8
+    ],
+    "stress": 63,
+    "currentAction": "везёт детей в школу",
+    "transport": "school",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "heating",
+      "transport"
+    ],
+    "routes": [
+      {
+        "from": "saraishyk",
+        "to": "saraishyk",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Сарайшык. По профессии бухгалтер. Ждёт место в саду, возит старшего в школу и считает семейный бюджет. Районный контекст: новостройки, нехватка базовой инфраструктуры.",
+    "speechStyle": "Быстро и прямо, как в родительском чате, без канцелярита.",
+    "focusGroup": true
+  },
+  {
+    "id": "saraishyk-03",
+    "name": "Артем Назаров",
+    "age": 44,
+    "homeDistrict": "saraishyk",
+    "workDistrict": "esil",
+    "profession": "таксист",
+    "hasChildren": true,
+    "childrenAges": [
+      10
+    ],
+    "stress": 55,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "gas",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "saraishyk",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "saraishyk",
+        "to": "saraishyk",
+        "purpose": "school"
+      },
+      {
+        "from": "saraishyk",
+        "to": "baikonur",
+        "purpose": "market",
+        "bridgeId": "east"
+      }
+    ],
+    "biography": "Живёт в районе Сарайшык. Работает в утренние пики; простой на мосту уменьшает дневной доход. Районный контекст: новостройки, нехватка базовой инфраструктуры.",
+    "speechStyle": "Разговорно, с иронией водителя; сравнивает время с выручкой.",
+    "focusGroup": true
+  },
+  {
+    "id": "saraishyk-04",
+    "name": "Куляш Сейдахметова",
+    "age": 71,
+    "homeDistrict": "saraishyk",
+    "workDistrict": "saraishyk",
+    "profession": "пенсионер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 59,
+    "currentAction": "дома",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "heating",
+      "transport",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "saraishyk",
+        "to": "saraishyk",
+        "purpose": "market"
+      }
+    ],
+    "biography": "Живёт в районе Сарайшык. Ездит в поликлинику и на рынок, проверяет батареи перед морозами. Районный контекст: новостройки, нехватка базовой инфраструктуры.",
+    "speechStyle": "Коротко, житейски; обсуждает батареи и чат КСК.",
+    "focusGroup": false
+  },
+  {
+    "id": "saraishyk-05",
+    "name": "Мирас Сапаров",
+    "age": 20,
+    "homeDistrict": "saraishyk",
+    "workDistrict": "esil",
+    "profession": "студент",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 60,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "low",
+    "interests": [
+      "transport",
+      "leisure",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "saraishyk",
+        "to": "esil",
+        "purpose": "school"
+      },
+      {
+        "from": "saraishyk",
+        "to": "esil",
+        "purpose": "leisure"
+      }
+    ],
+    "biography": "Живёт в районе Сарайшык. Совмещает пары с подработкой; рассчитывает на автобус и тёплую остановку. Районный контекст: новостройки, нехватка базовой инфраструктуры.",
+    "speechStyle": "Легко и остро, естественный городской сленг без карикатуры.",
+    "focusGroup": false
+  },
+  {
+    "id": "saraishyk-06",
+    "name": "Данияр Смагулов",
+    "age": 35,
+    "homeDistrict": "saraishyk",
+    "workDistrict": "esil",
+    "profession": "владелец кофейни",
+    "hasChildren": true,
+    "childrenAges": [
+      6
+    ],
+    "stress": 55,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "high",
+    "interests": [
+      "services",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "saraishyk",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "saraishyk",
+        "to": "saraishyk",
+        "purpose": "school"
+      },
+      {
+        "from": "saraishyk",
+        "to": "baikonur",
+        "purpose": "market",
+        "bridgeId": "east"
+      }
+    ],
+    "biography": "Живёт в районе Сарайшык. Открывает кофейню до восьми, зависит от поставок и пешеходного потока. Районный контекст: новостройки, нехватка базовой инфраструктуры.",
+    "speechStyle": "Предпринимательская ирония; замечает покупателей и коммунальные счета.",
+    "focusGroup": true
+  },
+  {
+    "id": "saraishyk-07",
+    "name": "Наталья Смирнова",
+    "age": 47,
+    "homeDistrict": "saraishyk",
+    "workDistrict": "almaty",
+    "profession": "школьный учитель",
+    "hasChildren": true,
+    "childrenAges": [
+      14
+    ],
+    "stress": 51,
+    "currentAction": "везёт детей в школу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "schools",
+      "transport",
+      "heating"
+    ],
+    "routes": [
+      {
+        "from": "saraishyk",
+        "to": "almaty",
+        "purpose": "work",
+        "bridgeId": "east"
+      },
+      {
+        "from": "saraishyk",
+        "to": "saraishyk",
+        "purpose": "school"
+      }
+    ],
+    "biography": "Живёт в районе Сарайшык. Ведёт две смены; после уроков помогает собственному подростку. Районный контекст: новостройки, нехватка базовой инфраструктуры.",
+    "speechStyle": "Спокойно, предметно; говорит о классах, сменах и детях.",
+    "focusGroup": false
+  },
+  {
+    "id": "saraishyk-08",
+    "name": "Асет Нургалиев",
+    "age": 43,
+    "homeDistrict": "saraishyk",
+    "workDistrict": "esil",
+    "profession": "мастер СТО",
+    "hasChildren": true,
+    "childrenAges": [
+      5,
+      11
+    ],
+    "stress": 69,
+    "currentAction": "везёт детей в школу",
+    "transport": "car",
+    "income": "middle",
+    "interests": [
+      "gas",
+      "services",
+      "transport",
+      "schools"
+    ],
+    "routes": [
+      {
+        "from": "saraishyk",
+        "to": "esil",
+        "purpose": "work"
+      },
+      {
+        "from": "saraishyk",
+        "to": "saraishyk",
+        "purpose": "school"
+      },
+      {
+        "from": "saraishyk",
+        "to": "baikonur",
+        "purpose": "market",
+        "bridgeId": "east"
+      }
+    ],
+    "biography": "Живёт в районе Сарайшык. Ездит за запчастями на рынок, зимой часто помогает заглохшим машинам. Районный контекст: новостройки, нехватка базовой инфраструктуры.",
+    "speechStyle": "Прямо и практично, с рабочим юмором.",
+    "focusGroup": true
+  },
+  {
+    "id": "saraishyk-09",
+    "name": "Айдана Тлеубергенова",
+    "age": 29,
+    "homeDistrict": "saraishyk",
+    "workDistrict": "baikonur",
+    "profession": "медсестра",
+    "hasChildren": true,
+    "childrenAges": [
+      4
+    ],
+    "stress": 51,
+    "currentAction": "едет на работу",
+    "transport": "bus",
+    "income": "middle",
+    "interests": [
+      "transport",
+      "heating",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "saraishyk",
+        "to": "baikonur",
+        "purpose": "work",
+        "bridgeId": "east"
+      }
+    ],
+    "biography": "Живёт в районе Сарайшык. Работает посменно; после ночной смены забирает ребёнка из сада. Районный контекст: новостройки, нехватка базовой инфраструктуры.",
+    "speechStyle": "Устало, но доброжелательно; ценит надёжность транспорта.",
+    "focusGroup": false
+  },
+  {
+    "id": "saraishyk-10",
+    "name": "Максим Цой",
+    "age": 28,
+    "homeDistrict": "saraishyk",
+    "workDistrict": "nura",
+    "profession": "курьер",
+    "hasChildren": false,
+    "childrenAges": [],
+    "stress": 54,
+    "currentAction": "едет на работу",
+    "transport": "car",
+    "income": "low",
+    "interests": [
+      "transport",
+      "gas",
+      "services"
+    ],
+    "routes": [
+      {
+        "from": "saraishyk",
+        "to": "nura",
+        "purpose": "work"
+      }
+    ],
+    "biography": "Живёт в районе Сарайшык. Возит заказы между берегами, доход зависит от числа доставок. Районный контекст: новостройки, нехватка базовой инфраструктуры.",
+    "speechStyle": "Коротко и энергично; считает потерянные минуты.",
+    "focusGroup": false
+  }
+]

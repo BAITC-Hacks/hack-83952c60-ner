@@ -1,5 +1,5 @@
 import { BRIDGES, DISTRICTS_DATA, DISTRICT_IDS, POPULATION_SCALE } from './data';
-import type { DistrictId, MigrationFlow, TrafficLoad, TransportMode, TravelPurpose } from './types';
+import type { BridgeDefinition, DistrictAggregate, DistrictId, MigrationFlow, TrafficLoad, TransportMode, TravelPurpose } from './types';
 
 /** Строки — место проживания, столбцы — назначение; порядок DISTRICT_IDS.
  * Каждая строка суммируется в 1. Это сценарные вероятности, не измеренные потоки. */
@@ -30,13 +30,19 @@ export function validateHour(hour: number): void {
   if (!Number.isFinite(hour) || hour < 0 || hour >= 24) throw new RangeError('hour должен быть в диапазоне [0, 24)');
 }
 
-export function selectBridge(from: DistrictId, to: DistrictId): string | undefined {
-  const origin = DISTRICTS_DATA.find(d => d.id === from);
-  const destination = DISTRICTS_DATA.find(d => d.id === to);
+export function selectBridge(
+  from: DistrictId,
+  to: DistrictId,
+  districts: readonly DistrictAggregate[] = DISTRICTS_DATA,
+  bridges: readonly BridgeDefinition[] = BRIDGES,
+): string | undefined {
+  const origin = districts.find(d => d.id === from);
+  const destination = districts.find(d => d.id === to);
   if (!origin || !destination) throw new RangeError('Неизвестный район маршрута');
   if (origin.bank === destination.bank) return undefined;
+  if (!bridges.length) throw new RangeError('Для маршрута между берегами необходим мост');
   const midpoint = (origin.centroid[0] + destination.centroid[0]) / 2;
-  return BRIDGES.reduce((best, bridge) => Math.abs(bridge.left[0] - midpoint) < Math.abs(best.left[0] - midpoint) ? bridge : best).id;
+  return bridges.reduce((best, bridge) => Math.abs(bridge.left[0] - midpoint) < Math.abs(best.left[0] - midpoint) ? bridge : best).id;
 }
 
 const PURPOSE_SHARES: Readonly<Record<TravelPurpose, number>> = { work: .48, school: .23, market: .19, leisure: .10 };
@@ -90,12 +96,17 @@ export function estimateTrafficLoad(flows: readonly MigrationFlow[], hour = 8): 
   const bridgeVolumes: Record<string, number> = Object.fromEntries(BRIDGES.map(bridge => [bridge.id, 0]));
   const destinationVolumes: Partial<Record<DistrictId, number>> = {};
   for (const flow of flows) {
-    if (!Number.isFinite(flow.residents) || flow.residents < 0) throw new RangeError('residents должен быть конечным неотрицательным числом');
+    if (!Number.isSafeInteger(flow.residents) || flow.residents < 0) throw new RangeError('residents должен быть безопасным неотрицательным целым числом');
+    if (!Number.isSafeInteger(flow.particles) || flow.particles < 0) throw new RangeError('particles должен быть безопасным неотрицательным целым числом');
+    if (flow.residents !== flow.particles * POPULATION_SCALE) throw new RangeError(`Каждая частица должна представлять ${POPULATION_SCALE} жителей`);
     if (!DISTRICT_IDS.includes(flow.from) || !DISTRICT_IDS.includes(flow.to)) throw new RangeError('Неизвестный район потока');
+    const defaultBridge = selectBridge(flow.from, flow.to);
+    if (flow.bridgeId !== undefined && defaultBridge === undefined) throw new RangeError('Маршрут на одном берегу не должен содержать мост');
+    const bridgeId = flow.bridgeId ?? defaultBridge;
     const volume = flow.residents * active;
-    if (flow.bridgeId) {
-      if (!(flow.bridgeId in bridgeVolumes)) throw new RangeError('Неизвестный мост потока');
-      bridgeVolumes[flow.bridgeId] += volume;
+    if (bridgeId !== undefined) {
+      if (!Object.hasOwn(bridgeVolumes, bridgeId)) throw new RangeError('Неизвестный мост потока');
+      bridgeVolumes[bridgeId] += volume;
     }
     destinationVolumes[flow.to] = (destinationVolumes[flow.to] ?? 0) + volume;
   }

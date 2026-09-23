@@ -1,0 +1,26 @@
+.population-panel { color: var(--text-main, #e2e8f0); background: var(--surface-card, #111827); padding: clamp(16px, 3vw, 28px); border: 1px solid var(--border-subtle, #334155); border-radius: 20px; }
+.population-heading { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+.population-heading h2, .population-heading h3 { margin: 0 0 8px; }
+.population-heading p, .population-state { margin: 0 0 16px; }
+.population-pulse { display: flex; gap: 12px; align-items: center; padding: 12px 16px; border: 1px solid currentColor; border-radius: 14px; }
+.population-pulse strong { font-size: 1.8rem; font-variant-numeric: tabular-nums; }
+.population-pulse--green { color: var(--color-green, #22c55e); }
+.population-pulse--yellow { color: var(--color-amber, #d69e00); }
+.population-pulse--red { color: var(--color-red, #ef4444); }
+.population-pulse--alert { animation: population-alert 1.4s ease-in-out infinite; }
+@keyframes population-alert { 50% { box-shadow: 0 0 20px #ef444460; } }
+.population-panel canvas { display: block; border-radius: 14px; }
+.population-legend { display: flex; flex-wrap: wrap; gap: 12px 24px; list-style: none; padding: 0; }
+.population-legend li { display: flex; align-items: center; gap: 8px; }
+.population-legend i { width: 10px; height: 10px; border-radius: 50%; }
+.population-note, .population-voices footer { color: var(--text-muted, #94a3b8); font-size: .85rem; line-height: 1.5; }
+.population-table-wrap { overflow-x: auto; margin: 20px 0; }
+.population-table { width: 100%; border-collapse: collapse; text-align: left; font-variant-numeric: tabular-nums; }
+.population-table th, .population-table td { padding: 12px 10px; border-bottom: 1px solid var(--border-subtle, #334155); }
+.population-heading button { cursor: pointer; border: 1px solid var(--border-subtle, #334155); border-radius: 10px; color: inherit; background: transparent; padding: 10px 14px; }
+.population-heading button:disabled { opacity: .55; cursor: default; }
+.population-heading button:focus-visible { outline: 2px solid #22d3ee; outline-offset: 3px; }
+.population-voices { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 12px; margin-top: 12px; }
+.population-voices blockquote { margin: 0; padding: 16px; border: 1px solid var(--border-subtle, #334155); border-radius: 12px; }
+.population-voices blockquote p { margin-top: 0; }
+@media (prefers-reduced-motion: reduce) { .population-pulse--alert { animation: none; } }

@@ -1,0 +1,110 @@
+[
+  {
+    "id": "esil",
+    "name": "Есиль",
+    "population": 380000,
+    "profile": "Высокий доход, дефицит школ, избыток офисов",
+    "centroid": [
+      0.53,
+      0.72
+    ],
+    "bank": "left",
+    "schoolDemand": 66000,
+    "schoolPlaces": 46000,
+    "kindergartenDemand": 27000,
+    "kindergartenPlaces": 20000,
+    "heatSupplyC": 84,
+    "heatTargetC": 85,
+    "income": "high"
+  },
+  {
+    "id": "saryarka",
+    "name": "Сарыарка",
+    "population": 340000,
+    "profile": "Старый фонд, школы у дома, дефицит тепла",
+    "centroid": [
+      0.22,
+      0.24
+    ],
+    "bank": "right",
+    "schoolDemand": 49000,
+    "schoolPlaces": 48000,
+    "kindergartenDemand": 19000,
+    "kindergartenPlaces": 17000,
+    "heatSupplyC": 61,
+    "heatTargetC": 85,
+    "income": "middle"
+  },
+  {
+    "id": "almaty",
+    "name": "Алматы",
+    "population": 330000,
+    "profile": "Высокая плотность, маятниковая миграция",
+    "centroid": [
+      0.5,
+      0.29
+    ],
+    "bank": "right",
+    "schoolDemand": 53000,
+    "schoolPlaces": 43000,
+    "kindergartenDemand": 22000,
+    "kindergartenPlaces": 16000,
+    "heatSupplyC": 78,
+    "heatTargetC": 85,
+    "income": "middle"
+  },
+  {
+    "id": "baikonur",
+    "name": "Байконур",
+    "population": 235000,
+    "profile": "Промзоны, частный сектор, зависимость от газа и АЗС",
+    "centroid": [
+      0.81,
+      0.23
+    ],
+    "bank": "right",
+    "schoolDemand": 35000,
+    "schoolPlaces": 30000,
+    "kindergartenDemand": 14000,
+    "kindergartenPlaces": 10000,
+    "heatSupplyC": 73,
+    "heatTargetC": 85,
+    "income": "low"
+  },
+  {
+    "id": "nura",
+    "name": "Нура",
+    "population": 155000,
+    "profile": "Молодые семьи, критический дефицит школ и садов",
+    "centroid": [
+      0.22,
+      0.79
+    ],
+    "bank": "left",
+    "schoolDemand": 35000,
+    "schoolPlaces": 14000,
+    "kindergartenDemand": 18000,
+    "kindergartenPlaces": 7000,
+    "heatSupplyC": 80,
+    "heatTargetC": 85,
+    "income": "middle"
+  },
+  {
+    "id": "saraishyk",
+    "name": "Сарайшык",
+    "population": 110000,
+    "profile": "Новостройки, нехватка базовой инфраструктуры",
+    "centroid": [
+      0.82,
+      0.77
+    ],
+    "bank": "left",
+    "schoolDemand": 22000,
+    "schoolPlaces": 11000,
+    "kindergartenDemand": 11000,
+    "kindergartenPlaces": 5000,
+    "heatSupplyC": 75,
+    "heatTargetC": 85,
+    "income": "middle"
+  }
+]

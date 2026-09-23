@@ -2,6 +2,10 @@ import express, { type ErrorRequestHandler } from 'express';
 import { resolve } from 'node:path';
 import { runSimulationAtQuarter } from '../src/engine/simulator';
 import { analyzeSimulation, createOpenAIProvider, type AnalysisProvider } from './analysis';
+import { createCitizenVoiceService, parseAkimDecision, type CitizenVoiceProvider } from './citizenVoices';
+import { generateAgents } from '../src/population/agents';
+import { DISTRICT_IDS } from '../src/population/data';
+import type { DistrictId } from '../src/population/types';
 
 export interface AppOptions {
   apiKey?: string;
@@ -10,6 +14,9 @@ export interface AppOptions {
   provider?: AnalysisProvider;
   timeoutMs?: number;
   frontendDirectory?: string;
+  citizenApiKey?: string;
+  citizenModel?: string;
+  citizenProvider?: CitizenVoiceProvider;
 }
 
 export function createApp(options: AppOptions = {}) {
@@ -17,6 +24,13 @@ export function createApp(options: AppOptions = {}) {
   const baseURL = (options.baseURL ?? process.env.OPENAI_BASE_URL ?? process.env.NVIDIA_BASE_URL ?? process.env.BREV_BASE_URL)?.trim() || undefined;
   const model = options.model ?? (process.env.OPENAI_MODEL?.trim() || process.env.NVIDIA_MODEL?.trim() || 'gpt-4o-mini');
   const provider = options.provider ?? (apiKey ? createOpenAIProvider(apiKey, baseURL) : undefined);
+  // Voices are an independent OpenAI integration. Never send NVIDIA/Brev credentials to OpenAI.
+  const voices = createCitizenVoiceService({
+    apiKey: options.citizenApiKey ?? (process.env.CITIZEN_OPENAI_API_KEY?.trim() || process.env.OPENAI_API_KEY?.trim() || ''),
+    model: options.citizenModel ?? (process.env.CITIZEN_MODEL?.trim() || 'gpt-4.1-mini'),
+    provider: options.citizenProvider,
+  });
+  const citizens = generateAgents(42);
   const app = express();
   app.disable('x-powered-by');
   app.use('/api', (_req, res, next) => {
@@ -27,6 +41,33 @@ export function createApp(options: AppOptions = {}) {
 
   app.get('/api/health', (_req, res) => {
     res.json({ status: 'ok', llmConfigured: Boolean(provider) });
+  });
+
+  app.post('/api/population/voices', async (req, res, next) => {
+    try {
+      const body: unknown = req.body;
+      if (typeof body !== 'object' || body === null || Array.isArray(body)) {
+        res.status(400).json({ error: 'Ожидается объект с решением акима.' });
+        return;
+      }
+      const input = body as Record<string, unknown>;
+      const decision = parseAkimDecision(input.decision);
+      if (!decision || Object.keys(input).some(key => !['decision', 'mode', 'selectedDistrict'].includes(key))
+        || (input.mode !== undefined && input.mode !== 'focus' && input.mode !== 'cohort')
+        || (input.selectedDistrict !== undefined && !DISTRICT_IDS.includes(input.selectedDistrict as DistrictId))) {
+        res.status(400).json({ error: 'Проверьте decision, mode (focus/cohort) и selectedDistrict.' });
+        return;
+      }
+      const selectedDistrict = (input.selectedDistrict ?? decision.districtIds[0]) as DistrictId | undefined;
+      if (input.mode !== 'cohort' && !selectedDistrict) {
+        res.status(400).json({ error: 'Для фокус-группы укажите selectedDistrict.' });
+        return;
+      }
+      const thoughts = input.mode === 'cohort'
+        ? await voices.generateCitizenThoughts(citizens, decision)
+        : await voices.generateVoiceOfCitizens(selectedDistrict!, decision);
+      res.json({ thoughts });
+    } catch (error) { next(error); }
   });
 
   app.post('/api/analyze', async (req, res, next) => {

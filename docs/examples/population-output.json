@@ -1,0 +1,110 @@
+{
+  "population": 1550000,
+  "visualParticles": 1550,
+  "hour": 8,
+  "trafficLoad": {
+    "bridges": [
+      {
+        "id": "west",
+        "loadRatio": 2.7,
+        "delayMinutes": 90,
+        "flowPerHour": 37800
+      },
+      {
+        "id": "central",
+        "loadRatio": 1.4256,
+        "delayMinutes": 10.838860799999999,
+        "flowPerHour": 35640
+      },
+      {
+        "id": "east",
+        "loadRatio": 1.656,
+        "delayMinutes": 20.158079999999998,
+        "flowPerHour": 24840
+      }
+    ],
+    "districtLoad": {
+      "esil": 1.643092105263158,
+      "saryarka": 0.9893382352941177,
+      "almaty": 1.0977272727272727,
+      "baikonur": 1.0723404255319149,
+      "nura": 3.3179723502304146,
+      "saraishyk": 0.7159090909090909
+    }
+  },
+  "pulse": {
+    "stressIndex": 50,
+    "averageAgentStress": 55.06666666666667,
+    "populationWeightedAgentStress": 53.39064516129032,
+    "status": "Повышенное напряжение",
+    "color": "yellow",
+    "pulsing": false,
+    "state": "Утренний коллапс",
+    "components": {
+      "bridges": 58.518150095238084,
+      "schools": 45.21624131310246,
+      "heating": 40.116129032258065
+    },
+    "districts": [
+      {
+        "districtId": "esil",
+        "population": 380000,
+        "sampledAgents": 10,
+        "averageStress": 47.4,
+        "infrastructureStress": 48.34528875497835
+      },
+      {
+        "districtId": "saryarka",
+        "population": 340000,
+        "sampledAgents": 10,
+        "averageStress": 52.8,
+        "infrastructureStress": 46.961738971428574
+      },
+      {
+        "districtId": "almaty",
+        "population": 330000,
+        "sampledAgents": 10,
+        "averageStress": 53.1,
+        "infrastructureStress": 45.14071471266846
+      },
+      {
+        "districtId": "baikonur",
+        "population": 235000,
+        "sampledAgents": 10,
+        "averageStress": 54.9,
+        "infrastructureStress": 45.93316754285714
+      },
+      {
+        "districtId": "nura",
+        "population": 155000,
+        "sampledAgents": 10,
+        "averageStress": 65,
+        "infrastructureStress": 65.33316754285714
+      },
+      {
+        "districtId": "saraishyk",
+        "population": 110000,
+        "sampledAgents": 10,
+        "averageStress": 57.2,
+        "infrastructureStress": 69.33316754285714
+      }
+    ]
+  },
+  "thoughts": [
+    {
+      "agentId": "nura-02",
+      "quote": "Школы нужны рядом. Надеюсь, детей перестанем возить через весь город.",
+      "source": "rules"
+    },
+    {
+      "agentId": "nura-03",
+      "quote": "Чат КСК уже обсуждает школы. Хочется конкретных сроков.",
+      "source": "rules"
+    },
+    {
+      "agentId": "nura-01",
+      "quote": "Пусть школьное утро наконец обойдётся без гонки по мостам.",
+      "source": "rules"
+    }
+  ]
+}

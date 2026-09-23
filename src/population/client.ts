@@ -16,7 +16,7 @@ export async function requestCitizenThoughts(
   if (typeof data !== 'object' || data === null || !('thoughts' in data) || !Array.isArray(data.thoughts)
     || data.thoughts.length > 5 || data.thoughts.some(item => typeof item !== 'object' || item === null
       || typeof item.agentId !== 'string' || typeof item.quote !== 'string'
-      || item.quote.length > 300 || !['llm', 'rules'].includes(item.source))) {
+      || item.quote.length > 320 || !['llm', 'rules'].includes(item.source))) {
     throw new Error('Некорректный ответ сервиса мнений.');
   }
   return data.thoughts as CitizenThought[];

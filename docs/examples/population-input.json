@@ -1,0 +1,13 @@
+{
+  "decision": {
+    "id": "nura-schools-001",
+    "topic": "schools",
+    "districtIds": [
+      "nura"
+    ],
+    "summary": "Добавить школьные места в Нуре, чтобы сократить поездки семей в другие районы.",
+    "effect": "improve"
+  },
+  "selectedDistrict": "nura",
+  "mode": "focus"
+}

@@ -1,0 +1,2015 @@
+[
+  {
+    "from": "esil",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 83,
+    "residents": 83000
+  },
+  {
+    "from": "esil",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 32,
+    "residents": 32000
+  },
+  {
+    "from": "esil",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 11,
+    "residents": 11000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "esil",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "esil",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 16,
+    "residents": 16000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "esil",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 6,
+    "residents": 6000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "esil",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 9,
+    "residents": 9000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "esil",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "esil",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 8,
+    "residents": 8000
+  },
+  {
+    "from": "esil",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "esil",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 5,
+    "residents": 5000
+  },
+  {
+    "from": "esil",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "esil",
+    "to": "esil",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 48,
+    "residents": 48000
+  },
+  {
+    "from": "esil",
+    "to": "saryarka",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 13,
+    "residents": 13000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "esil",
+    "to": "almaty",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 15,
+    "residents": 15000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "esil",
+    "to": "baikonur",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "esil",
+    "to": "nura",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 4,
+    "residents": 4000
+  },
+  {
+    "from": "esil",
+    "to": "saraishyk",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 4,
+    "residents": 4000
+  },
+  {
+    "from": "esil",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 13,
+    "residents": 13000
+  },
+  {
+    "from": "esil",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 5,
+    "residents": 5000
+  },
+  {
+    "from": "esil",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 9,
+    "residents": 9000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "esil",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "esil",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 12,
+    "residents": 12000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "esil",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 5,
+    "residents": 5000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "esil",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 13,
+    "residents": 13000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "esil",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 5,
+    "residents": 5000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "esil",
+    "to": "nura",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "esil",
+    "to": "nura",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "esil",
+    "to": "saraishyk",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "esil",
+    "to": "saraishyk",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "esil",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 15,
+    "residents": 15000
+  },
+  {
+    "from": "esil",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 6,
+    "residents": 6000
+  },
+  {
+    "from": "esil",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "esil",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "esil",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "esil",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "esil",
+    "to": "baikonur",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "esil",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "esil",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "esil",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "esil",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "saryarka",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 40,
+    "residents": 40000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 30,
+    "residents": 30000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 23,
+    "residents": 23000
+  },
+  {
+    "from": "saryarka",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 18,
+    "residents": 18000
+  },
+  {
+    "from": "saryarka",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 14,
+    "residents": 14000
+  },
+  {
+    "from": "saryarka",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 10,
+    "residents": 10000
+  },
+  {
+    "from": "saryarka",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 9,
+    "residents": 9000
+  },
+  {
+    "from": "saryarka",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 7,
+    "residents": 7000
+  },
+  {
+    "from": "saryarka",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saryarka",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saryarka",
+    "to": "esil",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 6,
+    "residents": 6000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "saryarka",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 59,
+    "residents": 59000
+  },
+  {
+    "from": "saryarka",
+    "to": "almaty",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 8,
+    "residents": 8000
+  },
+  {
+    "from": "saryarka",
+    "to": "baikonur",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "saryarka",
+    "to": "nura",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "saraishyk",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saryarka",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 17,
+    "residents": 17000
+  },
+  {
+    "from": "saryarka",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 13,
+    "residents": 13000
+  },
+  {
+    "from": "saryarka",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 7,
+    "residents": 7000
+  },
+  {
+    "from": "saryarka",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 5,
+    "residents": 5000
+  },
+  {
+    "from": "saryarka",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 8,
+    "residents": 8000
+  },
+  {
+    "from": "saryarka",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 6,
+    "residents": 6000
+  },
+  {
+    "from": "saryarka",
+    "to": "nura",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "nura",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "saraishyk",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saryarka",
+    "to": "saraishyk",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saryarka",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 6,
+    "residents": 6000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 5,
+    "residents": 5000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 7,
+    "residents": 7000
+  },
+  {
+    "from": "saryarka",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 5,
+    "residents": 5000
+  },
+  {
+    "from": "saryarka",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "saryarka",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "saryarka",
+    "to": "baikonur",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "saryarka",
+    "to": "baikonur",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "saryarka",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "saryarka",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saryarka",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "almaty",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 41,
+    "residents": 41000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "almaty",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 31,
+    "residents": 31000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "almaty",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 11,
+    "residents": 11000
+  },
+  {
+    "from": "almaty",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 8,
+    "residents": 8000
+  },
+  {
+    "from": "almaty",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 21,
+    "residents": 21000
+  },
+  {
+    "from": "almaty",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 16,
+    "residents": 16000
+  },
+  {
+    "from": "almaty",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 11,
+    "residents": 11000
+  },
+  {
+    "from": "almaty",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 8,
+    "residents": 8000
+  },
+  {
+    "from": "almaty",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "almaty",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "almaty",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "almaty",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "almaty",
+    "to": "esil",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 11,
+    "residents": 11000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "almaty",
+    "to": "saryarka",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 9,
+    "residents": 9000
+  },
+  {
+    "from": "almaty",
+    "to": "almaty",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 48,
+    "residents": 48000
+  },
+  {
+    "from": "almaty",
+    "to": "baikonur",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 4,
+    "residents": 4000
+  },
+  {
+    "from": "almaty",
+    "to": "nura",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "almaty",
+    "to": "saraishyk",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "almaty",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "almaty",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "almaty",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 6,
+    "residents": 6000
+  },
+  {
+    "from": "almaty",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 5,
+    "residents": 5000
+  },
+  {
+    "from": "almaty",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 14,
+    "residents": 14000
+  },
+  {
+    "from": "almaty",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 10,
+    "residents": 10000
+  },
+  {
+    "from": "almaty",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 9,
+    "residents": 9000
+  },
+  {
+    "from": "almaty",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 7,
+    "residents": 7000
+  },
+  {
+    "from": "almaty",
+    "to": "nura",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "almaty",
+    "to": "nura",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "almaty",
+    "to": "saraishyk",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "almaty",
+    "to": "saraishyk",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "almaty",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 7,
+    "residents": 7000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "almaty",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 5,
+    "residents": 5000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "almaty",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "almaty",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "almaty",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 6,
+    "residents": 6000
+  },
+  {
+    "from": "almaty",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 5,
+    "residents": 5000
+  },
+  {
+    "from": "almaty",
+    "to": "baikonur",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "almaty",
+    "to": "baikonur",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "almaty",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "almaty",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "almaty",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "almaty",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 18,
+    "residents": 18000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 14,
+    "residents": 14000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 10,
+    "residents": 10000
+  },
+  {
+    "from": "baikonur",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 7,
+    "residents": 7000
+  },
+  {
+    "from": "baikonur",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 14,
+    "residents": 14000
+  },
+  {
+    "from": "baikonur",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 11,
+    "residents": 11000
+  },
+  {
+    "from": "baikonur",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 18,
+    "residents": 18000
+  },
+  {
+    "from": "baikonur",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 14,
+    "residents": 14000
+  },
+  {
+    "from": "baikonur",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "baikonur",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "baikonur",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "esil",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "saryarka",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 7,
+    "residents": 7000
+  },
+  {
+    "from": "baikonur",
+    "to": "almaty",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 8,
+    "residents": 8000
+  },
+  {
+    "from": "baikonur",
+    "to": "baikonur",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 32,
+    "residents": 32000
+  },
+  {
+    "from": "baikonur",
+    "to": "nura",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "baikonur",
+    "to": "saraishyk",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 5,
+    "residents": 5000
+  },
+  {
+    "from": "baikonur",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 4,
+    "residents": 4000
+  },
+  {
+    "from": "baikonur",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 5,
+    "residents": 5000
+  },
+  {
+    "from": "baikonur",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 4,
+    "residents": 4000
+  },
+  {
+    "from": "baikonur",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 12,
+    "residents": 12000
+  },
+  {
+    "from": "baikonur",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 9,
+    "residents": 9000
+  },
+  {
+    "from": "baikonur",
+    "to": "saraishyk",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "baikonur",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "baikonur",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "baikonur",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "baikonur",
+    "to": "baikonur",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "baikonur",
+    "to": "baikonur",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "baikonur",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "baikonur",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "baikonur",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "baikonur",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "nura",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 24,
+    "residents": 24000
+  },
+  {
+    "from": "nura",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 18,
+    "residents": 18000
+  },
+  {
+    "from": "nura",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 6,
+    "residents": 6000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "nura",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "nura",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000
+  },
+  {
+    "from": "nura",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "nura",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "nura",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "nura",
+    "to": "esil",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 15,
+    "residents": 15000
+  },
+  {
+    "from": "nura",
+    "to": "saryarka",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 7,
+    "residents": 7000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "almaty",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 5,
+    "residents": 5000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "baikonur",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "nura",
+    "to": "nura",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 7,
+    "residents": 7000
+  },
+  {
+    "from": "nura",
+    "to": "saraishyk",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "nura",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "nura",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "nura",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "nura",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "nura",
+    "to": "nura",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "nura",
+    "to": "nura",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "nura",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 4,
+    "residents": 4000
+  },
+  {
+    "from": "nura",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "nura",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "west"
+  },
+  {
+    "from": "nura",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "nura",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "nura",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "saraishyk",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 15,
+    "residents": 15000
+  },
+  {
+    "from": "saraishyk",
+    "to": "esil",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 12,
+    "residents": 12000
+  },
+  {
+    "from": "saraishyk",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saraishyk",
+    "to": "saryarka",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saraishyk",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 6,
+    "residents": 6000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "almaty",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 5,
+    "residents": 5000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "baikonur",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "saraishyk",
+    "to": "nura",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "saraishyk",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "saraishyk",
+    "to": "saraishyk",
+    "purpose": "work",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "saraishyk",
+    "to": "esil",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 8,
+    "residents": 8000
+  },
+  {
+    "from": "saraishyk",
+    "to": "saryarka",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saraishyk",
+    "to": "almaty",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 6,
+    "residents": 6000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "baikonur",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "nura",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "saraishyk",
+    "to": "saraishyk",
+    "purpose": "school",
+    "mode": "school",
+    "particles": 6,
+    "residents": 6000
+  },
+  {
+    "from": "saraishyk",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "saraishyk",
+    "to": "esil",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "saraishyk",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saraishyk",
+    "to": "saryarka",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saraishyk",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "almaty",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "baikonur",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "saraishyk",
+    "purpose": "market",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "saraishyk",
+    "to": "saraishyk",
+    "purpose": "market",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "saraishyk",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 3,
+    "residents": 3000
+  },
+  {
+    "from": "saraishyk",
+    "to": "esil",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "saraishyk",
+    "to": "saryarka",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "central"
+  },
+  {
+    "from": "saraishyk",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "almaty",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000,
+    "bridgeId": "east"
+  },
+  {
+    "from": "saraishyk",
+    "to": "nura",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 1,
+    "residents": 1000
+  },
+  {
+    "from": "saraishyk",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "car",
+    "particles": 2,
+    "residents": 2000
+  },
+  {
+    "from": "saraishyk",
+    "to": "saraishyk",
+    "purpose": "leisure",
+    "mode": "bus",
+    "particles": 1,
+    "residents": 1000
+  }
+]
