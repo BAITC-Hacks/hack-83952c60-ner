@@ -1,4 +1,10 @@
 {
+  "Режим приложения": { "en": "Application mode", "kk": "Қолданба режимі" },
+  "Аким на 5 часов": { "en": "Akim for 5 Hours", "kk": "5 сағатқа әкім" },
+  "Симулятор города": { "en": "City simulator", "kk": "Қала симуляторы" },
+  "Решения могут изменить цифровой двойник: расходы, состояние городских систем и жизнь районов.": { "en": "Decisions can change the digital twin: spending, city systems and district life.", "kk": "Шешімдер цифрлық егізге әсер етеді: шығындарға, қалалық жүйелердің күйіне және аудандардың өміріне." },
+  "Перейти в симулятор города →": { "en": "Open the city simulator →", "kk": "Қала симуляторына өту →" },
+  "Примите выбранные пять решений и наблюдайте последствия по месяцам. Экспериментальные кризисы не переносятся.": { "en": "Apply the five selected decisions and observe their effects month by month. Experimental crises are not transferred.", "kk": "Таңдалған бес шешімді қабылдап, салдарын ай сайын бақылаңыз. Эксперименттік дағдарыстар тасымалданбайды." },
   "Учебная модель: показатели Сарайшыка взяты из Алматы, прежний вес населения Алматы разделён поровну. Границы условные.": {
     "en": "Educational model: Saraishyk uses Almaty's indicators, and Almaty's former population weight is split equally. Boundaries are illustrative.",
     "kk": "Оқу моделі: Сарайшық көрсеткіштері Алматыдан алынған, Алматының бұрынғы халық үлесі тең бөлінген. Шекаралар шартты."
