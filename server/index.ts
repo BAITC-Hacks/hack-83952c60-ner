@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { resolve } from 'node:path';
 import { createApp } from './app';
 
-const host = process.env.HOST?.trim() || '127.0.0.1';
+const host = (process.env.DOCKER === 'true' && (!process.env.HOST || process.env.HOST === '127.0.0.1') ? '0.0.0.0' : process.env.HOST?.trim()) || '127.0.0.1';
 const port = Number(process.env.PORT || 3001);
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error('PORT должен быть целым числом от 1 до 65535.');

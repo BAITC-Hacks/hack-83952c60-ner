@@ -24,6 +24,21 @@ npm start
 
 После сборки `npm start` обслуживает интерфейс и API по адресу http://127.0.0.1:3001. `npm run preview` предназначен только для просмотра фронтенд-сборки, без API; для полной проверки используйте `npm start`.
 
+### Запуск через Docker
+
+Сборка и запуск в изолированном контейнере:
+
+```powershell
+# Запуск через Docker Compose (порт 3001)
+docker compose up --build
+
+# Или прямая сборка и запуск контейнера:
+docker build -t akim-astana-simulator .
+docker run -p 3001:3001 --env-file .env akim-astana-simulator
+```
+
+Интерфейс и API будут доступны по адресу: **http://localhost:3001** (или http://127.0.0.1:3001).
+
 ## Настройка LLM
 
 | Переменная | По умолчанию | Назначение |
