@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { AGENT_COUNT, BRIDGES, CameraView, createTraffic, sampleAgent, seededRandom, smooth, stepTraffic, XYZ } from './simulation';
+import { AGENT_COUNT, BRIDGES, CameraView, createTraffic, sampleTrafficAgent, ScenarioId, seededRandom, signalGreen, stepTraffic, TrafficMetrics, transitWeight, XYZ } from './simulation';
 import { getLanguage, t } from '../i18n';
 
-export interface SceneOptions { project: boolean; paused: boolean; view: CameraView; agentsVisible: boolean; buildingsVisible: boolean }
-export interface Telemetry { blend: number; occupancy: number[]; congestion: number[]; fps: number; elapsed: number; completed: number }
+export interface SceneOptions { scenario: ScenarioId; paused: boolean; view: CameraView; agentsVisible: boolean; buildingsVisible: boolean }
+export interface Telemetry { blend: number; occupancy: number[]; congestion: number[]; fps: number; elapsed: number; completed: number; metrics: TrafficMetrics; transitioning: boolean }
 export interface SceneController { setOptions(options: SceneOptions): void; updateLanguage(): void; reset(): void; dispose(): void }
 
 const C = { amber: new THREE.Color('#ffbd60'), cyan: new THREE.Color('#5ffff0'), red: new THREE.Color('#ff455b') };
@@ -173,6 +173,42 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
     flyover.add(new THREE.Mesh(geometry, flyMaterial), lineObject(edges, '#62dbc6', .55));
   }
 
+  // Transit priority occupies the existing three crossings at street level.
+  const busLanes = new THREE.Group();
+  const laneMaterial = new THREE.MeshBasicMaterial({ color: '#33cfff', transparent: true, opacity: .55, depthWrite: false });
+  const laneMarkings: number[] = [];
+  for (const z of BRIDGES) for (const direction of [-1, 1]) {
+    const lane = new THREE.Mesh(new THREE.BoxGeometry(52, .045, .34), laneMaterial);
+    lane.position.set(0, .32, z + direction * .86); busLanes.add(lane);
+    for (let x = -22; x <= 22; x += 5.5) {
+      const tip: XYZ = [x + direction * .65, .37, z + direction * .86];
+      segment(laneMarkings, [x - direction * .4, .37, tip[2] - .2], tip);
+      segment(laneMarkings, [x - direction * .4, .37, tip[2] + .2], tip);
+    }
+  }
+  const busArrows = lineObject(laneMarkings, '#a0f2ff', .95); busLanes.add(busArrows); scene.add(busLanes);
+
+  // Coordinated junction beacons and travelling pulses show the signal-only intervention.
+  const signalLayer = new THREE.Group();
+  const signalPosts = new THREE.MeshBasicMaterial({ color: '#637d8c', transparent: true, opacity: .8 });
+  const signalBeacons: Array<{ material: THREE.MeshBasicMaterial; bridge: number; direction: number }> = [];
+  const waveMaterial = new THREE.MeshBasicMaterial({ color: '#9aff7b', transparent: true, opacity: .8, side: THREE.DoubleSide, depthWrite: false });
+  const wavePulses: THREE.Mesh[] = [];
+  for (let bridge = 0; bridge < BRIDGES.length; bridge++) {
+    const z = BRIDGES[bridge];
+    for (const side of [-1, 1]) {
+      const pole = new THREE.Mesh(new THREE.BoxGeometry(.16, 2.4, .16), signalPosts);
+      pole.position.set(side * 22, 1.2, z + side * 1.6); signalLayer.add(pole);
+      const material = new THREE.MeshBasicMaterial({ color: '#9aff7b', transparent: true, opacity: .95 });
+      const beacon = new THREE.Mesh(new THREE.SphereGeometry(.65, 12, 8), material);
+      beacon.position.set(side * 22, 2.7, z + side * 1.6); signalLayer.add(beacon);
+      signalBeacons.push({ material, bridge, direction: -side });
+    }
+    const wave = new THREE.Mesh(new THREE.RingGeometry(.7, 1.05, 24), waveMaterial);
+    wave.rotation.x = -Math.PI / 2; wave.position.set(-26, .36, z); signalLayer.add(wave); wavePulses.push(wave);
+  }
+  scene.add(signalLayer);
+
   // GPU sprites provide a soft bloom halo without a costly fullscreen postprocessing pass.
   const TRAIL = 4, positions = new Float32Array(AGENT_COUNT * TRAIL * 3), colors = new Float32Array(positions.length);
   const sizes = new Float32Array(AGENT_COUNT * TRAIL);
@@ -221,8 +257,11 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
   label('Правый берег', [-43, 1, 27], '#63828f', .68);
   label('Левый берег', [45, 1, -9], '#63828f', .68);
   const junctionLabel = label('01 / Центральный узел', [1, 9, 1], '#ff929a', .76);
-  const newLabel = label('Автобусная полоса / +40% потока', [0, 10, -9], '#7affe1', .74);
+  const newLabel = label('Новая развязка / 40% потока', [0, 10, -9], '#7affe1', .74);
   newLabel.visible = false;
+  const transitLabel = label('Выделенные полосы / 60% ОТ', [0, 6, -9], '#8ee7ff', .8);
+  const signalsLabel = label('Умные светофоры / зелёная волна', [0, 7, -9], '#b4ff97', .9);
+  transitLabel.visible = false; signalsLabel.visible = false;
 
   const pulse = new THREE.Mesh(new THREE.RingGeometry(4.7, 4.78, 64), new THREE.MeshBasicMaterial({ color: '#ff5968', transparent: true, opacity: .4, side: THREE.DoubleSide, depthWrite: false }));
   pulse.rotation.x = -Math.PI / 2; pulse.position.y = .15; scene.add(pulse);
@@ -252,27 +291,37 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
     if (!options.paused) {
       // Substeps preserve the two-second transition even when a frame takes > 50 ms.
       const steps = Math.max(1, Math.ceil(dt / .05));
-      for (let i = 0; i < steps; i++) stepTraffic(model, dt / steps, options.project);
+      for (let i = 0; i < steps; i++) stepTraffic(model, dt / steps, options.scenario);
     }
-    const blend = smooth(model.blend);
+    const blend = model.blend, transit = model.weights.transit, signals = model.weights.signals;
     buildings.visible = options.buildingsVisible; particles.visible = options.agentsVisible;
     flyover.visible = blend > .001; flyover.scale.y = Math.max(.001, blend);
     flyMaterial.opacity = .2 * blend;
     newLabel.visible = blend > .6;
-    junctionLabel.visible = blend < .5;
-    bridgeMaterials[1].color.copy(C.red).lerp(C.cyan, blend);
-    pulse.visible = blend < .98;
+    transitLabel.visible = transit > .6; signalsLabel.visible = signals > .6;
+    junctionLabel.visible = model.weights.baseline > .5;
+    busLanes.visible = transit > .001;
+    laneMaterial.opacity = .55 * transit;
+    (busArrows.material as THREE.LineBasicMaterial).opacity = .95 * transit;
+    signalLayer.visible = signals > .001; signalPosts.opacity = .8 * signals; waveMaterial.opacity = .8 * signals;
+    for (const beacon of signalBeacons) {
+      beacon.material.color.set(signalGreen(model.elapsed, beacon.bridge, beacon.direction) ? '#9aff7b' : '#ff765f');
+      beacon.material.opacity = .95 * signals;
+    }
+    wavePulses.forEach((wave, bridge) => { wave.position.x = -26 + 52 * (((model.elapsed - bridge * .8) / 6 % 1 + 1) % 1); });
+    bridgeMaterials[1].color.copy(C.red).lerp(C.cyan, 1 - model.congestion[1]);
+    pulse.visible = model.congestion[1] > .02;
     pulse.scale.setScalar(1 + Math.sin(model.elapsed * 2) * .09);
-    (pulse.material as THREE.MeshBasicMaterial).opacity = .4 * (1 - blend);
+    (pulse.material as THREE.MeshBasicMaterial).opacity = .4 * model.congestion[1];
     for (const agent of model.agents) {
-      sampleAgent(agent, agent.progress, blend, point);
+      sampleTrafficAgent(agent, agent.progress, model, point);
       const queue = Math.abs(point[0]) < 18 ? model.congestion[agent.bridge] : 0;
-      color.copy(agent.transit ? C.cyan : C.amber);
-      if (agent.converts) color.lerp(C.cyan, blend);
-      if (!agent.transit) color.lerp(C.red, queue);
+      const publicTransport = transitWeight(agent, model);
+      color.copy(C.amber).lerp(C.cyan, publicTransport);
+      color.lerp(C.red, queue * (1 - publicTransport));
       for (let trail = 0; trail < TRAIL; trail++) {
         const index = (agent.id * TRAIL + trail) * 3;
-        sampleAgent(agent, agent.progress - trail * .27 / agent.length, blend, point);
+        sampleTrafficAgent(agent, agent.progress - trail * .27 / agent.length, model, point);
         positions[index] = point[0]; positions[index + 1] = point[1]; positions[index + 2] = point[2];
         colors[index] = color.r; colors[index + 1] = color.g; colors[index + 2] = color.b;
       }
@@ -286,7 +335,8 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
     controls.update(); renderer.render(scene, camera); frameCount++;
     if (now - lastReport > 125) {
       fps = fps * .6 + Math.min(144, frameCount * 1000 / Math.max(1, now - lastReport)) * .4;
-      onTelemetry({ blend, occupancy: [...model.occupancy], congestion: [...model.congestion], fps: Math.round(fps), elapsed: model.elapsed, completed: model.completed });
+      onTelemetry({ blend, occupancy: [...model.occupancy], congestion: [...model.congestion], fps: Math.round(fps), elapsed: model.elapsed, completed: model.completed,
+        metrics: { ...model.metrics }, transitioning: model.transitioning || model.scenario !== options.scenario });
       lastReport = now; frameCount = 0;
     }
   };

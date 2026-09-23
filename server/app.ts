@@ -1,6 +1,6 @@
 import express, { type ErrorRequestHandler } from 'express';
 import { resolve } from 'node:path';
-import { runSimulation } from '../src/engine/simulator';
+import { runSimulationAtQuarter } from '../src/engine/simulator';
 import { analyzeSimulation, createOpenAIProvider, type AnalysisProvider } from './analysis';
 
 export interface AppOptions {
@@ -38,8 +38,12 @@ export function createApp(options: AppOptions = {}) {
         return;
       }
       const input = body as Record<string, unknown>;
-      if (Object.keys(input).some((key) => key !== 'decisions' && key !== 'question')) {
-        res.status(400).json({ error: 'Разрешены только поля decisions и question. Результаты рассчитывает сервер.' });
+      if (Object.keys(input).some((key) => key !== 'decisions' && key !== 'question' && key !== 'year')) {
+        res.status(400).json({ error: 'Разрешены только поля decisions, question и year. Результаты рассчитывает сервер.' });
+        return;
+      }
+      if (input.year !== undefined && input.year !== 1 && input.year !== 2 && input.year !== 3) {
+        res.status(400).json({ error: 'Год анализа должен быть числом 1, 2 или 3.' });
         return;
       }
       if (input.question !== undefined && (typeof input.question !== 'string'
@@ -47,7 +51,7 @@ export function createApp(options: AppOptions = {}) {
         res.status(400).json({ error: 'Вопрос должен быть непустой строкой длиной до 2000 символов.' });
         return;
       }
-      const simulation = runSimulation(input.decisions);
+      const simulation = runSimulationAtQuarter(input.decisions, (input.year ?? 2) as number * 4);
       if (!simulation.isValid) {
         res.status(422).json({ error: 'Сценарий нарушает правила симулятора.', simulation });
         return;

@@ -1,0 +1,371 @@
+.annual-plan {
+  padding: 24px;
+  min-width: 0;
+}
+
+.annual-plan__header,
+.annual-plan__heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.annual-plan__header {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.annual-plan__icon {
+  display: inline-flex;
+  padding: 11px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-selected);
+  color: var(--color-cyan);
+  border-radius: 12px;
+}
+
+.annual-plan__heading h3 {
+  font-size: 1.15rem;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+.annual-plan__heading p {
+  color: var(--text-muted);
+  font-size: .82rem;
+  margin-top: 6px;
+  max-width: 58ch;
+}
+
+.annual-plan__badge {
+  padding: 5px 9px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: .69rem;
+  white-space: nowrap;
+}
+
+.annual-plan__years {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.annual-plan__years button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-height: 70px;
+  padding: 13px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--surface-subtle);
+  color: var(--text-main);
+  text-align: left;
+  cursor: pointer;
+}
+
+.annual-plan__years button:hover {
+  border-color: var(--color-blue);
+  background: var(--surface-soft);
+}
+
+.annual-plan__years button[aria-pressed='true'] {
+  border-color: var(--accent-blue);
+  box-shadow: inset 0 3px 0 var(--accent-blue);
+  background: var(--surface-selected);
+}
+
+.annual-plan__years strong {
+  font-size: .88rem;
+}
+
+.annual-plan__years span {
+  font-size: .7rem;
+  color: var(--text-muted);
+}
+
+.annual-plan__years button:focus-visible,
+.annual-plan__table-scroll:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 4px;
+}
+
+.annual-plan__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin: 0 0 24px;
+}
+
+.annual-plan__metrics > div {
+  min-width: 0;
+}
+
+.annual-plan__metrics dt {
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+
+.annual-plan__metrics dd {
+  margin: 5px 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-main);
+}
+
+.annual-plan__metrics .annual-plan__score {
+  color: var(--color-cyan);
+}
+
+.annual-plan__metrics span {
+  display: block;
+  color: var(--text-muted);
+  font-size: .69rem;
+  line-height: 1.5;
+}
+
+.annual-plan .annual-plan__positive {
+  color: var(--color-green);
+}
+
+.annual-plan .annual-plan__negative {
+  color: var(--color-rose);
+}
+
+.annual-plan__chart {
+  margin: 0 0 24px;
+  padding: 17px 20px 12px;
+  border: 1px solid var(--border-color);
+  background: var(--surface-subtle);
+  border-radius: 12px;
+}
+
+.annual-plan__chart figcaption {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-main);
+  font-size: .8rem;
+  font-weight: 600;
+}
+
+.annual-plan__chart figcaption svg {
+  flex-shrink: 0;
+  color: var(--color-cyan);
+}
+
+.annual-plan__chart > svg {
+  display: block;
+  width: 100%;
+  max-height: 310px;
+  overflow: visible;
+}
+
+.annual-plan__grid line {
+  stroke: var(--chart-grid);
+}
+
+.annual-plan__grid text,
+.annual-plan__point-label {
+  fill: var(--text-muted);
+  font-size: 13px;
+}
+
+.annual-plan__baseline {
+  stroke: var(--text-dim);
+  stroke-width: 1;
+  stroke-dasharray: 5 5;
+}
+
+.annual-plan__line {
+  fill: none;
+  stroke: var(--color-cyan);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.annual-plan__point circle {
+  fill: var(--bg-card);
+  stroke: var(--color-cyan);
+  stroke-width: 2;
+}
+
+.annual-plan__point--selected circle:not(.annual-plan__halo) {
+  fill: var(--color-cyan);
+}
+
+.annual-plan__point .annual-plan__halo {
+  fill: var(--color-cyan);
+  opacity: .14;
+  stroke: none;
+}
+
+.annual-plan__point-value {
+  fill: var(--text-main);
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.annual-plan__point--selected .annual-plan__point-label {
+  fill: var(--color-cyan);
+  font-weight: 700;
+}
+
+.annual-plan__legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: .68rem;
+}
+
+.annual-plan__legend > span {
+  width: 22px;
+  border-top: 1px dashed var(--text-dim);
+}
+
+.annual-plan__table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+
+.annual-plan table {
+  width: 100%;
+  min-width: 660px;
+  border-collapse: collapse;
+  font-size: .76rem;
+  text-align: right;
+}
+
+.annual-plan caption {
+  color: var(--text-main);
+  text-align: left;
+  font-size: .81rem;
+  font-weight: 600;
+  padding: 15px;
+}
+
+.annual-plan th,
+.annual-plan td {
+  padding: 13px 12px;
+  border-top: 1px solid var(--border-color);
+  vertical-align: middle;
+}
+
+.annual-plan thead th {
+  font-size: .67rem;
+  color: var(--text-muted);
+  background: var(--surface-subtle);
+  font-weight: 600;
+  max-width: 125px;
+}
+
+.annual-plan tr > :first-child {
+  text-align: left;
+}
+
+.annual-plan tbody th {
+  color: var(--text-main);
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.annual-plan tbody th span {
+  display: block;
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: .65rem;
+}
+
+.annual-plan tbody td {
+  color: var(--text-main);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+.annual-plan tr[aria-current='true'] {
+  background: var(--surface-selected);
+}
+
+.annual-plan tr[aria-current='true'] > :first-child {
+  box-shadow: inset 3px 0 0 var(--accent-blue);
+}
+
+.annual-plan__assumptions {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 18px;
+  color: var(--text-muted);
+  font-size: .71rem;
+  line-height: 1.65;
+}
+
+.annual-plan__assumptions > svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: var(--color-blue);
+}
+
+.annual-plan__assumptions p + p {
+  margin-top: 7px;
+}
+
+.annual-plan__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 30px 20px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 12px;
+  background: var(--surface-subtle);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.annual-plan__empty > svg {
+  color: var(--color-cyan);
+}
+
+.annual-plan__empty h4 {
+  color: var(--text-main);
+  font-size: .95rem;
+}
+
+.annual-plan__empty p {
+  max-width: 58ch;
+  font-size: .8rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 760px) {
+  .annual-plan { padding: 18px; }
+  .annual-plan__metrics { gap: 15px; }
+  .annual-plan__metrics dd { font-size: 1.5rem; }
+  .annual-plan__chart { padding: 14px 12px 12px; }
+}
+
+@media (max-width: 480px) {
+  .annual-plan__heading { gap: 10px; }
+  .annual-plan__icon { padding: 8px; }
+  .annual-plan__years { gap: 7px; }
+  .annual-plan__years button { padding: 12px 10px; }
+  .annual-plan__years span { font-size: .64rem; }
+  .annual-plan__metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 14px; }
+  .annual-plan__metrics > div:first-child { grid-column: 1 / -1; }
+  .annual-plan__metrics > div:first-child dd { font-size: 2rem; }
+  .annual-plan__grid text,
+  .annual-plan__point-label { font-size: 21px; }
+  .annual-plan__point-value { font-size: 22px; }
+}

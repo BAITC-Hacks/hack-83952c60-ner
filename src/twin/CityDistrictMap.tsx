@@ -63,6 +63,9 @@ export default function CityDistrictMap({ city, baseline, selected, onSelect, ac
   useEffect(() => {
     if (!focused || !active) return;
     drawer.current?.focus({ preventScroll: true });
+  }, [focused, active]);
+  useEffect(() => {
+    if (!focused || !active) return;
     const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !open) current.current.clearFocus(); };
     document.addEventListener('keydown', escape);
     return () => document.removeEventListener('keydown', escape);
@@ -96,8 +99,8 @@ export default function CityDistrictMap({ city, baseline, selected, onSelect, ac
       if (cancelled || !host.current) return;
       try {
         scene.current = createDistrictScene(host.current, current.current.data, { ...current.current.settings, motion: current.current.settings.motion && !current.current.reduced },
-          setHovered, id => current.current.selectDistrict(id), (id, x, y) => {
-            flows.current?.project(id, x, y);
+          setHovered, id => current.current.selectDistrict(id), (id, x, y, placements) => {
+            flows.current?.project(id, x, y, placements);
             const card = cards.current[id], line = lines.current[id], pin = pins.current[id];
             if (!card || !line) return;
             if (window.innerWidth > 1100) {

@@ -72,12 +72,25 @@ export function runSimulation(
   input: unknown,
   events: CityEvent[] = []
 ): SimulationResult {
+  return runSimulationAtQuarter(input, 8, events);
+}
+
+/** Snapshot of one portfolio launched at quarter zero, using the existing eight-quarter effect ramp. */
+export function runSimulationAtQuarter(
+  input: unknown,
+  quarter: number,
+  events: CityEvent[] = []
+): SimulationResult {
+  if (!Number.isInteger(quarter) || quarter <= 0) {
+    throw new RangeError('The simulation quarter must be a positive integer.');
+  }
   const validation = validateDecisions(input);
   const baseData = calculateBaseScore();
 
   if (!validation.isValid) {
     return {
       isValid: false,
+      horizonQuarters: quarter,
       validation,
       decisions: [],
       districts: baseData.districts,
@@ -117,12 +130,12 @@ export function runSimulation(
     saraishyk: { ...DISTRICTS.saraishyk.indicators },
   };
 
-  // 1. Apply measures with lag: factor = (8 - L) / 8
+  // 1. The effect starts after commissioning and reaches its raw value eight quarters later.
   for (const decision of decisions) {
     const measure = MEASURES[decision.measureId];
     if (!measure) continue;
 
-    const lagFactor = (8 - measure.lag) / 8;
+    const lagFactor = Math.min(1, Math.max(0, (quarter - measure.lag) / 8));
 
     for (const [indIdStr, rawEffect] of Object.entries(measure.effects)) {
       const indId = indIdStr as IndicatorId;
@@ -139,14 +152,14 @@ export function runSimulation(
     }
   }
 
-  // 2. Apply Synergies (fixed bonus, unscaled by lag, to district of first measure)
+  // 2. Apply fixed synergies after both measures are commissioned, without lag scaling.
   const activeSynergies: string[] = [];
   for (const rule of SYNERGIES) {
     const [m1Id, m2Id] = rule.pair;
     const d1 = decisions.find((d) => d.measureId === m1Id);
     const d2 = decisions.find((d) => d.measureId === m2Id);
 
-    if (d1 && d2) {
+    if (d1 && d2 && quarter > Math.max(MEASURES[m1Id].lag, MEASURES[m2Id].lag)) {
       activeSynergies.push(rule.descriptionRu);
       // For district measures, bonus is given in the district of the first measure
       const targetDistrict = d1.districtId;
@@ -252,6 +265,7 @@ export function runSimulation(
 
   return {
     isValid: true,
+    horizonQuarters: quarter,
     validation,
     decisions,
     districts: districtsResult,

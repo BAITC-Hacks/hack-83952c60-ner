@@ -87,6 +87,8 @@ export interface DistrictSimulationResult {
 }
 
 interface SimulationResultBase {
+  /** Elapsed quarters from launching the selected portfolio; omitted in older saved results. */
+  horizonQuarters?: number;
   validation: ValidationResult;
   decisions: SelectedDecision[];
   districts: Record<DistrictId, DistrictSimulationResult>;

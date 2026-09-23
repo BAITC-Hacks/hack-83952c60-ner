@@ -10,6 +10,7 @@ import { AstanaTransitMap } from './components/AstanaTransitMap';
 import { WorkspaceTabs } from './components/WorkspaceTabs';
 import { DecisionPanel } from './components/DecisionPanel';
 import { RadarAnalytics } from './components/RadarAnalytics';
+import { AnnualPlanAnalytics } from './components/AnnualPlanAnalytics';
 import { AIInsightCard } from './components/AIInsightCard';
 import { OptimizerCard } from './components/OptimizerCard';
 import { CompareModal } from './components/CompareModal';
@@ -17,6 +18,7 @@ import { CrisisModal } from './components/CrisisModal';
 import { PresentationModal } from './components/PresentationModal';
 import { CityEvent, DistrictId, IndicatorId, SelectedDecision } from './engine/types';
 import { runSimulation } from './engine/simulator';
+import { runAnnualPlan } from './engine/annualPlan';
 import { validateDecisions } from './engine/validator';
 import { RecommendationSwap } from './engine/optimizer';
 import { useScenarioStorage } from './scenarios/useScenarioStorage';
@@ -27,6 +29,7 @@ type WorkspaceSection = 'decisions' | 'maps' | 'analytics' | 'requests';
 export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[]) => void }> = ({ onDecisionsChange }) => {
   useLanguage();
   const [section, setSection] = useState<WorkspaceSection>('decisions');
+  const [analyticsYear, setAnalyticsYear] = useState<1 | 2 | 3>(3);
   const openSection = (next: WorkspaceSection) => {
     setSection(next);
     queueMicrotask(() => document.getElementById(`planner-panel-${next}`)?.focus());
@@ -55,6 +58,8 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
 
   // Run simulation in real-time
   const simulation = runSimulation(decisions, activeEvents);
+  const annualPlan = runAnnualPlan(decisions, activeEvents);
+  const annualSimulation = annualPlan.years.find(({ year }) => year === analyticsYear)?.simulation ?? simulation;
 
   const handleAddDecision = (decision: SelectedDecision) => {
     const nextDecisions = [...decisions, decision];
@@ -135,7 +140,7 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
       <WorkspaceTabs idPrefix="planner" label={t('Разделы планирования')} value={section} onChange={setSection} items={[
         { id: 'decisions', label: t('Решения и бюджет'), description: t('Выберите пять мер') },
         { id: 'maps', label: t('Карты города'), description: t('Районы, автобусы и LRT') },
-        { id: 'analytics', label: t('Аналитика'), description: t('Показатели и AI-советник') },
+        { id: 'analytics', label: t('Аналитика'), description: t('План на 3 года и AI-советник') },
         { id: 'requests', label: t('Запросы районов'), description: t('Приоритеты жителей') },
       ]} />
 
@@ -164,11 +169,15 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
       </div>
 
       <div id="planner-panel-analytics" role="tabpanel" aria-labelledby="planner-tab-analytics" hidden={section !== 'analytics'} className="workspace-panel" tabIndex={0}>
-        <div className="workspace-panel-heading"><div><h2>{t('Аналитика')}</h2><p>{t('Сравните исходные и итоговые показатели по направлениям. Затем запросите объяснение у AI-советника.')}</p></div></div>
-        <ScoreDashboard simulation={simulation} />
+        <div className="workspace-panel-heading"><div><h2>{t('Аналитика')}</h2><p>{t('План на три года: сравните бюджет, качество жизни и показатели районов на конец каждого года.')}</p></div></div>
         <div className="workspace-analytics">
-          <RadarAnalytics simulation={simulation} selectedDistrictId={selectedDistrictId} onSelectDistrict={selectDistrict} />
-          <AIInsightCard simulation={simulation} scenarioRevision={scenarioRevision} hasExperimentalEvents={activeEvents.length > 0} />
+          <AnnualPlanAnalytics plan={annualPlan} selectedYear={analyticsYear} onYearChange={setAnalyticsYear} />
+          <section aria-label={t('Показатели на конец {0}-го года', [analyticsYear])}>
+            <p className="annual-detail-period" role="status">{t('Показатели на конец {0}-го года', [analyticsYear])}</p>
+            <ScoreDashboard simulation={annualSimulation} />
+            <RadarAnalytics simulation={annualSimulation} selectedDistrictId={selectedDistrictId} onSelectDistrict={selectDistrict} />
+          </section>
+          <AIInsightCard simulation={annualSimulation} year={analyticsYear} scenarioRevision={scenarioRevision} hasExperimentalEvents={activeEvents.length > 0} />
         </div>
         <div className="glass-panel workspace-next"><p>{t('Примите выбранные пять решений и наблюдайте последствия по месяцам. Экспериментальные кризисы не переносятся.')}</p><a className="btn-primary" href="#/digital-twin">{t('Перейти в симулятор города →')}</a></div>
       </div>

@@ -15,7 +15,7 @@
 .dt-map .dt-district-card.is-muted:hover, .dt-map .dt-district-card.is-muted:focus-visible { opacity: .8; }
 .dt-number, .dt-audit-load { transition: color .6s; }
 .dt-map .dt-reset-focus { position: absolute; top: 48px; right: 22px; z-index: 4; display: flex; align-items: center; gap: 7px; padding: 8px 10px; border: 1px solid #36545e; border-radius: 5px; color: #c3dedf; background: #12232cdd; font-size: 10px; backdrop-filter: blur(12px); }
-.dt-has-focus .dt-stage { height: 740px; }
+.dt-has-focus .dt-stage { height: auto; min-height: 740px; }
 .dt-has-focus .dt-canvas, .dt-has-focus .dt-flow-overlay { height: calc(100% - 242px); }
 .dt-has-focus .dt-fallback { bottom: 242px; }
 .dt-has-focus .dt-fallback > span { bottom: 4px; font-size: 8px; }
@@ -113,7 +113,7 @@
 }
 @media (max-width: 800px) {
   .dt-has-focus .dt-focus-layout { grid-template-columns: minmax(0, 1fr); }
-  .dt-has-focus .dt-stage { height: 690px; }
+  .dt-has-focus .dt-stage { height: 690px; min-height: 0; }
   .dt-has-focus .dt-canvas, .dt-has-focus .dt-flow-overlay { height: 420px; }
   .dt-has-focus .dt-fallback { height: 420px; bottom: auto; }
   .dt-has-focus .dt-card-layer { grid-template-columns: repeat(3, minmax(0, 1fr)); }

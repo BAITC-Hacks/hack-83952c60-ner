@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import React from 'react';
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, expect, it, vi } from 'vitest';
 import CityDistrictMap from '../src/twin/CityDistrictMap';
 import { initializeSession } from '../src/twin/model';
+import { setLanguage } from '../src/i18n';
 
 const schoolsName = '+ 2 школы шаговой доступности (−15 млрд ₸)';
 const hubName = '+ Сервисный хаб / АЗС на окраине (−5 млрд ₸)';
@@ -11,6 +12,7 @@ const schoolPinName = 'Построено: 2 школы шаговой дост�
 
 afterEach(() => {
   cleanup();
+  setLanguage('ru');
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
@@ -41,7 +43,7 @@ it('opens an audit on selection and allows closing or resetting focus without ch
   expect(screen.queryByRole('complementary', { name: 'Аудит района Нура' })).toBeNull();
 
   focusDistrict();
-  fireEvent.click(screen.getByRole('button', { name: 'Сбросить фокус', exact: true }));
+  fireEvent.click(screen.getByRole('button', { name: 'Сбросить фокус' }));
   expect(screen.queryByRole('complementary', { name: 'Аудит района Нура' })).toBeNull();
   expect(select.mock.calls).toEqual([['nura'], ['nura'], ['nura']]);
 });
@@ -91,7 +93,7 @@ it('keeps completed decisions across focus changes and isolates them by district
   const nuraAudit = focusDistrict();
   fireEvent.click(within(nuraAudit).getByRole('button', { name: schoolsName }));
   await within(screen.getByRole('button', { name: 'Район Нура' })).findByText('118');
-  fireEvent.click(screen.getByRole('button', { name: 'Сбросить фокус', exact: true }));
+  fireEvent.click(screen.getByRole('button', { name: 'Сбросить фокус' }));
 
   const esilAudit = focusDistrict('Есиль');
   expect((within(esilAudit).getByRole('button', { name: schoolsName }) as HTMLButtonElement).disabled).toBe(false);
@@ -137,4 +139,84 @@ it('applies school feedback with reduced motion enabled', async () => {
   expect(await within(screen.getByRole('button', { name: 'Район Нура' })).findByText('118')).toBeTruthy();
   expect(screen.getByRole('img', { name: schoolPinName })).toBeTruthy();
   expect((screen.getByRole('button', { name: 'Возобновить анимацию карты' }) as HTMLButtonElement).disabled).toBe(true);
+});
+
+it('translates an open audit, its actions and accessible commuting flows when the language changes', () => {
+  setup();
+  focusDistrict();
+  const translations = [
+    {
+      language: 'en', audit: 'Nura district audit',
+      schools: '+ 2 schools within walking distance (−15 bn ₸)',
+      hub: '+ Service hub / fuel station on the outskirts (−5 bn ₸)',
+      deficit: 'Shortage of school places',
+      schoolFlow: /^🎓 12[\s,]400 children → established secondary schools · Saryarka$/,
+      workFlow: /^💼 45[\s,]000 employees → House of Ministries \/ business centres · Yesil$/,
+      serviceFlow: '⛽ Trips to vehicle repair shops and wholesale warehouses · Baikonur',
+    },
+    {
+      language: 'kk', audit: 'Нұра ауданының аудиті',
+      schools: '+ Жаяу жетуге болатын 2 мектеп (−15 млрд ₸)',
+      hub: '+ Қала шетіндегі сервистік хаб / жанармай бекеті (−5 млрд ₸)',
+      deficit: 'Мектеп орындарының тапшылығы',
+      schoolFlow: /^🎓 12[\s,]400 бала → бұрыннан жұмыс істейтін гимназиялар · Сарыарқа$/,
+      workFlow: /^💼 45[\s,]000 қызметкер → Министрліктер үйі \/ бизнес орталықтар · Есіл$/,
+      serviceFlow: '⛽ Көлік жөндеу орталықтары мен көтерме қоймаларға бару · Байқоңыр',
+    },
+  ] as const;
+
+  for (const labels of translations) {
+    act(() => setLanguage(labels.language));
+    const audit = screen.getByRole('complementary', { name: labels.audit });
+    expect(within(audit).getByRole('button', { name: labels.schools })).toBeTruthy();
+    expect(within(audit).getByRole('button', { name: labels.hub })).toBeTruthy();
+    expect(within(audit).getByRole('progressbar', { name: labels.deficit })).toBeTruthy();
+    const schoolFlow = screen.getByRole('img', { name: labels.schoolFlow });
+    expect(screen.getByRole('img', { name: labels.workFlow })).toBeTruthy();
+    expect(screen.getByRole('img', { name: labels.serviceFlow })).toBeTruthy();
+    fireEvent.focus(schoolFlow);
+    expect(screen.getByRole('tooltip').textContent).toMatch(labels.language === 'en' ? /children → established secondary schools/ : /бала → бұрыннан жұмыс істейтін гимназиялар/);
+    fireEvent.blur(schoolFlow);
+  }
+
+  fireEvent.click(screen.getByRole('button', { name: translations[1].schools }));
+  expect(screen.getByRole('img', { name: 'Салынды: Жаяу жетуге болатын 2 мектеп' })).toBeTruthy();
+  act(() => setLanguage('en'));
+  expect(screen.getByRole('img', { name: 'Built: 2 schools within walking distance' })).toBeTruthy();
+  expect((screen.getByRole('button', { name: translations[0].schools }) as HTMLButtonElement).disabled).toBe(true);
+  expect(screen.getByLabelText('Experiment budget').textContent).toBe('45');
+});
+
+it('preserves the preview across layers and data sources without changing unrelated metrics', async () => {
+  const { city } = setup();
+  const audit = focusDistrict();
+  fireEvent.click(within(audit).getByRole('button', { name: schoolsName }));
+  const card = screen.getByRole('button', { name: 'Район Нура' });
+  expect(await within(card).findByText('118')).toBeTruthy();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Текущий сценарий' }));
+  const currentLoad = (city.districts.nura.load - 34).toLocaleString('ru', { maximumFractionDigits: 1 });
+  expect(await within(card).findByText(currentLoad)).toBeTruthy();
+  expect(within(card).getByText('(-34 к базе)')).toBeTruthy();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Нагрузка транспорта' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Экология' }));
+  const ecology = city.districts.nura.quality.ecology.toLocaleString('ru', { maximumFractionDigits: 1 });
+  expect(await within(card).findByText(ecology)).toBeTruthy();
+  expect(within(card).getByText('(0 к базе)')).toBeTruthy();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Экология' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Население' }));
+  const population = city.districts.nura.population.toLocaleString('ru', { maximumFractionDigits: 0 });
+  expect(await within(card).findByLabelText(population, { normalizer: text => text })).toBeTruthy();
+  expect(within(card).getByText('(0 к базе)')).toBeTruthy();
+
+  fireEvent.click(screen.getByRole('button', { name: 'Население' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Нагрузка транспорта' }));
+  expect(await within(card).findByText(currentLoad)).toBeTruthy();
+  fireEvent.click(screen.getByRole('button', { name: 'Срез из задания' }));
+  expect(await within(card).findByText('118')).toBeTruthy();
+  expect((within(audit).getByRole('button', { name: schoolsName }) as HTMLButtonElement).disabled).toBe(true);
+  expect(screen.getByLabelText('Бюджет эксперимента').textContent).toBe('45');
+  expect(Number(screen.getByTestId('migration-schools').getAttribute('data-remaining'))).toBe(0.35);
 });

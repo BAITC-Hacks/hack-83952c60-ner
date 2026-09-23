@@ -8,6 +8,7 @@ import { DistrictId } from '../engine/types';
 import { DISTRICT_SHAPES, MapDistrict, trafficProfile } from './mapData';
 
 export interface SceneSettings { motion: boolean; agents: boolean; hexagons: boolean; bloom: boolean }
+export interface DistrictProjectionPlacements { schools: [number, number]; hub: [number, number] }
 export interface DistrictScene {
   update(data: MapDistrict[], selected: DistrictId | null, hovered: DistrictId | null, settings: SceneSettings): void;
   dispose(): void;
@@ -29,7 +30,8 @@ function random(seed: number) { const n = Math.sin(seed * 127.1 + 311.7) * 43758
 
 export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[], initialSettings: SceneSettings,
   onHover: (id: DistrictId | null) => void, onSelect: (id: DistrictId) => void,
-  onProject: (id: DistrictId, x: number, y: number) => void, onError: () => void, onClear?: () => void): DistrictScene {
+  onProject: (id: DistrictId, x: number, y: number, placements?: DistrictProjectionPlacements) => void,
+  onError: () => void, onClear?: () => void): DistrictScene {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
   renderer.setClearColor('#05080c');
@@ -43,6 +45,8 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
   const camera = new THREE.OrthographicCamera(-65, 65, 40, -40, .1, 500);
   camera.position.set(54, 105, 90);
   camera.lookAt(0, 0, 0);
+  // Projection callbacks run before the first render, including when motion is paused.
+  camera.updateMatrixWorld(true);
   scene.add(new THREE.HemisphereLight('#b1deff', '#09141a', 2.5));
   const light = new THREE.DirectionalLight('#bce9ff', 3.8);
   light.position.set(-25, 55, -25); scene.add(light);
@@ -138,9 +142,12 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
       const material = object.material as THREE.MeshStandardMaterial | THREE.LineBasicMaterial;
       materials.push({ material, opacity: material.opacity, transparent: material.transparent, color: material.color.clone(), statusColor: object instanceof THREE.LineSegments });
     });
+    const anchor = new THREE.Vector3(world(district.anchor).x, depth + 2, world(district.anchor).y);
+    const schoolAnchor = anchor.clone().add(new THREE.Vector3(-18 / 8, 0, 22 / 8));
+    const hubAnchor = anchor.clone().add(new THREE.Vector3(18 / 8, 0, 22 / 8));
+    const placements: DistrictProjectionPlacements = { schools: [0, 0], hub: [0, 0] };
     return { id: district.id, group, glass, edgeMaterial, glowMaterial, roadMaterial, hexMaterial, materials, route, routeLine, agentGeometry, agents, positions,
-      dim: 1,
-      anchor: new THREE.Vector3(world(district.anchor).x, depth + 2, world(district.anchor).y), profile: trafficProfile(metric.load) };
+      dim: 1, anchor, schoolAnchor, hubAnchor, placements, profile: trafficProfile(metric.load) };
   });
 
   // The canyon follows the same separation as the original river, below the glass skyline.
@@ -157,6 +164,11 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
   const rippleGeo = new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(ripplePositions, 3));
   const ripples = new THREE.Points(rippleGeo, new THREE.PointsMaterial({ color: '#3abaff', size: .16, transparent: true, opacity: .8, blending: THREE.AdditiveBlending })); scene.add(ripples);
   const riverPoint = new THREE.Vector3(), agentPoint = new THREE.Vector3(), projected = new THREE.Vector3();
+  const projectPlacement = (anchor: THREE.Vector3, matrix: THREE.Matrix4, target: [number, number]) => {
+    projected.copy(anchor).applyMatrix4(matrix).project(camera);
+    target[0] = (projected.x + 1) / 2 * width;
+    target[1] = (1 - projected.y) / 2 * height;
+  };
   const resize = () => {
     dirty = true;
     width = Math.max(1, host.clientWidth); height = Math.max(1, host.clientHeight);
@@ -227,8 +239,10 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
       }
       module.agentGeometry.attributes.position.needsUpdate = true;
       module.group.updateMatrixWorld(true);
+      projectPlacement(module.schoolAnchor, module.group.matrixWorld, module.placements.schools);
+      projectPlacement(module.hubAnchor, module.group.matrixWorld, module.placements.hub);
       projected.copy(module.anchor).applyMatrix4(module.group.matrixWorld).project(camera);
-      onProject(module.id, (projected.x + 1) / 2 * width, (1 - projected.y) / 2 * height);
+      onProject(module.id, (projected.x + 1) / 2 * width, (1 - projected.y) / 2 * height, module.placements);
     });
     for (let i = 0; i < 110; i++) {
       riverCurve.getPointAt((i / 110 + elapsed * .012) % 1, riverPoint);

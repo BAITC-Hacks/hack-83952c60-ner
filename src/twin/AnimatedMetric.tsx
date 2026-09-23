@@ -5,6 +5,7 @@ export default function AnimatedMetric({ value, animate, digits = 1 }: { value: 
   const [display, setDisplay] = useState(value);
   const previous = useRef(value);
   useEffect(() => {
+    if (previous.current === value) return;
     if (!animate || typeof requestAnimationFrame === 'undefined') {
       previous.current = value;
       setDisplay(value);

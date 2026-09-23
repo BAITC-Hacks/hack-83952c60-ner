@@ -5,7 +5,8 @@ import { getLanguage, t } from '../i18n';
 import { AuditState, auditDistrict } from './mapAudit';
 import { DISTRICT_SHAPES } from './mapData';
 
-export interface DistrictFlowsHandle { project(id: DistrictId, x: number, y: number): void }
+type Placements = { schools: Point; hub: Point };
+export interface DistrictFlowsHandle { project(id: DistrictId, x: number, y: number, placements?: Placements): void }
 const COLORS = { schools: '#b99aff', work: '#63ddfa', services: '#ffa65d' };
 const EMOJI = { schools: '🎓', work: '💼', services: '⛽' };
 type Point = [number, number];
@@ -19,6 +20,7 @@ export default forwardRef<DistrictFlowsHandle, { district: DistrictId | null; au
   const prefix = useId().replace(/:/g, '');
   const svg = useRef<SVGSVGElement>(null);
   const coordinates = useRef<Partial<Record<DistrictId, Point>>>({});
+  const buildings = useRef<Partial<Record<DistrictId, Placements>>>({});
   const paths = useRef<Partial<Record<string, SVGGElement | null>>>({});
   const markers = useRef<Partial<Record<string, SVGGElement | null>>>({});
   const radar = useRef<SVGGElement>(null);
@@ -51,10 +53,13 @@ export default forwardRef<DistrictFlowsHandle, { district: DistrictId | null; au
         tooltipElement.current.style.top = `${Math.max(80, y - 10)}px`;
       }
     });
-    markers.current.schools?.setAttribute('transform', `translate(${from[0] - 28} ${from[1] + 24})`);
-    markers.current.hub?.setAttribute('transform', `translate(${from[0] + 28} ${from[1] + 24})`);
+    const placements = projected ? buildings.current[district] : undefined;
+    const school = placements?.schools ?? [from[0] - 18, from[1] + 22 * .7];
+    const hub = placements?.hub ?? [from[0] + 18, from[1] + 22 * .7];
+    markers.current.schools?.setAttribute('transform', `translate(${school.join(' ')})`);
+    markers.current.hub?.setAttribute('transform', `translate(${hub.join(' ')})`);
   };
-  useImperativeHandle(ref, () => ({ project(id, x, y) { coordinates.current[id] = [x, y]; draw(); } }));
+  useImperativeHandle(ref, () => ({ project(id, x, y, placements) { coordinates.current[id] = [x, y]; if (placements) buildings.current[id] = placements; draw(); } }));
   useLayoutEffect(() => { draw(); }, [district, audit, projected, tooltip]);
   useLayoutEffect(() => { setTooltip(null); }, [district]);
   return <div className="dt-flow-overlay">
