@@ -1,0 +1,139 @@
+.dt-focus-layout { display: grid; grid-template-columns: minmax(0, 1fr); }
+.dt-has-focus .dt-focus-layout { grid-template-columns: minmax(0, 1fr) 340px; }
+.dt-focus-layout > * { min-width: 0; }
+.dt-map button:focus-visible, .dt-district-shape:focus-visible, .dt-flow:focus-visible { outline: 2px solid #9be9e6; outline-offset: 4px; }
+.dt-fallback svg { width: 100%; height: 100%; max-height: none; filter: none; }
+.dt-fallback-river { fill: none; stroke: #2796da; stroke-width: 3; opacity: .6; filter: drop-shadow(0 0 5px #208adb); pointer-events: none; }
+.dt-district-shape { cursor: pointer; transition: opacity .3s, filter .3s, transform .4s; }
+.dt-district-shape text { font-size: 10px; fill: currentColor; stroke: none; pointer-events: none; }
+.dt-district-shape .dt-polygon-top { fill: color-mix(in srgb, currentColor 9%, #0c1821); stroke-width: 1.5; }
+.dt-district-shape:hover, .dt-district-shape:focus-visible { filter: drop-shadow(0 0 15px currentColor); }
+.dt-district-shape.is-focused { transform: scale(1.02); filter: drop-shadow(0 0 12px currentColor); }
+.dt-district-shape.is-focused .dt-polygon-top { stroke-width: 2.5; }
+.dt-district-shape.is-muted, .dt-map .dt-district-card.is-muted { opacity: .35; filter: grayscale(40%); }
+.dt-map .dt-district-card { transition: opacity .3s, filter .3s, border-color .4s, transform .3s; }
+.dt-map .dt-district-card.is-muted:hover, .dt-map .dt-district-card.is-muted:focus-visible { opacity: .8; }
+.dt-number, .dt-audit-load { transition: color .6s; }
+.dt-map .dt-reset-focus { position: absolute; top: 48px; right: 22px; z-index: 4; display: flex; align-items: center; gap: 7px; padding: 8px 10px; border: 1px solid #36545e; border-radius: 5px; color: #c3dedf; background: #12232cdd; font-size: 10px; backdrop-filter: blur(12px); }
+.dt-has-focus .dt-stage { height: 740px; }
+.dt-has-focus .dt-canvas, .dt-has-focus .dt-flow-overlay { height: calc(100% - 242px); }
+.dt-has-focus .dt-fallback { bottom: 242px; }
+.dt-has-focus .dt-fallback > span { bottom: 4px; font-size: 8px; }
+.dt-has-focus .dt-leaders { display: none; }
+.dt-has-focus .dt-card-layer { inset: auto 0 55px; height: auto; padding: 0 22px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.dt-has-focus .dt-district-card { position: relative; inset: auto; width: 100%; padding: 10px; }
+.dt-has-focus .dt-card-heading { font-size: 11px; }
+.dt-has-focus .dt-district-code { display: none; }
+.dt-has-focus .dt-number { font-size: 24px; margin: 4px 0; }
+.dt-has-focus .dt-delta { font-size: 8px; }
+.dt-has-focus .dt-card-bars { display: none; }
+.dt-has-focus .dt-orientation { left: 22px; top: 350px; bottom: auto; }
+.dt-has-focus .dt-water-label { top: 370px; left: 58%; font-size: 8px; }
+.dt-has-focus .dt-water-label span, .dt-has-focus .dt-agent-types { display: none; }
+
+.dt-flow-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+.dt-flows { width: 100%; height: 100%; overflow: visible; }
+.dt-flow { cursor: help; outline: none; }
+.dt-flow path { fill: none; }
+.dt-flow-line { stroke: currentColor; stroke-width: var(--flow-width); stroke-linecap: round; filter: drop-shadow(0 0 4px currentColor); transition: stroke-width .6s; }
+.dt-flow-halo { stroke: currentColor; stroke-width: calc(var(--flow-width) + 5px); opacity: .07; transition: stroke-width .6s; }
+.dt-flow--schools .dt-flow-line { stroke-dasharray: 7 9; animation: dt-flow-run 1.4s linear infinite; }
+.dt-flow--work .dt-flow-line { stroke-dasharray: 34 6; animation: dt-flow-run 2.2s linear infinite; }
+.dt-flow--services .dt-flow-line { opacity: .85; stroke-dasharray: 3 5; animation: dt-flow-run 2s linear infinite; }
+.dt-flow-hit { stroke: transparent; stroke-width: 20; pointer-events: stroke; }
+.dt-flow:hover .dt-flow-halo, .dt-flow:focus .dt-flow-halo { opacity: .25; }
+.dt-flow-tooltip { position: absolute; left: 50%; top: 85px; transform: translate(-50%, -100%); width: max-content; max-width: calc(100% - 40px); padding: 12px 15px; color: #e5f0f6; font-size: 11px; line-height: 1.7; border: 1px solid; border-radius: 7px; background: #10212df5; box-shadow: 0 10px 25px #0007; backdrop-filter: blur(15px); }
+.dt-flow-tooltip small { display: block; color: #88a9b7; font-size: 9px; }
+.dt-radar { pointer-events: none; }
+.dt-radar-ring { fill: none; stroke: currentColor; stroke-width: 1.3; animation: dt-radar-pulse 2.6s ease-out infinite; transform-box: fill-box; transform-origin: center; }
+.dt-radar-ring--second { animation-delay: -1.3s; }
+.dt-radar-core { fill: currentColor; stroke: #e2faff; stroke-width: 1.5; filter: drop-shadow(0 0 8px currentColor); }
+.dt-built-pin { animation: dt-pin-appear .5s cubic-bezier(.2, 1.5, .4, 1); transform-box: fill-box; transform-origin: center; }
+.dt-built-pin circle { fill: #252442; stroke: #b99aff; stroke-width: 1.5; filter: drop-shadow(0 4px 8px #0008); }
+.dt-built-pin text { font-size: 20px; }
+.dt-built-pin--hub circle { fill: #382c20; stroke: #ffa65d; }
+
+.dt-audit { position: relative; z-index: 4; padding: 23px 23px 20px; border-left: 1px solid #2b424e; background: linear-gradient(155deg, #182835e8, #0a151ef5 70%); backdrop-filter: blur(24px); box-shadow: -14px 0 45px #0003; animation: dt-audit-in .35s ease-out; outline: none; }
+.dt-audit-top { display: flex; align-items: center; justify-content: space-between; color: #91b3bf; font-size: 8px; letter-spacing: 1.8px; }
+.dt-audit-top > span { display: flex; gap: 8px; align-items: center; }
+.dt-audit-top i { width: 5px; height: 5px; background: var(--audit-color); border-radius: 50%; box-shadow: 0 0 10px var(--audit-color); }
+.dt-map .dt-audit-top button, .dt-map .dt-audit-toast button { background: transparent; color: #97acb6; padding: 3px; border: 0; display: flex; }
+.dt-audit-heading { display: flex; align-items: center; justify-content: space-between; margin: 22px 0 12px; color: #7595a4; }
+.dt-audit-heading span { font-size: 8px; letter-spacing: 2px; }
+.dt-audit-heading h3 { font: 500 34px var(--font-sans), sans-serif; letter-spacing: -.8px; margin: 4px 0 0; color: #e2eef2; }
+.dt-audit-load { display: flex; align-items: center; gap: 14px; color: var(--audit-color); border-bottom: 1px solid #263c48; padding-bottom: 19px; }
+.dt-audit-load > strong { font-size: 39px; line-height: 1.15; font-weight: 500; white-space: nowrap; letter-spacing: -1.7px; font-variant-numeric: tabular-nums; }
+.dt-audit-load > strong small { font-size: 17px; opacity: .6; }
+.dt-audit-load > span { color: #94adb8; font-size: 9px; line-height: 1.6; }
+.dt-audit-load > span small { display: block; color: var(--audit-color); font-size: 8px; margin-top: 4px; }
+.dt-audit-gain { display: flex; align-items: center; gap: 5px; font-size: 9px; color: #70e1b5; margin: 9px 0 0; }
+.dt-audit h4 { font: 500 12px var(--font-sans), sans-serif; color: #d1e0e6; margin: 0; }
+.dt-audit-deficits { margin: 23px 0 17px; }
+.dt-audit-indicator { margin-top: 16px; }
+.dt-audit-indicator > div { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; font: 11px var(--font-sans), sans-serif; color: #9bb1bd; }
+.dt-audit-indicator strong { color: var(--indicator-color); font: 11px var(--font-mono), monospace; }
+.dt-audit progress { display: block; appearance: none; width: 100%; height: 4px; border: 0; border-radius: 2px; overflow: hidden; margin-top: 8px; background: #253442; accent-color: var(--indicator-color); }
+.dt-audit progress::-webkit-progress-bar { background: #253442; }
+.dt-audit progress::-webkit-progress-value { background: var(--indicator-color); transition: width .6s; }
+.dt-audit progress::-moz-progress-bar { background: var(--indicator-color); }
+.dt-audit-routes { display: grid; gap: 9px; padding: 13px 0; border-top: 1px solid #273945; border-bottom: 1px solid #273945; }
+.dt-audit-routes > div { font-size: 9px; line-height: 1.5; color: #a7becb; }
+.dt-audit-routes small { font-size: 8px; display: block; margin: 3px 0 0 20px; color: #647f8e; }
+.dt-audit-actions { margin-top: 21px; }
+.dt-audit-budget { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 12px; }
+.dt-audit-budget > span { color: #80b0ba; font-size: 9px; white-space: nowrap; }
+.dt-audit-budget output { font-size: 15px; color: #c5edeb; }
+.dt-map .dt-build-action { display: flex; gap: 12px; width: 100%; align-items: center; text-align: left; padding: 13px 11px; margin-top: 9px; color: #d6e5f0; background: #28304370; border: 1px solid #65558788; border-radius: 7px; transition: background .2s, border-color .2s; }
+.dt-map .dt-build-action--hub { border-color: #896b4480; background: #382f2470; }
+.dt-map .dt-build-action:not(:disabled):hover { background: #383b57; border-color: #b99aff; }
+.dt-map .dt-build-action--hub:not(:disabled):hover { background: #453828; border-color: #ffa65d; }
+.dt-build-icon { flex-shrink: 0; font-size: 20px; color: #7ddcb5; display: flex; }
+.dt-build-action > span:nth-child(2) { flex: 1; }
+.dt-build-action strong { display: block; font: 500 11px/1.45 var(--font-sans), sans-serif; }
+.dt-build-action small { display: block; font-size: 9px; color: #a0a8bd; margin-top: 4px; }
+.dt-map .dt-build-action:disabled { opacity: .58; cursor: not-allowed; }
+.dt-audit-note { font: 10px/1.7 var(--font-sans), sans-serif; color: #76909f; margin: 16px 0 0; }
+.dt-map .dt-reset-audit { display: flex; align-items: center; justify-content: center; gap: 7px; width: 100%; border: 0; background: transparent; color: #93b6c1; padding: 13px 0 0; font-size: 9px; }
+.dt-audit-toast { position: absolute; z-index: 6; top: 85px; right: 20px; left: 20px; width: fit-content; max-width: calc(100% - 40px); margin-left: auto; display: flex; gap: 12px; align-items: flex-start; color: #90efc7; background: #13322ef0; border: 1px solid #477f6c; border-radius: 8px; padding: 15px; font-size: 11px; line-height: 1.6; box-shadow: 0 10px 30px #0006; backdrop-filter: blur(15px); animation: dt-toast-in .35s ease-out; }
+.dt-audit-toast > svg { flex-shrink: 0; margin-top: 2px; }
+.dt-audit-toast small { display: block; font-size: 8px; color: #83b8a8; margin-top: 4px; }
+@keyframes dt-flow-run { to { stroke-dashoffset: -80; } }
+@keyframes dt-radar-pulse { from { transform: scale(.5); opacity: .9; } to { transform: scale(2.7); opacity: 0; } }
+@keyframes dt-pin-appear { from { transform: scale(.1) translateY(-20px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+@keyframes dt-audit-in { from { opacity: 0; transform: translateX(25px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes dt-toast-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 1100px) {
+  .dt-has-focus .dt-focus-layout { grid-template-columns: minmax(0, 1fr) 305px; }
+  .dt-audit { padding: 20px 18px; }
+  .dt-has-focus .dt-card-layer { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 0 15px; }
+  .dt-has-focus .dt-canvas, .dt-has-focus .dt-flow-overlay { height: calc(100% - 335px); }
+  .dt-has-focus .dt-fallback { bottom: 335px; }
+  .dt-has-focus .dt-orientation { top: 295px; }
+  .dt-has-focus .dt-water-label { top: 325px; }
+}
+@media (max-width: 800px) {
+  .dt-has-focus .dt-focus-layout { grid-template-columns: minmax(0, 1fr); }
+  .dt-has-focus .dt-stage { height: 690px; }
+  .dt-has-focus .dt-canvas, .dt-has-focus .dt-flow-overlay { height: 420px; }
+  .dt-has-focus .dt-fallback { height: 420px; bottom: auto; }
+  .dt-has-focus .dt-card-layer { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .dt-audit { border-left: 0; border-top: 1px solid #35525f; padding: 24px; animation-name: dt-toast-in; }
+  .dt-audit-heading { margin-top: 16px; }
+  .dt-audit-routes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; }
+  .dt-audit-actions { max-width: 520px; }
+}
+@media (max-width: 540px) {
+  .dt-has-focus .dt-stage { height: 760px; }
+  .dt-has-focus .dt-canvas, .dt-has-focus .dt-flow-overlay { height: 380px; }
+  .dt-has-focus .dt-fallback { height: 380px; }
+  .dt-has-focus .dt-card-layer { grid-template-columns: repeat(2, minmax(0, 1fr)); bottom: 52px; }
+  .dt-has-focus .dt-district-card { padding: 10px 12px; }
+  .dt-has-focus .dt-number { font-size: 24px; }
+  .dt-has-focus .dt-orientation { top: 280px; }
+  .dt-has-focus .dt-water-label { top: 315px; }
+  .dt-map .dt-reset-focus { right: 15px; top: 46px; }
+  .dt-audit { padding: 22px 20px; }
+  .dt-audit-routes { grid-template-columns: 1fr; gap: 10px; }
+  .dt-audit-toast { right: 14px; left: 14px; max-width: calc(100% - 28px); font-size: 10px; }
+  .dt-flow-tooltip { font-size: 9px; max-width: calc(100% - 24px); padding: 9px 11px; }
+}

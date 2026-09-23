@@ -19,7 +19,7 @@
   "dependencies": {
     "@deck.gl/core": "^9.4.0",
     "@deck.gl/layers": "^9.4.0",
-    "@deck.gl/mapbox": "^9.4.0",
+    "@deck.gl/maplibre": "^9.4.0",
     "clsx": "^2.1.1",
     "dotenv": "^18.0.3",
     "express": "^5.2.1",

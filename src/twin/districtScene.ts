@@ -9,7 +9,7 @@ import { DISTRICT_SHAPES, MapDistrict, trafficProfile } from './mapData';
 
 export interface SceneSettings { motion: boolean; agents: boolean; hexagons: boolean; bloom: boolean }
 export interface DistrictScene {
-  update(data: MapDistrict[], selected: DistrictId, hovered: DistrictId | null, settings: SceneSettings): void;
+  update(data: MapDistrict[], selected: DistrictId | null, hovered: DistrictId | null, settings: SceneSettings): void;
   dispose(): void;
 }
 const world = (p: readonly number[]) => new THREE.Vector2((p[0] - 325) / 8, (p[1] - 220) / 8);
@@ -29,7 +29,7 @@ function random(seed: number) { const n = Math.sin(seed * 127.1 + 311.7) * 43758
 
 export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[], initialSettings: SceneSettings,
   onHover: (id: DistrictId | null) => void, onSelect: (id: DistrictId) => void,
-  onProject: (id: DistrictId, x: number, y: number) => void, onError: () => void): DistrictScene {
+  onProject: (id: DistrictId, x: number, y: number) => void, onError: () => void, onClear?: () => void): DistrictScene {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
   renderer.setClearColor('#05080c');
@@ -58,7 +58,7 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
   composer.addPass(bloomPass);
   const outputPass = new OutputPass(); composer.addPass(outputPass);
 
-  let data = initial, settings = initialSettings, selected: DistrictId = 'nura', hovered: DistrictId | null = null;
+  let data = initial, settings = initialSettings, selected: DistrictId | null = null, hovered: DistrictId | null = null;
   let visible = true, width = 1, height = 1, disposed = false, raf = 0, elapsed = 0, previous = 0, dirty = true;
   const raycaster = new THREE.Raycaster(), pointer = new THREE.Vector2();
   const picking: THREE.Object3D[] = [];
@@ -76,6 +76,9 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
     group.add(mesh); picking.push(mesh);
     const edgeMaterial = materialLine(color, .88);
     const edges = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 22), edgeMaterial); group.add(edges);
+    const glowMaterial = materialLine(color, 0);
+    glowMaterial.color.multiplyScalar(2); glowMaterial.depthWrite = false;
+    const glow = new THREE.LineSegments(edges.geometry, glowMaterial); group.add(glow);
     const baseGeo = new THREE.ExtrudeGeometry(shape, { depth: .7, bevelEnabled: false });
     baseGeo.rotateX(Math.PI / 2); baseGeo.translate(0, -1.6, 0);
     group.add(new THREE.Mesh(baseGeo, new THREE.MeshStandardMaterial({ color: '#101c25', metalness: .65, roughness: .35, emissiveIntensity: .035 })));
@@ -123,11 +126,20 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
     agentGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     const agents = new THREE.Points(agentGeometry, new THREE.ShaderMaterial({
       transparent: true, depthWrite: false, vertexColors: true, blending: THREE.AdditiveBlending,
+      uniforms: { focusOpacity: { value: 1 }, saturation: { value: 1 } },
       vertexShader: 'varying vec3 vColor; void main(){ vColor=color; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); gl_PointSize=4.5; }',
-      fragmentShader: 'varying vec3 vColor; void main(){ float d=length(gl_PointCoord-.5); if(d>.5)discard; gl_FragColor=vec4(vColor,pow(1.-d*2.,1.2)); }',
+      fragmentShader: 'uniform float focusOpacity; uniform float saturation; varying vec3 vColor; void main(){ float d=length(gl_PointCoord-.5); if(d>.5)discard; vec3 c=mix(vec3(dot(vColor,vec3(.2126,.7152,.0722))),vColor,saturation); gl_FragColor=vec4(c,pow(1.-d*2.,1.2)*focusOpacity); }',
     })); scene.add(agents);
     const routeLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints(path), materialLine('#9ba9aa', .24)); scene.add(routeLine);
-    return { id: district.id, group, glass, edgeMaterial, roadMaterial, hexMaterial, route, agentGeometry, agents, positions,
+    // Keep original colors/opacity so resetting focus never compounds a previous fade.
+    const materials: { material: THREE.MeshStandardMaterial | THREE.LineBasicMaterial; opacity: number; transparent: boolean; color: THREE.Color; statusColor: boolean }[] = [];
+    group.traverse(object => {
+      if (!(object instanceof THREE.Mesh || object instanceof THREE.LineSegments)) return;
+      const material = object.material as THREE.MeshStandardMaterial | THREE.LineBasicMaterial;
+      materials.push({ material, opacity: material.opacity, transparent: material.transparent, color: material.color.clone(), statusColor: object instanceof THREE.LineSegments });
+    });
+    return { id: district.id, group, glass, edgeMaterial, glowMaterial, roadMaterial, hexMaterial, materials, route, routeLine, agentGeometry, agents, positions,
+      dim: 1,
       anchor: new THREE.Vector3(world(district.anchor).x, depth + 2, world(district.anchor).y), profile: trafficProfile(metric.load) };
   });
 
@@ -160,11 +172,25 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
     raycaster.setFromCamera(pointer, camera);
     return raycaster.intersectObjects(picking, false)[0]?.object.userData.district as DistrictId | undefined;
   };
-  const move = (event: PointerEvent) => { const id = pick(event) ?? null; if (id !== hovered) onHover(id); renderer.domElement.style.cursor = id ? 'pointer' : 'default'; };
-  const leave = () => onHover(null);
-  const click = (event: PointerEvent) => { const id = pick(event); if (id) onSelect(id); };
+  let press: { x: number; y: number; pointerId: number; dragged: boolean } | null = null;
+  const move = (event: PointerEvent) => {
+    if (press?.pointerId === event.pointerId && Math.hypot(event.clientX - press.x, event.clientY - press.y) > 6) press.dragged = true;
+    const id = pick(event) ?? null; if (id !== hovered) onHover(id); renderer.domElement.style.cursor = id ? 'pointer' : 'default';
+  };
+  const down = (event: PointerEvent) => {
+    press = event.button === 0 ? { x: event.clientX, y: event.clientY, pointerId: event.pointerId, dragged: false } : null;
+  };
+  const cancel = () => { press = null; };
+  const leave = () => { cancel(); onHover(null); renderer.domElement.style.cursor = 'default'; };
+  const click = (event: PointerEvent) => {
+    const start = press; press = null;
+    if (!start || start.dragged || start.pointerId !== event.pointerId || Math.hypot(event.clientX - start.x, event.clientY - start.y) > 6) return;
+    const id = pick(event); if (id) onSelect(id); else onClear?.();
+  };
   const lost = (event: Event) => { event.preventDefault(); onError(); };
   renderer.domElement.addEventListener('pointermove', move);
+  renderer.domElement.addEventListener('pointerdown', down);
+  renderer.domElement.addEventListener('pointercancel', cancel);
   renderer.domElement.addEventListener('pointerleave', leave);
   renderer.domElement.addEventListener('pointerup', click);
   renderer.domElement.addEventListener('webglcontextlost', lost);
@@ -178,12 +204,19 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
     dirty = false;
     if (settings.motion) elapsed += dt;
     modules.forEach(module => {
-      const focus = hovered === module.id;
-      module.group.position.y = THREE.MathUtils.lerp(module.group.position.y, focus ? 1.8 : 0, settings.motion ? .13 : 1);
-      module.hexMaterial.opacity = settings.hexagons && focus ? .3 : 0;
-      module.roadMaterial.opacity = focus ? .58 + .25 * Math.sin(elapsed * 4) : .3;
-      module.edgeMaterial.opacity = focus || selected === module.id ? 1 : .7;
-      module.glass.emissiveIntensity = focus ? .16 : .055;
+      const active = selected === module.id, focus = hovered === module.id || active;
+      const speed = settings.motion ? .13 : 1;
+      const scale = THREE.MathUtils.lerp(module.group.scale.x, active ? 1.02 : 1, speed);
+      module.group.scale.setScalar(scale);
+      // Scale around the district's own anchor, keeping labels and routes aligned.
+      module.group.position.x = module.anchor.x * (1 - scale);
+      module.group.position.z = module.anchor.z * (1 - scale);
+      module.group.position.y = THREE.MathUtils.lerp(module.group.position.y, active ? 2.4 : focus ? 1.8 : 0, speed);
+      module.hexMaterial.opacity = settings.hexagons && focus ? .3 * module.dim : 0;
+      module.roadMaterial.opacity = (focus ? .58 + .25 * Math.sin(elapsed * 4) : .3) * module.dim;
+      module.edgeMaterial.opacity = (focus ? 1 : .7) * module.dim;
+      module.glowMaterial.opacity = focus ? .6 * module.dim : 0;
+      module.glass.emissiveIntensity = focus ? .2 : .055;
       module.agents.visible = settings.agents;
       module.agentGeometry.setDrawRange(0, module.profile.count);
       for (let i = 0; i < module.profile.count; i++) {
@@ -193,7 +226,8 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
         agentPoint.toArray(module.positions, i * 3);
       }
       module.agentGeometry.attributes.position.needsUpdate = true;
-      projected.copy(module.anchor); projected.y += module.group.position.y; projected.project(camera);
+      module.group.updateMatrixWorld(true);
+      projected.copy(module.anchor).applyMatrix4(module.group.matrixWorld).project(camera);
       onProject(module.id, (projected.x + 1) / 2 * width, (1 - projected.y) / 2 * height);
     });
     for (let i = 0; i < 110; i++) {
@@ -211,17 +245,35 @@ export function createDistrictScene(host: HTMLDivElement, initial: MapDistrict[]
       data = next; selected = nextSelected; hovered = nextHovered; settings = nextSettings;
       modules.forEach(module => {
         const metric = data.find(d => d.id === module.id)!;
+        const muted = selected !== null && selected !== module.id;
+        module.dim = muted ? .35 : 1;
         module.profile = trafficProfile(metric.load);
-        module.glass.emissive.set(metric.color);
-        module.group.traverse(object => {
-          if (object instanceof THREE.LineSegments) (object.material as THREE.LineBasicMaterial).color.set(metric.color);
-          if (object instanceof THREE.Mesh && object.material instanceof THREE.MeshStandardMaterial) object.material.emissive.set(metric.color);
+        const status = new THREE.Color(metric.color);
+        const desaturate = (color: THREE.Color) => {
+          if (muted) {
+            const grey = color.r * .2126 + color.g * .7152 + color.b * .0722;
+            color.lerp(new THREE.Color().setRGB(grey, grey, grey), .4);
+          }
+          return color;
+        };
+        module.materials.forEach(({ material, opacity, transparent, color, statusColor }) => {
+          material.opacity = opacity * module.dim;
+          material.transparent = transparent || muted;
+          material.color.copy(desaturate((statusColor ? status : color).clone()));
+          if (material instanceof THREE.MeshStandardMaterial) material.emissive.copy(desaturate(status.clone()));
         });
+        module.glowMaterial.color.multiplyScalar(2);
+        module.routeLine.material.opacity = .24 * module.dim;
+        module.routeLine.material.color.copy(desaturate(new THREE.Color('#9ba9aa')));
+        module.agents.material.uniforms.focusOpacity.value = module.dim;
+        module.agents.material.uniforms.saturation.value = muted ? .6 : 1;
+        module.group.traverse(object => { object.renderOrder = selected === module.id ? 2 : 0; });
       });
     },
     dispose() {
       disposed = true; cancelAnimationFrame(raf); observer.disconnect(); visibility.disconnect();
       renderer.domElement.removeEventListener('pointermove', move); renderer.domElement.removeEventListener('pointerleave', leave);
+      renderer.domElement.removeEventListener('pointerdown', down); renderer.domElement.removeEventListener('pointercancel', cancel);
       renderer.domElement.removeEventListener('pointerup', click); renderer.domElement.removeEventListener('webglcontextlost', lost);
       const geometries = new Set<THREE.BufferGeometry>(), materials = new Set<THREE.Material>();
       scene.traverse(object => { const renderable = object as THREE.Mesh; if (renderable.geometry) geometries.add(renderable.geometry);
