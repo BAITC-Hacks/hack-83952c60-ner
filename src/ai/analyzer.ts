@@ -22,6 +22,7 @@ export function generateAIAnalysis(sim: SimulationResult, language: Language = g
   const strengths: string[] = [];
   const risksAndTradeoffs: string[] = [];
   const actionableRecommendations: string[] = [];
+  const horizonQuarters = sim.horizonQuarters ?? 8;
   const weakest = t(DISTRICTS[sim.weakestDistrictId].nameRu);
   if (sim.scoreDelta > 0) {
     strengths.push(t("Городской Score вырос на {0} относительно исходных условий.", [signed(sim.scoreDelta)]));
@@ -51,11 +52,21 @@ export function generateAIAnalysis(sim: SimulationResult, language: Language = g
     };
   });
   const longLag = sim.decisions.filter((decision) => MEASURES[decision.measureId].lag >= 4);
-  if (longLag.length) risksAndTradeoffs.push(t("{0}: лаг 4 квартала; за горизонт модели учитывается 50% полного эффекта.", [longLag.map((decision) => decision.measureId).join(', ')]));
+  if (horizonQuarters === 8 && longLag.length) {
+    risksAndTradeoffs.push(t("{0}: лаг 4 квартала; за горизонт модели учитывается 50% полного эффекта.", [longLag.map((decision) => decision.measureId).join(', ')]));
+  } else {
+    for (const decision of longLag) {
+      const lag = MEASURES[decision.measureId].lag;
+      const effectFactor = Math.min(1, Math.max(0, (horizonQuarters - lag) / 8));
+      if (effectFactor < 1) risksAndTradeoffs.push(t("{0}: лаг {1} квартала; за {2} кварталов учитывается {3}% полного эффекта.", [decision.measureId, lag, horizonQuarters, effectFactor * 100]));
+    }
+  }
   if (sim.validation.remainingBudget > 0) actionableRecommendations.push(t("Остаток {0} у.е. не даёт бонуса и не штрафуется. Сравнивайте допустимые замены по рассчитанному результату; шестую меру добавлять нельзя.", [sim.validation.remainingBudget]));
   if (!sim.activeSynergies.length) actionableRecommendations.push(t("В наборе нет активных синергий. При сравнении замен учитывайте связки M1+M2, M10+M12 и M5+M6 вместе с их стоимостью и ограничениями."));
   return {
-    executiveSummary: t("Score: {0}; изменение к базе: {1}. Потрачено {2} из 100 у.е. Слабейший район: {3}. Критических показателей: {4}. Это расчёт по синтетической модели на восемь кварталов.", [sim.finalScore.toFixed(2), signed(sim.scoreDelta), sim.validation.totalCost, weakest, sim.finalCritCount]),
+    executiveSummary: horizonQuarters === 8
+      ? t("Score: {0}; изменение к базе: {1}. Потрачено {2} из 100 у.е. Слабейший район: {3}. Критических показателей: {4}. Это расчёт по синтетической модели на восемь кварталов.", [sim.finalScore.toFixed(2), signed(sim.scoreDelta), sim.validation.totalCost, weakest, sim.finalCritCount])
+      : t("Score: {0}; изменение к базе: {1}. Потрачено {2} из 100 у.е. Слабейший район: {3}. Критических показателей: {4}. Это расчёт по синтетической модели на {5} кварталов.", [sim.finalScore.toFixed(2), signed(sim.scoreDelta), sim.validation.totalCost, weakest, sim.finalCritCount, horizonQuarters]),
     strengths,
     risksAndTradeoffs,
     districtHighlights,

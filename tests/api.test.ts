@@ -4,7 +4,8 @@ import { createApp } from '../server/app';
 import { analyzeSimulation, createOpenAIProvider, type AnalysisProvider } from '../server/analysis';
 import { buildAnalysisContext } from '../server/context';
 import { buildAnalysisFacts } from '../server/facts';
-import { runSimulation } from '../src/engine/simulator';
+import { runSimulation, runSimulationAtQuarter } from '../src/engine/simulator';
+import { findBestImprovements } from '../src/engine/optimizer';
 import { generateAIAnalysis } from '../src/ai/analyzer';
 import type { SelectedDecision, ValidSimulationResult } from '../src/engine/types';
 
@@ -30,6 +31,26 @@ function validProviderOutput(withAnswer = false, facts = evidence) {
 }
 
 describe('POST /api/analyze', () => {
+  it.each([1, 2, 3])('recomputes year %i from decisions before asking the provider', async (year) => {
+    const expected = runSimulationAtQuarter(decisions, year * 4) as ValidSimulationResult;
+    const provider = vi.fn<AnalysisProvider>().mockImplementation(async (context) => validProviderOutput(false, context.evidence));
+    const response = await request(createApp({ apiKey: '', provider })).post('/api/analyze').send({ decisions, year });
+    expect(response.status).toBe(200);
+    expect(response.body.source).toBe('llm');
+    expect(response.body.simulation.horizonQuarters).toBe(year * 4);
+    expect(response.body.simulation.finalScore).toBeCloseTo(expected.finalScore, 8);
+    expect(response.body.simulation.finalCritCount).toBe(expected.finalCritCount);
+    expect(provider.mock.calls[0][0].horizonQuarters).toBe(year * 4);
+    expect(response.body.analysis.executiveSummary).toContain(`на ${year * 4} кварталов`);
+  });
+
+  it.each([0, 4, -1, 1.5, '1', null, true, {}, []])('rejects invalid analysis year %j', async (year) => {
+    const provider = vi.fn<AnalysisProvider>();
+    const response = await request(createApp({ apiKey: '', provider })).post('/api/analyze').send({ decisions, year });
+    expect(response.status).toBe(400);
+    expect(provider).not.toHaveBeenCalled();
+  });
+
   it('calculates the scenario on the server and returns validated model output', async () => {
     const selected = validProviderOutput(true);
     const provider = vi.fn<AnalysisProvider>().mockResolvedValue(JSON.stringify(selected));
@@ -203,6 +224,47 @@ describe('POST /api/analyze', () => {
 });
 
 describe('server-owned model context', () => {
+  it.each([
+    { quarter: 4, schoolFactor: 0.125 },
+    { quarter: 8, schoolFactor: 0.625 },
+    { quarter: 12, schoolFactor: 1 },
+  ])('aligns facts, effects and replacement recommendations at quarter $quarter', ({ quarter, schoolFactor }) => {
+    const yearlySimulation = runSimulationAtQuarter(decisions, quarter) as ValidSimulationResult;
+    const context = buildAnalysisContext(yearlySimulation);
+    const school = context.decisions.find((decision) => decision.measureId === 'M7')!;
+    expect(context.horizonQuarters).toBe(quarter);
+    expect(school.lagFactor).toBe(schoolFactor);
+    expect(school.realizedEffectsBeforeClipping.S1).toBe(16 * schoolFactor);
+    expect(context.evidence.facts.measure_M7).toContain(`${(schoolFactor * 100).toFixed(1)}%`);
+    expect(context.rules.effectFormula).toContain(`(${quarter} − лаг`);
+    const suggestions = findBestImprovements(decisions, quarter);
+    expect(suggestions.length).toBeGreaterThan(0);
+    expect(context.evidence.recommendationIds).toHaveLength(suggestions.length);
+    suggestions.forEach((suggestion, index) => {
+      const replacement = decisions.map((decision) => decision.measureId === suggestion.removeMeasureId ? suggestion.addDecision : decision);
+      const next = runSimulationAtQuarter(replacement, quarter) as ValidSimulationResult;
+      expect(next.finalScore).toBeGreaterThan(yearlySimulation.finalScore);
+      expect(suggestion.scoreGain).toBeCloseTo(next.finalScore - yearlySimulation.finalScore, 2);
+      expect(context.evidence.facts[`replacement_${index}`]).toContain(`${yearlySimulation.finalScore.toFixed(2)} → ${next.finalScore.toFixed(2)}`);
+    });
+  });
+
+  it('withholds a synergy at the lag boundary and reports the selected horizon in fallback analysis', () => {
+    const slow: SelectedDecision[] = [
+      { measureId: 'M5', districtId: 'saryarka' }, { measureId: 'M6' },
+      { measureId: 'M7', districtId: 'nura' }, { measureId: 'M10', districtId: 'nura' }, { measureId: 'M12' },
+    ];
+    const first = runSimulationAtQuarter(slow, 4) as ValidSimulationResult;
+    const third = runSimulationAtQuarter(slow, 12) as ValidSimulationResult;
+    expect(first.isValid).toBe(true);
+    expect(buildAnalysisContext(first).synergies.some((synergy) => synergy.measures[0] === 'M5')).toBe(false);
+    expect(buildAnalysisContext(third).synergies.some((synergy) => synergy.measures[0] === 'M5')).toBe(true);
+    expect(generateAIAnalysis(first).executiveSummary).toContain('на 4 кварталов');
+    expect(generateAIAnalysis(first).risksAndTradeoffs).toContain('M6: лаг 4 квартала; за 4 кварталов учитывается 0% полного эффекта.');
+    expect(generateAIAnalysis(third).executiveSummary).toContain('на 12 кварталов');
+    expect(generateAIAnalysis(third).risksAndTradeoffs.some((risk) => risk.includes('50%'))).toBe(false);
+  });
+
   it('includes effects, lag, synergy scope, metrics and the exact score decomposition', () => {
     const context = buildAnalysisContext(simulation);
     const school = context.decisions.find((decision) => decision.measureId === 'M7')!;

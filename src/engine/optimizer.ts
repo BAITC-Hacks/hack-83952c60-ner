@@ -2,7 +2,7 @@ import { t } from '../i18n';
 import { DistrictId, SelectedDecision, SimulationResult } from './types';
 import { MEASURE_LIST, MEASURES } from '../data/measures';
 import { DISTRICT_LIST } from '../data/districts';
-import { runSimulation } from './simulator';
+import { runSimulation, runSimulationAtQuarter } from './simulator';
 import { validateDecisions } from './validator';
 
 export interface ScoredScenario {
@@ -95,10 +95,10 @@ export interface RecommendationSwap {
 /**
  * Given the current user decisions, computes the best single replacement to boost Score
  */
-export function findBestImprovements(currentDecisions: SelectedDecision[]): RecommendationSwap[] {
+export function findBestImprovements(currentDecisions: SelectedDecision[], horizonQuarters = 8): RecommendationSwap[] {
   if (currentDecisions.length !== 5) return [];
 
-  const currentSim = runSimulation(currentDecisions);
+  const currentSim = runSimulationAtQuarter(currentDecisions, horizonQuarters);
   if (!currentSim.isValid) return [];
   const currentScore = currentSim.finalScore;
   const recommendations: RecommendationSwap[] = [];
@@ -125,7 +125,7 @@ export function findBestImprovements(currentDecisions: SelectedDecision[]): Reco
           ...(targetDist ? { districtId: targetDist } : {}),
         };
 
-        const testSim = runSimulation(candidateDecisions);
+        const testSim = runSimulationAtQuarter(candidateDecisions, horizonQuarters);
         if (testSim.isValid && testSim.finalScore > currentScore + 0.05) {
           const gain = testSim.finalScore - currentScore;
 

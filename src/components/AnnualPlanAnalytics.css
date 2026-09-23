@@ -125,7 +125,10 @@
 
 .annual-plan__metrics span {
   display: block;
+  margin-top: 5px;
   color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-weight: 400;
   font-size: .69rem;
   line-height: 1.5;
 }

@@ -69,20 +69,24 @@ export const AnnualPlanAnalytics: React.FC<AnnualPlanAnalyticsProps> = ({ plan, 
             <dl className="annual-plan__metrics" aria-live="polite" aria-atomic="true">
               <div>
                 <dt>{t('Score на конец года {0}', [selectedYear])}</dt>
-                <dd className="annual-plan__score">{score(selectedScore)}</dd>
-                <span>{t('Относительно базы: {0}', [delta(totalChange)])}</span>
+                <dd className="annual-plan__score">
+                  {score(selectedScore)}
+                  <span>{t('Относительно базы: {0}', [delta(totalChange)])}</span>
+                </dd>
               </div>
               <div>
                 <dt>{t('Изменение за год')}</dt>
-                <dd className={deltaClass(annualChange)}>{delta(annualChange)}</dd>
-                <span>{selectedYear === 1 ? t('Сравнение с исходным уровнем') : t('Сравнение с концом предыдущего года')}</span>
+                <dd className={deltaClass(annualChange)}>
+                  {delta(annualChange)}
+                  <span>{selectedYear === 1 ? t('Сравнение с исходным уровнем') : t('Сравнение с концом предыдущего года')}</span>
+                </dd>
               </div>
               <div>
                 <dt>{t('Критические показатели')}</dt>
                 <dd className={selected.simulation.finalCritCount > 0 ? 'annual-plan__negative' : 'annual-plan__positive'}>
                   {selected.simulation.finalCritCount}
+                  <span>{t('Исходно: {0}. Порог: ниже 40.', [baselineCritical])}</span>
                 </dd>
-                <span>{t('Исходно: {0}. Порог: ниже 40.', [baselineCritical])}</span>
               </div>
             </dl>
 

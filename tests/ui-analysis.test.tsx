@@ -5,7 +5,7 @@ import { act, cleanup, fireEvent, render, screen, within } from '@testing-librar
 import { AIInsightCard } from '../src/components/AIInsightCard';
 import { DecisionPanel } from '../src/components/DecisionPanel';
 import App from '../src/App';
-import { runSimulation } from '../src/engine/simulator';
+import { runSimulation, runSimulationAtQuarter } from '../src/engine/simulator';
 import type { SelectedDecision, ValidSimulationResult } from '../src/engine/types';
 import type { AnalysisResponse } from '../src/ai/llmClient';
 
@@ -33,6 +33,44 @@ beforeEach(() => { localStorage.clear(); });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.restoreAllMocks(); localStorage.clear(); });
 
 describe('explicit server analysis', () => {
+  it('sends the selected year and keeps an old result stale after year 1 → 3 → 1', async () => {
+    const firstYear = runSimulationAtQuarter(benchmark, 4) as ValidSimulationResult;
+    const thirdYear = runSimulationAtQuarter(benchmark, 12) as ValidSimulationResult;
+    const fetchMock = vi.fn().mockResolvedValue(apiResponse({ ...response, simulation: firstYear }));
+    vi.stubGlobal('fetch', fetchMock);
+    const { rerender } = render(<AIInsightCard simulation={firstYear} scenarioRevision={0} year={1} />);
+    expect(screen.getByText('Год анализа: 1')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Получить AI-анализ' }));
+    await screen.findByText(response.analysis.executiveSummary);
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ decisions: benchmark, year: 1 });
+    rerender(<AIInsightCard simulation={thirdYear} scenarioRevision={0} year={3} />);
+    expect(screen.getByText('Год анализа: 3')).toBeTruthy();
+    expect(screen.getByLabelText('Устаревший анализ')).toBeTruthy();
+    rerender(<AIInsightCard simulation={firstYear} scenarioRevision={0} year={1} />);
+    expect(screen.getByLabelText('Устаревший анализ')).toBeTruthy();
+  });
+
+  it('discards a late annual request even after returning to the requested year', async () => {
+    let resolveOld!: (value: Response) => void;
+    const firstYear = runSimulationAtQuarter(benchmark, 4) as ValidSimulationResult;
+    const thirdYear = runSimulationAtQuarter(benchmark, 12) as ValidSimulationResult;
+    const fetchMock = vi.fn().mockImplementationOnce(() => new Promise<Response>((resolve) => { resolveOld = resolve; }))
+      .mockResolvedValueOnce(apiResponse({ ...response, simulation: firstYear, analysis: { ...response.analysis, executiveSummary: 'Новый годовой анализ' } }));
+    vi.stubGlobal('fetch', fetchMock);
+    const { rerender } = render(<AIInsightCard simulation={firstYear} scenarioRevision={0} year={1} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Получить AI-анализ' }));
+    const signal = fetchMock.mock.calls[0][1].signal as AbortSignal;
+    rerender(<AIInsightCard simulation={thirdYear} scenarioRevision={0} year={3} />);
+    rerender(<AIInsightCard simulation={firstYear} scenarioRevision={0} year={1} />);
+    expect(signal.aborted).toBe(true);
+    fireEvent.click(screen.getByRole('button', { name: 'Получить AI-анализ' }));
+    await screen.findByText('Новый годовой анализ');
+    await act(async () => { resolveOld(apiResponse()); });
+    expect(screen.getByText('Новый годовой анализ')).toBeTruthy();
+    expect(screen.queryByText(response.analysis.executiveSummary)).toBeNull();
+    expect(screen.getByLabelText('Анализ текущего сценария')).toBeTruthy();
+  });
+
   it('does not request analysis on render and gates an incomplete scenario', () => {
     const fetchMock = vi.fn(); vi.stubGlobal('fetch', fetchMock);
     render(<AIInsightCard simulation={runSimulation([])} scenarioRevision={0} />);

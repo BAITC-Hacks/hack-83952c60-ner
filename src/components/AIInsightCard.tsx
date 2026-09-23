@@ -9,6 +9,7 @@ interface AIInsightCardProps {
   simulation: SimulationResult;
   scenarioRevision: number;
   hasExperimentalEvents?: boolean;
+  year?: 1 | 2 | 3;
 }
 
 const getFallbackReasons = () => ({
@@ -18,10 +19,10 @@ const getFallbackReasons = () => ({
   invalid_response: t("Ответ LLM не прошёл проверку. Показано объяснение по правилам."),
 });
 
-export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation, scenarioRevision, hasExperimentalEvents = false }) => {
+export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation, scenarioRevision, hasExperimentalEvents = false, year }) => {
   useLanguage();
   const [question, setQuestion] = useState('');
-  const { result, isStale, isLoading, error, analyze } = useScenarioAnalysis(simulation, scenarioRevision);
+  const { result, isStale, isLoading, error, analyze } = useScenarioAnalysis(simulation, scenarioRevision, year);
   const analysis = result?.source === 'rules' ? generateAIAnalysis(result.simulation) : result?.analysis;
   const canAnalyze = simulation.isValid && !hasExperimentalEvents && !isLoading;
 
@@ -32,6 +33,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation, scenar
         <div>
           <h3 id="analysis-heading" style={{ fontSize: '1rem', fontWeight: 700 }}>{t("AI-анализ городского сценария")}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t("Объяснение результатов, сильных сторон, рисков и компромиссов")}</p>
+          {year !== undefined && <p style={{ fontSize: '0.75rem', color: 'var(--color-purple)', marginTop: '4px' }}>{t("Год анализа: {0}", [year])}</p>}
         </div>
       </div>
 
@@ -51,7 +53,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation, scenar
       </form>
 
       {error && <p role="alert" className="analysis-notice">{error}</p>}
-      {isStale && <p role="status" className="analysis-notice">{t("Анализ устарел: решения изменились. Обновите его для текущего сценария.")}</p>}
+      {isStale && <p role="status" className="analysis-notice">{year === undefined ? t("Анализ устарел: решения изменились. Обновите его для текущего сценария.") : t("Анализ устарел: решения или год изменились. Обновите его для текущего сценария.")}</p>}
       {!result && !isLoading && <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>{t("Запустите анализ кнопкой. Числовые показатели выше вычисляются математической моделью симулятора.")}</p>}
       {result && analysis && (
         <div style={{ opacity: isStale ? 0.6 : 1 }} aria-label={isStale ? t("Устаревший анализ") : t("Анализ текущего сценария")}>

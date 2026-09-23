@@ -51,7 +51,7 @@ export function createApp(options: AppOptions = {}) {
         res.status(400).json({ error: 'Вопрос должен быть непустой строкой длиной до 2000 символов.' });
         return;
       }
-      const simulation = runSimulationAtQuarter(input.decisions, (input.year ?? 2) as number * 4);
+      const simulation = runSimulationAtQuarter(input.decisions, ((input.year ?? 2) as number) * 4);
       if (!simulation.isValid) {
         res.status(422).json({ error: 'Сценарий нарушает правила симулятора.', simulation });
         return;

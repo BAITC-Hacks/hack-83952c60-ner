@@ -1,7 +1,7 @@
 import type { AIAnalysis, ValidSimulationResult } from '../src/engine/types';
 import { generateAIAnalysis } from '../src/ai/analyzer';
 import { findBestImprovements } from '../src/engine/optimizer';
-import { runSimulation } from '../src/engine/simulator';
+import { runSimulationAtQuarter } from '../src/engine/simulator';
 import { DISTRICTS } from '../src/data/districts';
 import { DIRECTION_LIST, INDICATORS } from '../src/data/indicators';
 import { MEASURES } from '../src/data/measures';
@@ -21,6 +21,7 @@ const signed = (value: number) => `${value > 0 ? '+' : ''}${number(value)}`;
 
 /** The LLM may rank these facts, but cannot create facts or unchecked alternatives. */
 export function buildAnalysisFacts(sim: ValidSimulationResult): AnalysisFacts {
+  const horizonQuarters = sim.horizonQuarters ?? 8;
   const baseline = generateAIAnalysis(sim);
   const facts: Record<string, string> = {};
   const summaryIds: string[] = [];
@@ -31,7 +32,7 @@ export function buildAnalysisFacts(sim: ValidSimulationResult): AnalysisFacts {
     facts[id] = text;
     category?.push(id);
   };
-  add('score', `Score изменился с ${number(sim.baseScore)} до ${number(sim.finalScore)} (${signed(sim.scoreDelta)}). Это результат синтетической модели на восемь кварталов.`, summaryIds);
+  add('score', `Score изменился с ${number(sim.baseScore)} до ${number(sim.finalScore)} (${signed(sim.scoreDelta)}). Это результат синтетической модели на ${horizonQuarters} кварталов.`, summaryIds);
   add('budget', `Выбрано пять решений на ${sim.validation.totalCost} из 100 у.е.; остаток ${sim.validation.remainingBudget} у.е. не даёт бонуса и не штрафуется.`, summaryIds);
   add('city_average', `Средневзвешенная оценка города: ${number(sim.baseCityAverage)} → ${number(sim.finalCityAverage)}. Её изменение добавляет ${signed(0.7 * (sim.finalCityAverage - sim.baseCityAverage))} к Score.`, summaryIds);
   add('minimum', `Оценка слабейшего района: ${number(sim.baseMinDistrictScore)} → ${number(sim.finalMinDistrictScore)}. Текущий слабейший район — ${DISTRICTS[sim.weakestDistrictId].nameRu}; изменение минимальной оценки даёт ${signed(0.3 * (sim.finalMinDistrictScore - sim.baseMinDistrictScore))} к Score.`, summaryIds);
@@ -55,11 +56,12 @@ export function buildAnalysisFacts(sim: ValidSimulationResult): AnalysisFacts {
   }
   for (const decision of sim.decisions) {
     const measure = MEASURES[decision.measureId];
-    add(`measure_${measure.id}`, `${measure.id} «${measure.nameRu}», ${decision.districtId ? DISTRICTS[decision.districtId].nameRu : 'все шесть районов'}: стоимость ${measure.cost} у.е., лаг ${measure.lag} кварталов, в модели реализуется ${((8 - measure.lag) / 8 * 100).toFixed(1)}% полного эффекта.`);
+    const effectFactor = Math.min(1, Math.max(0, (horizonQuarters - measure.lag) / 8));
+    add(`measure_${measure.id}`, `${measure.id} «${measure.nameRu}», ${decision.districtId ? DISTRICTS[decision.districtId].nameRu : 'все шесть районов'}: стоимость ${measure.cost} у.е., лаг ${measure.lag} кварталов, за ${horizonQuarters} кварталов реализуется ${(effectFactor * 100).toFixed(1)}% полного эффекта.`);
   }
-  for (const [index, suggestion] of findBestImprovements(sim.decisions).entries()) {
+  for (const [index, suggestion] of findBestImprovements(sim.decisions, horizonQuarters).entries()) {
     const nextDecisions = sim.decisions.map((decision) => decision.measureId === suggestion.removeMeasureId ? suggestion.addDecision : decision);
-    const next = runSimulation(nextDecisions);
+    const next = runSimulationAtQuarter(nextDecisions, horizonQuarters);
     if (!next.isValid || next.finalScore <= sim.finalScore) continue;
     const added = suggestion.addDecision;
     const target = added.districtId ? DISTRICTS[added.districtId].nameRu : 'весь город';

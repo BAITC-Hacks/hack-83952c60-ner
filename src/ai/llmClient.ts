@@ -18,11 +18,12 @@ export async function requestScenarioAnalysis(
   decisions: SelectedDecision[],
   question?: string,
   signal?: AbortSignal,
+  year?: 1 | 2 | 3,
 ): Promise<AnalysisResponse> {
   const response = await fetch('/api/analyze', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ decisions, ...(question ? { question } : {}) }),
+    body: JSON.stringify({ decisions, ...(question ? { question } : {}), ...(year !== undefined ? { year } : {}) }),
     signal,
   });
   if (!response.ok) {

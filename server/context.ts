@@ -6,10 +6,11 @@ import { buildAnalysisFacts } from './facts';
 
 /** All facts sent to the model are computed on the server from the shared dataset. */
 export function buildAnalysisContext(simulation: ValidSimulationResult, question?: string) {
+  const horizonQuarters = simulation.horizonQuarters ?? 8;
   return {
     scenarioKind: 'Учебная модель Астаны на фиксированных синтетических данных, не прогноз реального города.',
     evidence: buildAnalysisFacts(simulation),
-    horizonQuarters: 8,
+    horizonQuarters,
     budget: {
       available: 100,
       spent: simulation.validation.totalCost,
@@ -21,7 +22,7 @@ export function buildAnalysisContext(simulation: ValidSimulationResult, question
       maximumPerDirection: 2,
       criticalThreshold: 'строго меньше 40',
       formula: 'Score = 0.7 × средневзвешенный по населению балл + 0.3 × минимальный районный балл − число критических показателей',
-      effectFormula: 'эффект меры × (8 − лаг в кварталах) / 8; затем бонусы синергии без лага; итоговые показатели ограничены [0, 100]',
+      effectFormula: `эффект меры × min(1, max(0, (${horizonQuarters} − лаг в кварталах) / 8)); затем полные бонусы синергии после завершения лагов обеих мер; итоговые показатели ограничены [0, 100]`,
     },
     indicators: INDICATOR_LIST.map(({ id, nameRu, weight, meaningRu }) => ({
       id, name: nameRu, weight, meaning: meaningRu,
@@ -39,7 +40,7 @@ export function buildAnalysisContext(simulation: ValidSimulationResult, question
     },
     decisions: simulation.decisions.map((decision) => {
       const measure = MEASURES[decision.measureId];
-      const lagFactor = (8 - measure.lag) / 8;
+      const lagFactor = Math.min(1, Math.max(0, (horizonQuarters - measure.lag) / 8));
       return {
         ...decision,
         name: measure.nameRu,
@@ -61,6 +62,7 @@ export function buildAnalysisContext(simulation: ValidSimulationResult, question
       const first = simulation.decisions.find((decision) => decision.measureId === rule.pair[0]);
       const second = simulation.decisions.find((decision) => decision.measureId === rule.pair[1]);
       if (!first || !second) return [];
+      if (horizonQuarters <= Math.max(MEASURES[first.measureId].lag, MEASURES[second.measureId].lag)) return [];
       return [{
         measures: rule.pair,
         description: rule.descriptionRu,

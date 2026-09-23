@@ -132,7 +132,7 @@ describe('three-year portfolio projections', () => {
       { measureId: 'M7', districtId: 'nura' }, { measureId: 'M8', districtId: 'nura' },
       { measureId: 'M9', districtId: 'nura' }, { measureId: 'M12' }, { measureId: 'M14' },
     ],
-  ])('does not project any years for invalid input %#', (input) => {
+  ].map((input) => ({ input })))('does not project any years for invalid input %#', ({ input }) => {
     expect(runAnnualPlan(input)).toEqual({ isValid: false, years: [] });
   });
 
