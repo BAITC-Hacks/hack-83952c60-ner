@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import React from 'react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import { AIInsightCard } from '../src/components/AIInsightCard';
 import { DecisionPanel } from '../src/components/DecisionPanel';
@@ -29,7 +29,8 @@ const response: AnalysisResponse = {
 };
 const apiResponse = (payload = response) => ({ ok: true, json: async () => payload }) as Response;
 
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.restoreAllMocks(); });
+beforeEach(() => { localStorage.clear(); });
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.restoreAllMocks(); localStorage.clear(); });
 
 describe('explicit server analysis', () => {
   it('does not request analysis on render and gates an incomplete scenario', () => {
@@ -128,6 +129,7 @@ describe('scenario selection', () => {
     expect(screen.getByText('0/5')).toBeTruthy();
     expect(screen.getByText('52,56')).toBeTruthy();
     expect(screen.queryByRole('button', { name: /Форс-мажор|Команды|Презентация/ })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Сценарии' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Эталон ТЗ' }));
     expect(screen.getByText('5/5')).toBeTruthy();
     expect(screen.getByText('56,54')).toBeTruthy();

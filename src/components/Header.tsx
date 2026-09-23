@@ -117,6 +117,16 @@ export const Header: React.FC<HeaderProps> = ({
             Эталон ТЗ
           </button>
 
+          <button
+            onClick={onOpenCompare}
+            className="btn-secondary"
+            title="Сохранить сценарий и сравнить варианты бюджета"
+            style={{ fontSize: '0.8rem', padding: '7px 12px' }}
+          >
+            <Award size={15} color="#a78bfa" />
+            Сценарии
+          </button>
+
           {enableExperiments && <><button
             onClick={onOpenCrisis}
             className={`btn-secondary ${crisisActive ? 'badge-amber' : ''}`}
@@ -125,16 +135,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <ShieldAlert size={15} color={crisisActive ? '#f59e0b' : '#94a3b8'} />
             Форс-мажор {crisisActive && '●'}
-          </button>
-
-          <button
-            onClick={onOpenCompare}
-            className="btn-secondary"
-            title="Сравнение команд и сценариев (A/B тестирование)"
-            style={{ fontSize: '0.8rem', padding: '7px 12px' }}
-          >
-            <Award size={15} color="#a78bfa" />
-            Команды
           </button>
 
           <button

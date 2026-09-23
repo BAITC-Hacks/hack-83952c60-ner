@@ -242,3 +242,124 @@ button:focus-visible, select:focus-visible, textarea:focus-visible {
   .district-indicators { grid-template-columns: repeat(5, minmax(0, 1fr)); }
   select { min-width: 0; }
 }
+
+/* Persistent scenario library and comparisons. Keep wide data tables inside the dialog. */
+.scenarios-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(8px);
+}
+.scenarios-dialog {
+  width: 100%;
+  max-width: 1060px;
+  max-height: calc(100dvh - 48px);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: clip;
+  background: #10192e;
+  color: var(--text-main);
+}
+.scenarios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+.scenarios-heading { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.scenarios-heading > svg { color: #a78bfa; flex-shrink: 0; }
+.scenarios-heading h2 { font-size: 1.25rem; }
+.scenarios-heading p { color: var(--text-muted); font-size: 0.8rem; margin-top: 2px; }
+.scenarios-close { padding: 10px; flex-shrink: 0; }
+.scenarios-content { padding: 24px; overflow-y: auto; overscroll-behavior: contain; min-height: 0; }
+.scenarios-save {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.04);
+}
+.scenarios-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; font-size: 0.82rem; color: var(--text-muted); }
+.scenarios-save .scenarios-field { flex: 1 1 260px; }
+.scenarios-field input, .scenarios-field select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: #0a0f1d;
+  color: var(--text-main);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+  font-size: 0.85rem;
+}
+.scenarios-save > button { min-height: 42px; }
+.scenarios-help { color: var(--text-muted); font-size: 0.78rem; line-height: 1.6; }
+.scenarios-save > .scenarios-help { flex-basis: 100%; }
+.scenarios-section { margin-top: 28px; min-width: 0; }
+.scenarios-section h3 { font-size: 1rem; margin-bottom: 8px; }
+.scenarios-count { color: #a78bfa; margin-left: 6px; font-family: var(--font-mono); }
+.scenarios-table-scroll { width: 100%; max-width: 100%; overflow-x: auto; margin-top: 14px; border: 1px solid var(--border-color); border-radius: 10px; }
+.scenarios-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem; }
+.scenarios-table thead { color: var(--text-muted); background: rgba(59, 130, 246, 0.06); }
+.scenarios-table th, .scenarios-table td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); vertical-align: middle; }
+.scenarios-table tbody tr:last-child > * { border-bottom: 0; }
+.scenarios-table th { font-weight: 500; }
+.scenarios-table td { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.scenarios-library-table { min-width: 800px; }
+.scenarios-library-table th:first-child { width: 30%; min-width: 170px; max-width: 300px; }
+.scenarios-name { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.scenarios-table time { display: block; color: var(--text-muted); font-size: 0.72rem; margin-top: 4px; }
+.scenarios-score { color: #38bdf8; font-weight: 700; font-family: var(--font-mono); }
+.scenarios-actions { display: flex; gap: 8px; }
+.scenarios-actions button { padding: 8px; font-size: 0.75rem; min-height: 34px; }
+.scenarios-notices { padding: 12px 14px; margin-bottom: 16px; border: 1px solid rgba(245, 158, 11, 0.35); border-radius: 8px; background: rgba(245, 158, 11, 0.08); color: #fbbf24; font-size: 0.8rem; }
+.scenarios-notices p + p { margin-top: 6px; }
+.scenarios-empty { color: var(--text-muted); font-size: 0.85rem; padding: 18px 0; }
+.scenarios-pair-fields, .scenarios-pair-names, .scenarios-decision-lists { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+.scenarios-pair-fields { margin: 16px 0; }
+.scenarios-pair-names { font-size: 0.9rem; overflow-wrap: anywhere; margin-top: 20px; }
+.scenarios-pair-names strong { display: inline-block; margin-right: 6px; color: #a78bfa; }
+.scenarios-comparison-table { min-width: 430px; }
+.scenarios-comparison-table th:first-child { width: 48%; }
+.scenarios-comparison-table td, .scenarios-comparison-table th:not(:first-child) { text-align: right; }
+.scenario-difference { position: relative; font-variant-numeric: tabular-nums; }
+.scenario-difference-positive { color: #34d399; }
+.scenario-difference-negative { color: #fb7185; }
+.scenario-difference-neutral { color: var(--text-muted); }
+.scenario-comparison h4 { font-size: 0.9rem; margin: 24px 0 12px; }
+.scenarios-decision-lists > div { border: 1px solid var(--border-color); border-radius: 10px; padding: 14px; overflow-wrap: anywhere; }
+.scenarios-decision-lists h5 { font-size: 0.85rem; margin-bottom: 12px; color: #c4b5fd; }
+.scenarios-decision-lists ol { margin-left: 18px; font-size: 0.78rem; }
+.scenarios-decision-lists li + li { margin-top: 10px; }
+.scenarios-measure-district { display: block; color: var(--text-muted); margin-top: 2px; }
+.scenarios-indicator-heading { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.scenarios-indicator-heading h4 { margin: 0; }
+.scenarios-indicator-heading .scenarios-field { min-width: 180px; }
+.scenarios-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.scenarios-dialog input:focus-visible, .scenarios-table-scroll:focus-visible { outline: 2px solid #38bdf8; outline-offset: 3px; }
+@media (max-width: 600px) {
+  .scenarios-overlay { padding: 8px; }
+  .glass-panel.scenarios-dialog { padding: 0 !important; max-height: calc(100dvh - 16px); }
+  .scenarios-header { padding: 14px; gap: 8px; }
+  .scenarios-heading { gap: 8px; }
+  .scenarios-heading > svg { display: none; }
+  .scenarios-heading h2 { font-size: 1.1rem; }
+  .scenarios-heading p { font-size: 0.72rem; }
+  .scenarios-content { padding: 14px; }
+  .scenarios-save { padding: 12px; }
+  .scenarios-save > button { width: 100%; justify-content: center; }
+  .scenarios-pair-fields, .scenarios-decision-lists { grid-template-columns: minmax(0, 1fr); }
+  .scenarios-table th, .scenarios-table td { padding: 10px; }
+}

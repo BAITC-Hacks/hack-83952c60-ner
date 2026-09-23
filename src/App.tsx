@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Header } from './components/Header';
 import { BudgetBar } from './components/BudgetBar';
 import { ScoreDashboard } from './components/ScoreDashboard';
@@ -10,25 +10,30 @@ import { OptimizerCard } from './components/OptimizerCard';
 import { CompareModal } from './components/CompareModal';
 import { CrisisModal } from './components/CrisisModal';
 import { PresentationModal } from './components/PresentationModal';
-import { CityEvent, DistrictId, SelectedDecision } from './engine/types';
+import { CityEvent, SelectedDecision } from './engine/types';
 import { runSimulation } from './engine/simulator';
 import { validateDecisions } from './engine/validator';
 import { RecommendationSwap } from './engine/optimizer';
+import { useScenarioStorage } from './scenarios/useScenarioStorage';
 
 const ENABLE_EXPERIMENTS = import.meta.env.VITE_ENABLE_EXPERIMENTS === 'true';
 
 export const App: React.FC = () => {
-  const [decisions, setDecisions] = useState<SelectedDecision[]>([]);
+  const { draft, setDraft, scenarios, saveScenario, deleteScenario, notices } = useScenarioStorage();
+  const { decisions, selectedDistrictId } = draft;
+  const setDecisions = (next: SelectedDecision[]) => {
+    setDraft((current) => ({ ...current, decisions: next.map((decision) => ({ ...decision })) }));
+  };
   const [scenarioRevision, setScenarioRevision] = useState(0);
   const [selectionErrors, setSelectionErrors] = useState<string[]>([]);
 
   const [activeEvents, setActiveEvents] = useState<CityEvent[]>([]);
-  const [selectedDistrictId, setSelectedDistrictId] = useState<DistrictId | null>('nura');
 
   // Modal states
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [isCrisisOpen, setIsCrisisOpen] = useState(false);
   const [isPresentationOpen, setIsPresentationOpen] = useState(false);
+  const closeScenarios = useCallback(() => setIsCompareOpen(false), []);
 
   // Run simulation in real-time
   const simulation = runSimulation(decisions, activeEvents);
@@ -49,7 +54,7 @@ export const App: React.FC = () => {
   };
 
   const handleReset = () => {
-    setDecisions([]);
+    setDraft({ decisions: [], selectedDistrictId: 'nura' });
     setActiveEvents([]);
     setSelectionErrors([]);
     setScenarioRevision((revision) => revision + 1);
@@ -92,6 +97,13 @@ export const App: React.FC = () => {
         crisisActive={activeEvents.length > 0}
         enableExperiments={ENABLE_EXPERIMENTS}
       />
+
+      {notices.length > 0 && <div role="status" className="analysis-notice">
+        {notices.map((notice) => <p key={notice}>{notice}</p>)}
+      </div>}
+      {activeEvents.length > 0 && <p className="analysis-notice">
+        Черновик сохраняет только выбранные меры. После перезагрузки экспериментальные кризисы будут отключены.
+      </p>}
 
       {/* 2. Hero Score Dashboard */}
       <ScoreDashboard simulation={simulation} />
@@ -136,7 +148,7 @@ export const App: React.FC = () => {
           <DistrictMap
             districts={simulation.districts}
             selectedDistrictId={selectedDistrictId}
-            onSelectDistrict={(id) => setSelectedDistrictId(id)}
+            onSelectDistrict={(id) => setDraft((current) => ({ ...current, selectedDistrictId: id }))}
             decisions={decisions}
           />
 
@@ -153,15 +165,20 @@ export const App: React.FC = () => {
 
       </div>
 
-      {/* Modals for Optional Features */}
-      {ENABLE_EXPERIMENTS && <><CompareModal
+      <CompareModal
         isOpen={isCompareOpen}
-        onClose={() => setIsCompareOpen(false)}
+        onClose={closeScenarios}
         currentSim={simulation}
+        scenarios={scenarios}
+        onSaveScenario={(name) => !activeEvents.length && simulation.isValid && saveScenario(name, decisions)}
+        onDeleteScenario={deleteScenario}
         onLoadScenario={handleLoadPreset}
+        hasExperimentalEvents={activeEvents.length > 0}
+        notices={notices}
       />
 
-      <CrisisModal
+      {/* Modals for Optional Features */}
+      {ENABLE_EXPERIMENTS && <><CrisisModal
         isOpen={isCrisisOpen}
         onClose={() => setIsCrisisOpen(false)}
         activeEvents={activeEvents}
