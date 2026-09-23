@@ -288,7 +288,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                   </select>
                 ) : (
                   <div style={{ flex: 1, fontSize: '0.72rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                    Все 5 районов города
+                    Все 6 районов города
                   </div>
                 )}
 

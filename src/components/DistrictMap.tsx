@@ -40,7 +40,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
             Карта районов Астаны
           </h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Схематичная карта учебного датасета: качество жизни в пяти районах
+            Схематичная карта учебного датасета: качество жизни в шести районах
           </p>
         </div>
         
@@ -130,18 +130,36 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
           {/* 3. ALMATY (Right Bank, NE) */}
           <g onClick={() => onSelectDistrict('almaty')}>
             <polygon
-              points="395,45 540,60 520,185 385,155"
+              points="395,45 540,60 535,108 390,100"
               fill={getDistrictColor(districts.almaty?.finalDistrictScore || 57.06, selectedDistrictId === 'almaty')}
               fillOpacity={selectedDistrictId === 'almaty' ? 0.85 : 0.45}
               stroke={selectedDistrictId === 'almaty' ? '#ffffff' : '#60a5fa'}
               strokeWidth={selectedDistrictId === 'almaty' ? 3 : 1.5}
               filter={selectedDistrictId === 'almaty' ? 'url(#glowFilter)' : undefined}
             />
-            <text x="460" y="105" fill="#f8fafc" fontSize="13" fontWeight="700" textAnchor="middle">
+            <text x="460" y="70" fill="#f8fafc" fontSize="13" fontWeight="700" textAnchor="middle">
               Алматы
             </text>
-            <text x="460" y="125" fill="#cbd5e1" fontSize="11" fontFamily="var(--font-mono)" textAnchor="middle">
+            <text x="460" y="90" fill="#cbd5e1" fontSize="11" fontFamily="var(--font-mono)" textAnchor="middle">
               {(districts.almaty?.finalDistrictScore || 57.06).toFixed(1)}
+            </text>
+          </g>
+
+          {/* 6. SARAISHYK (Right Bank, East) */}
+          <g onClick={() => onSelectDistrict('saraishyk')}>
+            <polygon
+              points="390,105 535,113 520,175 385,155"
+              fill={getDistrictColor(districts.saraishyk?.finalDistrictScore || 57.06, selectedDistrictId === 'saraishyk')}
+              fillOpacity={selectedDistrictId === 'saraishyk' ? 0.85 : 0.45}
+              stroke={selectedDistrictId === 'saraishyk' ? '#ffffff' : '#60a5fa'}
+              strokeWidth={selectedDistrictId === 'saraishyk' ? 3 : 1.5}
+              filter={selectedDistrictId === 'saraishyk' ? 'url(#glowFilter)' : undefined}
+            />
+            <text x="460" y="132" fill="#f8fafc" fontSize="13" fontWeight="700" textAnchor="middle">
+              Сарайшык
+            </text>
+            <text x="460" y="152" fill="#cbd5e1" fontSize="11" fontFamily="var(--font-mono)" textAnchor="middle">
+              {(districts.saraishyk?.finalDistrictScore || 57.06).toFixed(1)}
             </text>
           </g>
 
@@ -163,7 +181,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
             </text>
           </g>
 
-          {/* 5. NURA (Left Bank, South-West - newest district) */}
+          {/* 5. NURA (Left Bank, South-West) */}
           <g onClick={() => onSelectDistrict('nura')}>
             <polygon
               points="75,185 195,185 245,320 200,360 80,340"
@@ -206,6 +224,9 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
 
       </div>
 
+      <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '8px' }}>
+        Учебная модель: показатели Сарайшыка взяты из Алматы, прежний вес населения Алматы разделён поровну. Границы условные.
+      </p>
       {/* District Quick Inspector */}
       {selectedData && (
         <div

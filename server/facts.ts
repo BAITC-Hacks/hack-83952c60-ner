@@ -55,7 +55,7 @@ export function buildAnalysisFacts(sim: ValidSimulationResult): AnalysisFacts {
   }
   for (const decision of sim.decisions) {
     const measure = MEASURES[decision.measureId];
-    add(`measure_${measure.id}`, `${measure.id} «${measure.nameRu}», ${decision.districtId ? DISTRICTS[decision.districtId].nameRu : 'все пять районов'}: стоимость ${measure.cost} у.е., лаг ${measure.lag} кварталов, в модели реализуется ${((8 - measure.lag) / 8 * 100).toFixed(1)}% полного эффекта.`);
+    add(`measure_${measure.id}`, `${measure.id} «${measure.nameRu}», ${decision.districtId ? DISTRICTS[decision.districtId].nameRu : 'все шесть районов'}: стоимость ${measure.cost} у.е., лаг ${measure.lag} кварталов, в модели реализуется ${((8 - measure.lag) / 8 * 100).toFixed(1)}% полного эффекта.`);
   }
   for (const [index, suggestion] of findBestImprovements(sim.decisions).entries()) {
     const nextDecisions = sim.decisions.map((decision) => decision.measureId === suggestion.removeMeasureId ? suggestion.addDecision : decision);

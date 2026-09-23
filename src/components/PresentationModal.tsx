@@ -189,7 +189,7 @@ ${analysis.risksAndTradeoffs.join('\n')}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {simulation.decisions.map((d, i) => {
                 const m = MEASURES[d.measureId];
-                const target = d.districtId ? DISTRICTS[d.districtId]?.nameRu : 'Все 5 районов (Город)';
+                const target = d.districtId ? DISTRICTS[d.districtId]?.nameRu : 'Все 6 районов (Город)';
                 return (
                   <div
                     key={i}
