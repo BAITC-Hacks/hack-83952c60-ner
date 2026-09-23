@@ -1,3 +1,4 @@
+import { t, useLanguage } from '../i18n';
 import React from 'react';
 import { DistrictId, DistrictSimulationResult, SelectedDecision } from '../engine/types';
 import { DISTRICTS } from '../data/districts';
@@ -17,6 +18,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
   onSelectDistrict,
   decisions,
 }) => {
+  useLanguage();
   // Color scale function based on score 0-100
   const getDistrictColor = (score: number, isSelected: boolean) => {
     let baseColor = '#3b82f6';
@@ -37,23 +39,22 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
         <div>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
-            Карта районов Астаны
-          </h3>
+            {t("Карта районов Астаны")}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Схематичная карта учебного датасета: качество жизни в шести районах
+            {t('Схематичная карта учебного датасета: качество жизни в шести районах')}
           </p>
         </div>
         
         {/* Heatmap Legend */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.7rem', color: 'var(--text-dim)' }}>
-          <span>&lt;45 (Критич.)</span>
+          <span>{t("<45 (Критич.)")}</span>
           <div style={{ display: 'flex', gap: '2px' }}>
             <span style={{ width: '12px', height: '8px', background: '#ef4444', borderRadius: '2px' }} />
             <span style={{ width: '12px', height: '8px', background: '#f59e0b', borderRadius: '2px' }} />
             <span style={{ width: '12px', height: '8px', background: '#06b6d4', borderRadius: '2px' }} />
             <span style={{ width: '12px', height: '8px', background: '#10b981', borderRadius: '2px' }} />
           </div>
-          <span>&gt;60 (Высокий)</span>
+          <span>{t(">60 (Высокий)")}</span>
         </div>
       </div>
 
@@ -88,8 +89,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
             strokeLinecap="round"
           />
           <text x="310" y="165" fill="#38bdf8" fontSize="10" fontWeight="600" opacity="0.6" letterSpacing="2">
-            р. ЕСИЛЬ (ИШИМ)
-          </text>
+            {t("р. ЕСИЛЬ (ИШИМ)")}</text>
 
           {/* 1. SARYARKA (Right Bank, NW) */}
           <g onClick={() => onSelectDistrict('saryarka')}>
@@ -102,8 +102,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
               filter={selectedDistrictId === 'saryarka' ? 'url(#glowFilter)' : undefined}
             />
             <text x="145" y="95" fill="#f8fafc" fontSize="13" fontWeight="700" textAnchor="middle">
-              Сарыарка
-            </text>
+              {t("Сарыарка")}</text>
             <text x="145" y="115" fill="#cbd5e1" fontSize="11" fontFamily="var(--font-mono)" textAnchor="middle">
               {(districts.saryarka?.finalDistrictScore || 54.65).toFixed(1)}
             </text>
@@ -120,8 +119,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
               filter={selectedDistrictId === 'baikonur' ? 'url(#glowFilter)' : undefined}
             />
             <text x="315" y="95" fill="#f8fafc" fontSize="13" fontWeight="700" textAnchor="middle">
-              Байконур
-            </text>
+              {t("Байконур")}</text>
             <text x="315" y="115" fill="#cbd5e1" fontSize="11" fontFamily="var(--font-mono)" textAnchor="middle">
               {(districts.baikonur?.finalDistrictScore || 56.63).toFixed(1)}
             </text>
@@ -138,7 +136,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
               filter={selectedDistrictId === 'almaty' ? 'url(#glowFilter)' : undefined}
             />
             <text x="460" y="70" fill="#f8fafc" fontSize="13" fontWeight="700" textAnchor="middle">
-              Алматы
+              {t('Алматы')}
             </text>
             <text x="460" y="90" fill="#cbd5e1" fontSize="11" fontFamily="var(--font-mono)" textAnchor="middle">
               {(districts.almaty?.finalDistrictScore || 57.06).toFixed(1)}
@@ -156,7 +154,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
               filter={selectedDistrictId === 'saraishyk' ? 'url(#glowFilter)' : undefined}
             />
             <text x="460" y="132" fill="#f8fafc" fontSize="13" fontWeight="700" textAnchor="middle">
-              Сарайшык
+              {t('Сарайшык')}
             </text>
             <text x="460" y="152" fill="#cbd5e1" fontSize="11" fontFamily="var(--font-mono)" textAnchor="middle">
               {(districts.saraishyk?.finalDistrictScore || 57.06).toFixed(1)}
@@ -174,11 +172,9 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
               filter={selectedDistrictId === 'esil' ? 'url(#glowFilter)' : undefined}
             />
             <text x="345" y="245" fill="#f8fafc" fontSize="14" fontWeight="800" textAnchor="middle">
-              Есиль
-            </text>
+              {t("Есиль")}</text>
             <text x="345" y="265" fill="#cbd5e1" fontSize="11" fontFamily="var(--font-mono)" textAnchor="middle">
-              {(districts.esil?.finalDistrictScore || 62.99).toFixed(1)} (27% нас.)
-            </text>
+              {(districts.esil?.finalDistrictScore || 62.99).toFixed(1)} {t("(27% нас.)")}</text>
           </g>
 
           {/* 5. NURA (Left Bank, South-West) */}
@@ -192,15 +188,13 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
               filter={selectedDistrictId === 'nura' ? 'url(#glowFilter)' : undefined}
             />
             <text x="145" y="260" fill="#f8fafc" fontSize="14" fontWeight="800" textAnchor="middle">
-              Нура
-            </text>
+              {t("Нура")}</text>
             <text x="145" y="280" fill="#cbd5e1" fontSize="11" fontFamily="var(--font-mono)" textAnchor="middle">
               {(districts.nura?.finalDistrictScore || 49.18).toFixed(1)}
             </text>
             {districts.nura?.criticalIndicators.length > 0 && (
               <text x="145" y="300" fill="#fca5a5" fontSize="10" fontWeight="700" textAnchor="middle">
-                ⚠️ Штраф &lt;40
-              </text>
+                {t("⚠️ Штраф <40")}</text>
             )}
           </g>
 
@@ -216,7 +210,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
                 className="badge badge-blue"
                 style={{ fontSize: '0.68rem', background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(4px)' }}
               >
-                {d.measureId}: {d.districtId ? DISTRICTS[d.districtId].nameRu : 'Город'}
+                {d.measureId}: {d.districtId ? t(DISTRICTS[d.districtId].nameRu) : t("Город")}
               </span>
             );
           })}
@@ -225,7 +219,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
       </div>
 
       <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '8px' }}>
-        Учебная модель: показатели Сарайшыка взяты из Алматы, прежний вес населения Алматы разделён поровну. Границы условные.
+        {t('Учебная модель: показатели Сарайшыка взяты из Алматы, прежний вес населения Алматы разделён поровну. Границы условные.')}
       </p>
       {/* District Quick Inspector */}
       {selectedData && (
@@ -241,14 +235,14 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
               <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>
-                Район {selectedData.nameRu}
+                {t("Район")} {t(selectedData.nameRu)}
               </h4>
               <span className="badge badge-purple" style={{ fontSize: '0.7rem' }}>
-                Доля населения: {(selectedData.populationShare * 100).toFixed(0)}%
+                {t("Доля населения:")}{' '}{(selectedData.populationShare * 100).toFixed(0)}%
               </span>
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.9rem', fontWeight: 700, color: '#38bdf8' }}>
-              Балл: {selectedData.finalDistrictScore.toFixed(2)}
+              {t("Балл:")}{' '}{selectedData.finalDistrictScore.toFixed(2)}
               {selectedData.scoreDelta !== 0 && (
                 <span style={{ color: selectedData.scoreDelta > 0 ? '#34d399' : '#f43f5e', marginLeft: '6px' }}>
                   ({selectedData.scoreDelta > 0 ? `+${selectedData.scoreDelta.toFixed(2)}` : selectedData.scoreDelta.toFixed(2)})
@@ -272,7 +266,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
                     padding: '4px 6px',
                     textAlign: 'center',
                   }}
-                  title={`${INDICATORS[indId as keyof typeof INDICATORS].nameRu}: ${val.toFixed(1)}`}
+                  title={`${t(INDICATORS[indId as keyof typeof INDICATORS].nameRu)}: ${val.toFixed(1)}`}
                 >
                   <div style={{ fontSize: '0.65rem', color: isCrit ? '#fca5a5' : 'var(--text-dim)' }}>
                     {indId}

@@ -1,3 +1,4 @@
+import { t, useLanguage } from '../i18n';
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { ArrowUpRight, Layers, Plus, Trash2, X } from 'lucide-react';
 import { runSimulation } from '../engine/simulator';
@@ -35,6 +36,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
   isOpen, onClose, currentSim, scenarios, onSaveScenario, onDeleteScenario,
   onLoadScenario, hasExperimentalEvents, notices,
 }) => {
+  useLanguage();
   const [name, setName] = useState('');
   const [saveStatus, setSaveStatus] = useState('');
   const [scenarioAId, setScenarioAId] = useState('');
@@ -107,10 +109,10 @@ export const CompareModal: React.FC<CompareModalProps> = ({
   if (!isOpen) return null;
 
   const saveHelp = hasExperimentalEvents
-    ? 'Сохранение недоступно при активных кризисах. Сбросьте события и соберите сценарий без кризисов.'
+    ? t("Сохранение недоступно при активных кризисах. Сбросьте события и соберите сценарий без кризисов.")
     : !currentSim.isValid
-      ? 'Для сохранения выберите допустимый набор из пяти решений.'
-      : 'Сохранится независимая копия пяти решений. Введите название сценария.';
+      ? t("Для сохранения выберите допустимый набор из пяти решений.")
+      : t("Сохранится независимая копия пяти решений. Введите название сценария.");
   const canSave = currentSim.isValid && !hasExperimentalEvents && Boolean(name.trim());
 
   return (
@@ -120,11 +122,11 @@ export const CompareModal: React.FC<CompareModalProps> = ({
           <div className="scenarios-heading">
             <Layers size={24} aria-hidden="true" />
             <div>
-              <h2 id={titleId}>Сценарии</h2>
-              <p>Личная библиотека решений и подробное сравнение</p>
+              <h2 id={titleId}>{t("Сценарии")}</h2>
+              <p>{t("Личная библиотека решений и подробное сравнение")}</p>
             </div>
           </div>
-          <button type="button" onClick={onClose} className="btn-secondary scenarios-close" aria-label="Закрыть сценарии"><X size={20} aria-hidden="true" /></button>
+          <button type="button" onClick={onClose} className="btn-secondary scenarios-close" aria-label={t("Закрыть сценарии")}><X size={20} aria-hidden="true" /></button>
         </header>
 
         <div className="scenarios-content">
@@ -134,31 +136,31 @@ export const CompareModal: React.FC<CompareModalProps> = ({
             if (!canSave) return;
             if (onSaveScenario(name.trim())) {
               setName('');
-              setSaveStatus('Сценарий добавлен в библиотеку.');
+              setSaveStatus(t("Сценарий добавлен в библиотеку."));
             } else {
-              setSaveStatus('Не удалось добавить сценарий. Проверьте выбранные решения.');
+              setSaveStatus(t("Не удалось добавить сценарий. Проверьте выбранные решения."));
             }
           }}>
             <div className="scenarios-field">
-              <label htmlFor={nameId}>Название сценария</label>
-              <input id={nameId} value={name} onChange={(event) => { setName(event.target.value); setSaveStatus(''); }} placeholder="Например, социальный приоритет" aria-describedby={saveHelpId} />
+              <label htmlFor={nameId}>{t("Название сценария")}</label>
+              <input id={nameId} value={name} onChange={(event) => { setName(event.target.value); setSaveStatus(''); }} placeholder={t("Например, социальный приоритет")} aria-describedby={saveHelpId} />
             </div>
-            <button type="submit" className="btn-primary" disabled={!canSave} aria-describedby={saveHelpId}><Plus size={16} aria-hidden="true" />Сохранить сценарий</button>
+            <button type="submit" className="btn-primary" disabled={!canSave} aria-describedby={saveHelpId}><Plus size={16} aria-hidden="true" />{t("Сохранить сценарий")}</button>
             <p id={saveHelpId} className="scenarios-help">{saveHelp}</p>
             {saveStatus && <p role="status" className="scenarios-help">{saveStatus}</p>}
-            {saveStatus === 'Сценарий добавлен в библиотеку.' && <div>
-              <p className="scenarios-help">Чтобы проверить другой подход, вернитесь к мерам, измените решения и сохраните их под новым названием. Первый вариант останется в библиотеке.</p>
-              <button type="button" className="btn-secondary" onClick={onClose}>Вернуться к мерам</button>
+            {saveStatus === t('Сценарий добавлен в библиотеку.') && <div>
+              <p className="scenarios-help">{t('Чтобы проверить другой подход, вернитесь к мерам, измените решения и сохраните их под новым названием. Первый вариант останется в библиотеке.')}</p>
+              <button type="button" className="btn-secondary" onClick={onClose}>{t('Вернуться к мерам')}</button>
             </div>}
           </form>
 
-          <section aria-label="Библиотека сценариев" className="scenarios-section">
-            <h3>Библиотека <span className="scenarios-count">{ranked.length}</span></h3>
-            <p className="scenarios-help">По Score: сначала лучший результат, при равенстве — новый сценарий. Данные доступны в этом браузере для текущего адреса приложения.</p>
-            {ranked.length === 0 ? <p className="scenarios-empty">Пока нет сохранённых сценариев. Соберите пять решений и сохраните первый вариант.</p> : (
-              <div className="scenarios-table-scroll" tabIndex={0} role="region" aria-label="Таблица сохранённых сценариев">
+          <section aria-label={t("Библиотека сценариев")} className="scenarios-section">
+            <h3>{t("Библиотека")}{' '}<span className="scenarios-count">{ranked.length}</span></h3>
+            <p className="scenarios-help">{t("По Score: сначала лучший результат, при равенстве — новый сценарий. Данные доступны в этом браузере для текущего адреса приложения.")}</p>
+            {ranked.length === 0 ? <p className="scenarios-empty">{t("Пока нет сохранённых сценариев. Соберите пять решений и сохраните первый вариант.")}</p> : (
+              <div className="scenarios-table-scroll" tabIndex={0} role="region" aria-label={t("Таблица сохранённых сценариев")}>
                 <table className="scenarios-table scenarios-library-table">
-                  <thead><tr><th scope="col">Название и дата</th><th scope="col">Score</th><th scope="col">Прирост</th><th scope="col">Бюджет</th><th scope="col">Критические показатели</th><th scope="col">Действия</th></tr></thead>
+                  <thead><tr><th scope="col">{t("Название и дата")}</th><th scope="col">Score</th><th scope="col">{t("Прирост")}</th><th scope="col">{t("Бюджет")}</th><th scope="col">{t("Критические показатели")}</th><th scope="col">{t("Действия")}</th></tr></thead>
                   <tbody>{ranked.map((scenario, index) => (
                     <tr key={scenario.id}>
                       <th scope="row"><span className="scenarios-name">{index + 1}. {scenario.name}</span><time dateTime={scenario.createdAt}>{new Date(scenario.createdAt).toLocaleString('ru-RU')}</time></th>
@@ -167,8 +169,8 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                       <td>{scenario.simulation.validation.totalCost}/100</td>
                       <td>{scenario.simulation.finalCritCount}</td>
                       <td><div className="scenarios-actions">
-                        <button type="button" className="btn-secondary" aria-label={`Загрузить сценарий ${index + 1}: ${scenario.name}`} onClick={() => { onLoadScenario(scenario.decisions.map((decision) => ({ ...decision }))); onClose(); }}><ArrowUpRight size={14} aria-hidden="true" />Загрузить</button>
-                        <button type="button" className="btn-secondary" aria-label={`Удалить сценарий ${index + 1}: ${scenario.name}`} onClick={() => onDeleteScenario(scenario.id)}><Trash2 size={15} aria-hidden="true" /></button>
+                        <button type="button" className="btn-secondary" aria-label={t("Загрузить сценарий {0}: {1}", [index + 1, scenario.name])} onClick={() => { onLoadScenario(scenario.decisions.map((decision) => ({ ...decision }))); onClose(); }}><ArrowUpRight size={14} aria-hidden="true" />{t("Загрузить")}</button>
+                        <button type="button" className="btn-secondary" aria-label={t("Удалить сценарий {0}: {1}", [index + 1, scenario.name])} onClick={() => onDeleteScenario(scenario.id)}><Trash2 size={15} aria-hidden="true" /></button>
                       </div></td>
                     </tr>
                   ))}</tbody>
@@ -177,15 +179,15 @@ export const CompareModal: React.FC<CompareModalProps> = ({
             )}
           </section>
 
-          <section aria-label="Сравнение сценариев" className="scenarios-section">
-            <h3>Сравнение A и B</h3>
-            <p className="scenarios-help">Все разницы рассчитаны как B − A. Показатели пересчитываются по сохранённым решениям.</p>
-            {ranked.length < 2 && <p className="scenarios-empty">Сохраните хотя бы два сценария, чтобы сравнить результаты.</p>}
+          <section aria-label={t("Сравнение сценариев")} className="scenarios-section">
+            <h3>{t("Сравнение A и B")}</h3>
+            <p className="scenarios-help">{t("Все разницы рассчитаны как B − A. Показатели пересчитываются по сохранённым решениям.")}</p>
+            {ranked.length < 2 && <p className="scenarios-empty">{t("Сохраните хотя бы два сценария, чтобы сравнить результаты.")}</p>}
             <div className="scenarios-pair-fields">
-              <div className="scenarios-field"><label htmlFor={scenarioASelectId}>Сценарий A</label><select id={scenarioASelectId} value={scenarioA?.id ?? ''} onChange={(event) => setScenarioAId(event.target.value)} disabled={ranked.length === 0}><option value="">Выберите сценарий A</option>{ranked.map((scenario, index) => <option key={scenario.id} value={scenario.id} disabled={scenario.id === scenarioBId}>{index + 1}. {scenario.name}</option>)}</select></div>
-              <div className="scenarios-field"><label htmlFor={scenarioBSelectId}>Сценарий B</label><select id={scenarioBSelectId} value={scenarioB?.id ?? ''} onChange={(event) => setScenarioBId(event.target.value)} disabled={ranked.length < 2}><option value="">Выберите сценарий B</option>{ranked.map((scenario, index) => <option key={scenario.id} value={scenario.id} disabled={scenario.id === scenarioAId}>{index + 1}. {scenario.name}</option>)}</select></div>
+              <div className="scenarios-field"><label htmlFor={scenarioASelectId}>{t("Сценарий A")}</label><select id={scenarioASelectId} value={scenarioA?.id ?? ''} onChange={(event) => setScenarioAId(event.target.value)} disabled={ranked.length === 0}><option value="">{t("Выберите сценарий A")}</option>{ranked.map((scenario, index) => <option key={scenario.id} value={scenario.id} disabled={scenario.id === scenarioBId}>{index + 1}. {scenario.name}</option>)}</select></div>
+              <div className="scenarios-field"><label htmlFor={scenarioBSelectId}>{t("Сценарий B")}</label><select id={scenarioBSelectId} value={scenarioB?.id ?? ''} onChange={(event) => setScenarioBId(event.target.value)} disabled={ranked.length < 2}><option value="">{t("Выберите сценарий B")}</option>{ranked.map((scenario, index) => <option key={scenario.id} value={scenario.id} disabled={scenario.id === scenarioAId}>{index + 1}. {scenario.name}</option>)}</select></div>
             </div>
-            {ranked.length >= 2 && (!scenarioA || !scenarioB) && <p className="scenarios-help">Выберите два разных сценария в полях A и B.</p>}
+            {ranked.length >= 2 && (!scenarioA || !scenarioB) && <p className="scenarios-help">{t("Выберите два разных сценария в полях A и B.")}</p>}
             {scenarioA && scenarioB && scenarioA.id !== scenarioB.id && <ScenarioComparison scenarioA={scenarioA} scenarioB={scenarioB} />}
           </section>
         </div>

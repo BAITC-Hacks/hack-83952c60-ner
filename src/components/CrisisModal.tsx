@@ -1,3 +1,4 @@
+import { t, useLanguage } from '../i18n';
 import React from 'react';
 import { ShieldAlert, X, AlertTriangle, Flame, Wind, Users } from 'lucide-react';
 import { CityEvent } from '../engine/types';
@@ -16,6 +17,7 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
   activeEvents,
   onToggleEvent,
 }) => {
+  useLanguage();
   if (!isOpen) return null;
 
   const isEventActive = (id: string) => activeEvents.some((e) => e.id === id);
@@ -61,14 +63,13 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
             <ShieldAlert size={22} color="#f59e0b" />
             <div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
-                Городские форс-мажоры (Стресс-тестирование)
-              </h3>
+                {t("Городские форс-мажоры (Стресс-тестирование)")}</h3>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Проверьте устойчивость выбранного сценария к непредвиденным городским кризисам Астаны
-              </p>
+                {t("Проверьте устойчивость выбранного сценария к непредвиденным городским кризисам Астаны")}</p>
             </div>
           </div>
           <button
+            aria-label={t('Закрыть')}
             onClick={onClose}
             style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
           >
@@ -109,10 +110,10 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
                   </div>
                   <div>
                     <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', marginBottom: '4px' }}>
-                      {event.titleRu}
+                      {t(event.titleRu)}
                     </h4>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                      {event.descriptionRu}
+                      {t(event.descriptionRu)}
                     </p>
                   </div>
                 </div>
@@ -128,7 +129,7 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
                     borderColor: active ? '#d97706' : undefined,
                   }}
                 >
-                  {active ? 'Активен' : 'Смоделировать'}
+                  {active ? t("Активен") : t("Смоделировать")}
                 </button>
               </div>
             );
@@ -137,8 +138,7 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
 
         <div style={{ textAlign: 'right' }}>
           <button onClick={onClose} className="btn-primary" style={{ padding: '8px 20px' }}>
-            Закрыть и посмотреть последствия
-          </button>
+            {t("Закрыть и посмотреть последствия")}</button>
         </div>
       </div>
     </div>

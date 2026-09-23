@@ -1,3 +1,4 @@
+import { t, useLanguage } from '../i18n';
 import React, { useState } from 'react';
 import { Plus, AlertCircle, Sparkles } from 'lucide-react';
 import { DirectionId, DistrictId, IndicatorId, SelectedDecision } from '../engine/types';
@@ -23,6 +24,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
   onAddDecision,
   onRemoveDecision,
 }) => {
+  useLanguage();
   const [activeDirectionFilter, setActiveDirectionFilter] = useState<DirectionId | 'all'>('all');
   const [selectedDistricts, setSelectedDistricts] = useState<Record<string, DistrictId>>({});
 
@@ -42,8 +44,8 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
         const partner = rule.pair.find((id) => id !== measureId)!;
         if (selectedMeasureIds.has(partner)) {
           return selectedMeasureIds.has(measureId)
-            ? `Синергия активна с ${partner}!`
-            : `Возможная синергия с ${partner}`;
+            ? t("Синергия активна с {0}!", [partner])
+            : t("Возможная синергия с {0}", [partner]);
         }
       }
     }
@@ -53,19 +55,17 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
   return (
     <div id="measure-catalog" tabIndex={-1} className="glass-panel" style={{ padding: '20px', scrollMarginTop: '20px' }}>
       {problemFocus && <div className="journey-filter" role="status">
-        <p>Меры для улучшения: <strong>{INDICATORS[problemFocus].nameRu}</strong></p>
-        <button className="btn-secondary" onClick={() => { setActiveDirectionFilter('all'); onClearProblem?.(); }}>Показать все меры</button>
+        <p>{t('Меры для улучшения:')} <strong>{t(INDICATORS[problemFocus].nameRu)}</strong></p>
+        <button className="btn-secondary" onClick={() => { setActiveDirectionFilter('all'); onClearProblem?.(); }}>{t('Показать все меры')}</button>
       </div>}
       
       {/* Header and Direction Filter Pills */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
         <div>
           <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f8fafc' }}>
-            Каталог управленческих мероприятий (14 инициатив)
-          </h3>
+            {t("Каталог управленческих мероприятий (14 инициатив)")}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Выберите ровно 5 мер. Максимум 2 на одно направление.
-          </p>
+            {t("Выберите ровно 5 мер. Максимум 2 на одно направление.")}</p>
         </div>
 
         {/* Filter buttons */}
@@ -83,8 +83,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
               fontWeight: 600,
             }}
           >
-            Все (14)
-          </button>
+            {t("Все (14)")}</button>
           {DIRECTION_LIST.map((dir) => {
             const isActive = activeDirectionFilter === dir.id;
             return (
@@ -106,7 +105,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                 }}
               >
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: dir.color }} />
-                <span>{dir.nameRu.split(' ')[0]}</span>
+                <span>{t(dir.nameRu).split(' ')[0]}</span>
               </button>
             );
           })}
@@ -130,7 +129,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
             : { measureId: measure.id };
           const candidateValidation = validateDecisions([...decisions, proposedDecision], { allowIncomplete: true });
           const isBlocked = !isSelected && !candidateValidation.isValid;
-          const blockedReason = `При добавлении: ${candidateValidation.errors.join(' ')}`;
+          const blockedReason = t("При добавлении: {0}", [candidateValidation.errors.join(' ')]);
 
           return (
             <div
@@ -172,7 +171,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                       {measure.id}
                     </span>
                     <span className="badge" style={{ fontSize: '0.68rem', background: 'rgba(255, 255, 255, 0.06)', color: 'var(--text-muted)' }}>
-                      {measure.type}
+                      {t(measure.type)}
                     </span>
                   </div>
 
@@ -185,19 +184,18 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                         color: isSelected ? '#38bdf8' : '#f8fafc',
                       }}
                     >
-                      {measure.cost} у.е.
-                    </span>
+                      {measure.cost} {t("у.е.")}</span>
                   </div>
                 </div>
 
                 {/* Measure Name */}
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc', lineHeight: 1.35, marginBottom: '6px' }}>
-                  {measure.nameRu}
+                  {t(measure.nameRu)}
                 </h4>
 
                 {/* Lag and realized fraction */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '8px' }}>
-                  <span>Задержка: {measure.lag} кв. Ниже — вклад за 8 кварталов, до сочетаний и ограничения 0–100.</span>
+                  <span>{t('Задержка: {0} кв. Ниже — вклад за 8 кварталов, до сочетаний и ограничения 0–100.', [measure.lag])}</span>
                 </div>
 
                 {/* Direct Effects tags */}
@@ -215,7 +213,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                         fontWeight: 600,
                       }}
                     >
-                      {INDICATORS[ind as IndicatorId].nameRu}: {(val || 0) > 0 ? '+' : ''}{((val || 0) * (8 - measure.lag) / 8).toFixed(1)}
+                      {t(INDICATORS[ind as IndicatorId].nameRu)}: {(val || 0) > 0 ? '+' : ''}{((val || 0) * (8 - measure.lag) / 8).toFixed(1)}
                     </span>
                   ))}
                 </div>
@@ -265,7 +263,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
               <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {measure.type === 'Район' ? (
                   <select
-                    aria-label={`Район для ${measure.id}`}
+                    aria-label={t("Район для {0}", [measure.id])}
                     disabled={isSelected}
                     value={chosenDistrict}
                     onChange={(e) => handleDistrictChange(measure.id, e.target.value as DistrictId)}
@@ -282,13 +280,13 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                   >
                     {DISTRICT_LIST.map((d) => (
                       <option key={d.id} value={d.id}>
-                        {d.nameRu} ({(d.populationShare * 100).toFixed(0)}%)
+                        {t(d.nameRu)} ({(d.populationShare * 100).toFixed(0)}%)
                       </option>
                     ))}
                   </select>
                 ) : (
                   <div style={{ flex: 1, fontSize: '0.72rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                    Все 6 районов города
+                    {t("Все 6 районов города")}
                   </div>
                 )}
 
@@ -306,14 +304,13 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                       cursor: 'pointer',
                     }}
                   >
-                    Убрать
-                  </button>
+                    {t("Убрать")}</button>
                 ) : (
                   <button
                     disabled={isBlocked}
-                    aria-label={`Выбрать ${measure.id}`}
+                    aria-label={t("Выбрать {0}", [measure.id])}
                     aria-describedby={isBlocked ? `measure-${measure.id}-restriction` : undefined}
-                    title={isBlocked ? blockedReason : `Выбрать ${measure.nameRu}`}
+                    title={isBlocked ? blockedReason : t("Выбрать {0}", [measure.nameRu])}
                     onClick={() => onAddDecision(proposedDecision)}
                     className="btn-primary"
                     style={{
@@ -324,8 +321,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                     }}
                   >
                     <Plus size={13} />
-                    Выбрать
-                  </button>
+                    {t("Выбрать")}</button>
                 )}
               </div>
 

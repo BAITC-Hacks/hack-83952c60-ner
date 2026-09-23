@@ -1,3 +1,4 @@
+import { t, useLanguage } from '../i18n';
 import React from 'react';
 import { TrendingUp, AlertOctagon, CheckCircle2, Zap, Scale, Target } from 'lucide-react';
 import { SimulationResult } from '../engine/types';
@@ -8,6 +9,7 @@ interface ScoreDashboardProps {
 }
 
 export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) => {
+  useLanguage();
   const {
     isValid,
     baseScore,
@@ -24,7 +26,7 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
   } = simulation;
 
   const isPositive = scoreDelta !== null && scoreDelta > 0;
-  const weakestDistrictName = DISTRICTS[weakestDistrictId]?.nameRu || weakestDistrictId;
+  const weakestDistrictName = t(DISTRICTS[weakestDistrictId]?.nameRu) || weakestDistrictId;
 
   return (
     <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px', position: 'relative', overflow: 'hidden' }}>
@@ -77,8 +79,7 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
               }}
             >
               <span style={{ fontSize: '0.65rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>
-                Score
-              </span>
+                {t("Score")}</span>
               <span
                 style={{
                   fontFamily: 'var(--font-mono)',
@@ -95,22 +96,19 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '4px' }}>
               <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>
-                Astana Quality of Life Score
-              </h2>
+                {t("Astana Quality of Life Score")}</h2>
               {isValid ? (
                 <span className="badge badge-green" style={{ fontSize: '0.7rem' }}>
-                  <CheckCircle2 size={12} /> Валиден
-                </span>
+                  <CheckCircle2 size={12} /> {t("Валиден")}</span>
               ) : (
                 <span className="badge badge-red" style={{ fontSize: '0.7rem' }}>
-                  <AlertOctagon size={12} /> Сценарий не завершён
-                </span>
+                  <AlertOctagon size={12} /> {t("Сценарий не завершён")}{' '}</span>
               )}
             </div>
 
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                Базовый уровень: <strong>{baseScore.toFixed(2).replace('.', ',')}</strong>
+                {t("Базовый уровень:")}{' '}<strong>{baseScore.toFixed(2).replace('.', ',')}</strong>
               </span>
               {isValid && (
                 <span
@@ -131,8 +129,7 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
             </div>
 
             <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-              Формула: 70% среднее по городу + 30% слабый район − штраф N_crit
-            </div>
+              {t("Формула: 70% среднее по городу + 30% слабый район − штраф N_crit")}</div>
           </div>
 
         </div>
@@ -151,15 +148,15 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '4px' }}>
               <Scale size={13} color="#60a5fa" />
-              <span>D_avg (70%)</span>
+              <span>{t("D_avg (70%)")}</span>
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
               {isValid ? finalCityAverage.toFixed(2) : baseCityAverage.toFixed(2)}
             </div>
             <div style={{ fontSize: '0.7rem', color: isValid && finalCityAverage > baseCityAverage ? '#34d399' : 'var(--text-dim)' }}>
               {isValid && finalCityAverage > baseCityAverage
-                ? `+${(finalCityAverage - baseCityAverage).toFixed(2)} к базе`
-                : 'База: ' + baseCityAverage.toFixed(2)}
+                ? t("+{0} к базе", [(finalCityAverage - baseCityAverage).toFixed(2)])
+                : t("База: ") + baseCityAverage.toFixed(2)}
             </div>
           </div>
 
@@ -174,13 +171,13 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '4px' }}>
               <Target size={13} color="#a78bfa" />
-              <span>min(D_d) (30%)</span>
+              <span>{t("min(D_d) (30%)")}</span>
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
               {isValid ? finalMinDistrictScore.toFixed(2) : baseMinDistrictScore.toFixed(2)}
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-              Район: <strong>{weakestDistrictName}</strong>
+              {t("Район:")}{' '}<strong>{weakestDistrictName}</strong>
             </div>
           </div>
 
@@ -195,13 +192,13 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: finalCritCount > 0 ? '#fb7185' : '#34d399', marginBottom: '4px' }}>
               <AlertOctagon size={13} />
-              <span>Штраф N_crit (&lt;40)</span>
+              <span>{t("Штраф N_crit (<40)")}</span>
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: finalCritCount > 0 ? '#f43f5e' : '#10b981' }}>
-              {finalCritCount > 0 ? `-${finalCritCount}.0 балла` : '0 (нет штрафа)'}
+              {finalCritCount > 0 ? t("-{0}.0 балла", [finalCritCount]) : t("0 (нет штрафа)")}
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
-              {finalCritCount === 0 ? 'Все показатели ≥ 40' : `${finalCritCount} провал(ов)`}
+              {finalCritCount === 0 ? t("Все показатели ≥ 40") : t("{0} провал(ов)", [finalCritCount])}
             </div>
           </div>
 
@@ -216,13 +213,12 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: activeSynergies.length > 0 ? '#38bdf8' : 'var(--text-dim)', marginBottom: '4px' }}>
               <Zap size={13} />
-              <span>Синергии</span>
+              <span>{t("Синергии")}</span>
             </div>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: activeSynergies.length > 0 ? '#38bdf8' : 'var(--text-dim)' }}>
-              {activeSynergies.length} активна(о)
-            </div>
+              {activeSynergies.length} {t("активна(о)")}</div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
-              {activeSynergies.length > 0 ? 'Бонусы начислены' : 'Связок нет'}
+              {activeSynergies.length > 0 ? t("Бонусы начислены") : t("Связок нет")}
             </div>
           </div>
 

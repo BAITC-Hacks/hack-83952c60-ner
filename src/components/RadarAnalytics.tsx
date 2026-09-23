@@ -1,3 +1,4 @@
+import { t, useLanguage } from '../i18n';
 import React from 'react';
 import { SimulationResult, IndicatorId, DistrictId } from '../engine/types';
 import { INDICATORS, INDICATOR_LIST, DIRECTIONS } from '../data/indicators';
@@ -12,6 +13,7 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
   simulation,
   selectedDistrictId,
 }) => {
+  useLanguage();
   const targetDistrictId = selectedDistrictId || 'nura';
   const targetDistrict = simulation.districts[targetDistrictId] || simulation.districts.nura;
 
@@ -37,21 +39,19 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
         <div>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
-            Аналитика 10 показателей (До и После)
-          </h3>
+            {t("Аналитика 10 показателей (До и После)")}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Фокус на районе: <strong style={{ color: '#38bdf8' }}>{targetDistrict.nameRu}</strong> (кликните по карте для смены)
-          </p>
+            {t("Фокус на районе:")}{' '}<strong style={{ color: '#38bdf8' }}>{t(targetDistrict.nameRu)}</strong> {t("(кликните по карте для смены)")}</p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '0.7rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <span style={{ width: '8px', height: '8px', background: 'rgba(255, 255, 255, 0.25)', borderRadius: '2px' }} />
-            <span style={{ color: 'var(--text-dim)' }}>База</span>
+            <span style={{ color: 'var(--text-dim)' }}>{t("База")}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <span style={{ width: '8px', height: '8px', background: '#38bdf8', borderRadius: '2px' }} />
-            <span style={{ color: '#38bdf8', fontWeight: 600 }}>{simulation.isValid ? 'Текущий итог' : 'База до 5 решений'}</span>
+            <span style={{ color: '#38bdf8', fontWeight: 600 }}>{t("Текущий итог")}</span>
           </div>
         </div>
       </div>
@@ -88,7 +88,7 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
                     {ind.id}
                   </span>
                   <span style={{ fontSize: '0.75rem', color: '#f8fafc', fontWeight: 500 }}>
-                    {ind.nameRu}
+                    {t(ind.nameRu)}
                   </span>
                 </div>
 
@@ -130,7 +130,7 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
                     background: '#94a3b8',
                     zIndex: 2,
                   }}
-                  title={`Базовое значение: ${baseVal}`}
+                  title={t("Базовое значение: {0}", [baseVal])}
                 />
                 {/* 40 critical threshold marker */}
                 <div
@@ -143,7 +143,7 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
                     background: 'rgba(244, 63, 94, 0.7)',
                     zIndex: 3,
                   }}
-                  title="Порог штрафа (<40)"
+                  title={t("Порог штрафа (<40)")}
                 />
                 {/* Current level bar */}
                 <div
@@ -158,11 +158,11 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
               </div>
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.65rem', color: 'var(--text-dim)', marginTop: '4px' }}>
-                <span>Вес: {(ind.weight * 100).toFixed(0)}%</span>
+                <span>{t("Вес:")}{' '}{(ind.weight * 100).toFixed(0)}%</span>
                 {isCrit ? (
-                  <span style={{ color: '#fb7185', fontWeight: 600 }}>Штраф &lt;40</span>
+                  <span style={{ color: '#fb7185', fontWeight: 600 }}>{t("Штраф <40")}</span>
                 ) : (
-                  <span>Норма ≥40</span>
+                  <span>{t("Норма ≥40")}</span>
                 )}
               </div>
             </div>

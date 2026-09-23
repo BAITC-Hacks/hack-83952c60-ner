@@ -1,3 +1,4 @@
+import { t } from '../i18n';
 import { DistrictId, SelectedDecision, SimulationResult } from './types';
 import { MEASURE_LIST, MEASURES } from '../data/measures';
 import { DISTRICT_LIST } from '../data/districts';
@@ -128,12 +129,12 @@ export function findBestImprovements(currentDecisions: SelectedDecision[]): Reco
         if (testSim.isValid && testSim.finalScore > currentScore + 0.05) {
           const gain = testSim.finalScore - currentScore;
 
-          let explanation = `Замена увеличит Score на +${gain.toFixed(2)}.`;
+          let explanation = t("Замена увеличит Score на +{0}.", [gain.toFixed(2)]);
           if (testSim.finalCritCount < currentSim.finalCritCount) {
-            explanation += ` Ликвидирует критические дефициты (<40) и снимает штраф!`;
+            explanation += t(" Ликвидирует критические дефициты (<40) и снимает штраф!");
           }
           if (testSim.activeSynergies.length > currentSim.activeSynergies.length) {
-            explanation += ` Активирует синергетический бонус связки мер.`;
+            explanation += t(" Активирует синергетический бонус связки мер.");
           }
 
           recommendations.push({

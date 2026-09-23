@@ -1,9 +1,10 @@
+import { t, useLanguage } from '../i18n';
 import React from 'react';
 import { Coins, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { SelectedDecision, ValidationResult } from '../engine/types';
 import { MEASURES } from '../data/measures';
-import { DIRECTIONS } from '../data/indicators';
 import { DISTRICTS } from '../data/districts';
+import { DIRECTIONS } from '../data/indicators';
 import { TOTAL_BUDGET, REQUIRED_DECISIONS_COUNT } from '../engine/validator';
 
 interface BudgetBarProps {
@@ -17,6 +18,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
   decisions,
   onRemoveDecision,
 }) => {
+  useLanguage();
   const percentage = Math.min(100, (validation.totalCost / TOTAL_BUDGET) * 100);
   const isOverBudget = validation.totalCost > TOTAL_BUDGET;
 
@@ -46,11 +48,10 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                 {validation.totalCost}
               </span>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-dim)' }}>
-                / {TOTAL_BUDGET} у.е.
-              </span>
+                / {TOTAL_BUDGET} {t("у.е.")}</span>
             </div>
             <div style={{ fontSize: '0.75rem', color: isOverBudget ? '#fb7185' : 'var(--text-muted)' }}>
-              {isOverBudget ? `Превышение на ${validation.totalCost - TOTAL_BUDGET} у.е.!` : `Остаток бюджета: ${validation.remainingBudget} у.е.`}
+              {isOverBudget ? t("Превышение на {0} у.е.!", [validation.totalCost - TOTAL_BUDGET]) : t("Остаток бюджета: {0} у.е.", [validation.remainingBudget])}
             </div>
           </div>
         </div>
@@ -58,7 +59,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
         {/* 5 Decisions Slots Status */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            Принято решений: <strong>{decisions.length}/{REQUIRED_DECISIONS_COUNT}</strong>
+            {t("Принято решений:")}{' '}<strong>{decisions.length}/{REQUIRED_DECISIONS_COUNT}</strong>
           </span>
           <div style={{ display: 'flex', gap: '6px' }}>
             {Array.from({ length: REQUIRED_DECISIONS_COUNT }).map((_, idx) => {
@@ -81,7 +82,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                     color: measure ? '#93c5fd' : 'var(--text-dim)',
                     transition: 'all 0.2s',
                   }}
-                  title={measure ? `${measure.id}: ${measure.nameRu}` : `Слот ${idx + 1}: свободно`}
+                  title={measure ? `${measure.id}: ${t(measure.nameRu)}` : t("Слот {0}: свободно", [idx + 1])}
                 >
                   {measure ? measure.id : idx + 1}
                 </div>
@@ -117,10 +118,10 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                   alignItems: 'center',
                   gap: '4px',
                 }}
-                title={`${dirMeta.nameRu}: ${count}/2`}
+                title={`${t(dirMeta.nameRu)}: ${count}/2`}
               >
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: dirMeta.color }} />
-                <span>{dirMeta.nameRu.split(' ')[0]}</span>
+                <span>{t(dirMeta.nameRu).split(' ')[0]}</span>
                 <span style={{ fontWeight: 700 }}>{count}</span>
               </div>
             );
@@ -181,8 +182,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
       {decisions.length > 0 && (
         <div style={{ marginTop: '14px', display: 'flex', flexWrap: 'wrap', gap: '8px', alignItems: 'center' }}>
           <span style={{ fontSize: '0.75rem', color: 'var(--text-dim)', marginRight: '4px' }}>
-            Выбранные меры:
-          </span>
+            {t("Выбранные меры:")}{' '}</span>
           {decisions.map((d, index) => {
             const m = MEASURES[d.measureId];
             if (!m) return null;
@@ -202,13 +202,13 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                 }}
               >
                 <span style={{ fontWeight: 700, color: '#38bdf8' }}>{m.id}</span>
-                <span style={{ color: '#e2e8f0' }}>{m.nameRu}</span>
+                <span style={{ color: '#e2e8f0' }}>{t(m.nameRu)}</span>
                 {d.districtId && (
                   <span className="badge badge-purple" style={{ padding: '1px 5px', fontSize: '0.68rem' }}>
-                    {DISTRICTS[d.districtId].nameRu}
+                    {t(DISTRICTS[d.districtId].nameRu)}
                   </span>
                 )}
-                <span style={{ color: '#94a3b8' }}>({m.cost} у.е.)</span>
+                <span style={{ color: '#94a3b8' }}>({m.cost} {t("у.е.)")}</span>
                 <button
                   onClick={() => onRemoveDecision(index)}
                   style={{
@@ -220,7 +220,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                     alignItems: 'center',
                     padding: '2px',
                   }}
-                  title="Удалить решение"
+                  title={t("Удалить решение")}
                 >
                   ✕
                 </button>

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { t, useLanguage } from './i18n';
 import { Header } from './components/Header';
 import { DistrictCouncil } from './components/DistrictCouncil';
 import { DecisionJourney } from './components/DecisionJourney';
@@ -21,6 +22,7 @@ import { useScenarioStorage } from './scenarios/useScenarioStorage';
 const ENABLE_EXPERIMENTS = import.meta.env.VITE_ENABLE_EXPERIMENTS === 'true';
 
 export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[]) => void }> = ({ onDecisionsChange }) => {
+  useLanguage();
   const { draft, setDraft, scenarios, saveScenario, deleteScenario, notices } = useScenarioStorage();
   const { decisions, selectedDistrictId } = draft;
   useEffect(() => { onDecisionsChange?.(decisions); }, [decisions, onDecisionsChange]);
@@ -107,10 +109,10 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
       />
 
       {notices.length > 0 && <div role="status" className="analysis-notice">
-        {notices.map((notice) => <p key={notice}>{notice}</p>)}
+        {notices.map((notice) => <p key={notice}>{t(notice)}</p>)}
       </div>}
       {activeEvents.length > 0 && <p className="analysis-notice">
-        Черновик сохраняет только выбранные меры. После перезагрузки экспериментальные кризисы будут отключены.
+        {t('Черновик сохраняет только выбранные меры. После перезагрузки экспериментальные кризисы будут отключены.')}
       </p>}
 
       {/* 2. Hero Score Dashboard */}
@@ -124,7 +126,7 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
         document.getElementById('measure-catalog')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
       }} />
       <ScoreDashboard simulation={simulation} />
-      <p className="analysis-notice">Решения могут изменить цифровой двойник: расходы, состояние городских систем и жизнь районов. <a href="#/digital-twin">Перейти в симулятор города →</a> Примите выбранные пять решений и наблюдайте последствия по месяцам. Экспериментальные кризисы не переносятся.</p>
+      <p className="analysis-notice">{t('Решения могут изменить цифровой двойник: расходы, состояние городских систем и жизнь районов.')} <a href="#/digital-twin">{t('Перейти в симулятор города →')}</a> {t('Примите выбранные пять решений и наблюдайте последствия по месяцам. Экспериментальные кризисы не переносятся.')}</p>
 
       {/* 3. Budget and Decisions Slots Control Bar */}
       <BudgetBar
