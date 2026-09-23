@@ -6,6 +6,7 @@ import { DecisionJourney } from './components/DecisionJourney';
 import { BudgetBar } from './components/BudgetBar';
 import { ScoreDashboard } from './components/ScoreDashboard';
 import { DistrictMap } from './components/DistrictMap';
+import { AstanaTransitMap } from './components/AstanaTransitMap';
 import { DecisionPanel } from './components/DecisionPanel';
 import { RadarAnalytics } from './components/RadarAnalytics';
 import { AIInsightCard } from './components/AIInsightCard';
@@ -96,7 +97,7 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
 
   return (
     <main className="app-shell" style={{ maxWidth: '1440px', margin: '0 auto', padding: '24px 20px 60px' }}>
-      
+
       {/* 1. Header with shift timer and actions */}
       <Header
         onLoadPreset={handleLoadPreset}
@@ -143,9 +144,19 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
         onApplySwap={handleApplySwap}
       />}
 
+      <div className="city-map-pair">
+        <DistrictMap
+          districts={simulation.districts}
+          selectedDistrictId={selectedDistrictId}
+          onSelectDistrict={selectDistrict}
+          decisions={decisions}
+        />
+        <AstanaTransitMap />
+      </div>
+
       {/* 5. Main Simulation Workspace Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '24px' }}>
-        
+
         {/* Left Column: 14 Measures Catalog (5 cols on wide screens) */}
         <div style={{ gridColumn: 'span 12', minWidth: 0 }} className="lg:grid-column-5">
           <style>{`
@@ -165,16 +176,8 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
           />
         </div>
 
-        {/* Right Column: Map, Indicators, and AI analysis (7 cols on wide screens) */}
+        {/* Right Column: Indicators and AI analysis (7 cols on wide screens) */}
         <div style={{ gridColumn: 'span 12', display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }} className="lg:grid-column-7">
-          
-          {/* Interactive District Heatmap of Astana */}
-          <DistrictMap
-            districts={simulation.districts}
-            selectedDistrictId={selectedDistrictId}
-            onSelectDistrict={selectDistrict}
-            decisions={decisions}
-          />
 
           {/* Detailed 10 Indicators Before/After */}
           <RadarAnalytics
