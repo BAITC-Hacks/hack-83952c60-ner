@@ -185,7 +185,7 @@ export default function AstanaAtlas() {
   return <main className="atlas" lang="ru">
     <header className="at-header">
       <a className="at-brand" href="#/astana-map"><span className="at-logo"><Layers3 size={22} /></span><span>ASTANA<span className="at-brand-sub">CITY ATLAS</span></span><span className="at-beta">GIS / 01</span></a>
-      <nav aria-label="Режим приложения"><a href="#">Аким на 5 часов</a><a href="#/digital-twin">Симулятор города</a><a href="#/transport">Транспорт · 3D</a><a href="#/astana-map" aria-current="page">Карта Астаны <ArrowUpRight size={13} /></a></nav>
+      <nav aria-label="Режим приложения"><a href="#">Аким на 5 часов</a><a href="#/digital-twin">Симулятор города</a><a href="#/population">Пульс города</a><a href="#/transport">Транспорт · 3D</a><a href="#/astana-map" aria-current="page">Карта Астаны <ArrowUpRight size={13} /></a></nav>
       <div className="at-live"><i /> Открытая география</div>
     </header>
     <div className={`at-workspace ${sidebar ? '' : 'at-collapsed'}`}>

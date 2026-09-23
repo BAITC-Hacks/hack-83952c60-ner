@@ -17,20 +17,21 @@
 | LLM, системный промпт, кеш | `server/citizenVoices.ts` | Только явный запрос реакции |
 | HTTP | `POST /api/population/voices` в `server/app.ts` | По событию |
 
-Типы находятся в `src/population/types.ts`. Браузерный вход — `src/population/index.ts`; Node-код импортирует нужные файлы напрямую. Серверный SDK и ключ не экспортируются в браузер. Основные экраны существующего симулятора не изменены; панель готова для встраивания.
+Типы находятся в `src/population/types.ts`. Браузерный вход — `src/population/index.ts`; Node-код импортирует нужные файлы напрямую. Серверный SDK и ключ не экспортируются в браузер. Экран доступен через пункт «Пульс города» по адресу `/#/population`; он загружается отдельным чанком. При уходе с экрана Canvas и текущий запрос мнений освобождаются.
 
 ## Запуск и примеры JSON
 
 ```sh
 npm run dev
-# Демо: http://127.0.0.1:3000/examples/population.html
+# Основной экран: http://127.0.0.1:3000/#/population
+# Отдельное демо: http://127.0.0.1:3000/examples/population.html
 npx tsx scripts/population-example.ts
 npx tsx scripts/benchmark-population.ts
 npm run typecheck
 npm test -- tests/population-core.test.ts tests/population-swarm.test.ts tests/population-canvas.test.tsx tests/population-voices.test.ts tests/population-integration.test.ts
 ```
 
-Демо — дополнительная HTML-точка входа **для Vite dev**; обычная production-сборка использует прежний `index.html`. Для production вставьте `PopulationPanel` в нужный экран приложения. Скрипт примеров всегда работает без ключа и без сетевых вызовов.
+Маршрут `/#/population` включён в production-сборку. Отдельное демо — дополнительная HTML-точка входа **для Vite dev**; оба варианта используют `PopulationScreen`. `PopulationPanel` также можно встроить в другие экраны. Скрипт примеров всегда работает без ключа и без сетевых вызовов.
 
 Полные структуры уже записаны:
 
