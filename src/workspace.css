@@ -1,6 +1,7 @@
 [hidden] { display: none !important; }
 .app-toolbar { border-bottom: 1px solid var(--border-color); background: var(--bg-secondary); }
 .app-toolbar-inner { max-width: 1440px; margin: auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; }
+.app-toolbar-inner--transport { justify-content: flex-end; }
 .app-toolbar .mode-nav { margin: 0; padding: 0; display: flex; gap: 4px; flex-wrap: wrap; }
 .app-toolbar .mode-nav a { min-height: 40px; padding: 9px 14px; border-radius: 8px; text-decoration: none; font-size: .82rem; font-weight: 600; color: var(--text-muted); border: 1px solid transparent; background: transparent; }
 .app-toolbar .mode-nav a[aria-current="page"] { color: var(--color-cyan); background: var(--surface-soft); border-color: var(--border-color); }

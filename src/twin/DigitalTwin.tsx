@@ -6,26 +6,17 @@ import { validateDecisions } from '../engine/validator';
 import { applyMandate, DECISION_COST_SCALE } from './model';
 import { Action, CONFIG, DIRECTIONS, LABELS, PROJECTS, Point, advanceSession, applyAction, initializeSession, population, quality } from './model';
 import { useTwinStorage } from './storage';
+import CityDistrictMap from './CityDistrictMap';
 import { WorkspaceTabs } from '../components/WorkspaceTabs';
 import { getLanguage, t, useLanguage } from '../i18n';
 
-type Layer = 'population' | 'transport' | 'ecology' | 'social' | 'safety' | 'services';
 type TwinView = 'city' | 'budget' | 'scenarios';
 type TrendMetric = 'quality' | 'budget' | 'population';
 const TREND_TITLES: Record<TrendMetric, string> = {
   quality: 'Качество жизни, 0–100', budget: 'Резерв бюджета, у.е.', population: 'Население, чел.',
 };
-const LAYERS: Record<Layer, string> = { ...LABELS, population: 'Население', transport: 'Нагрузка транспорта' };
 const fmt = (n: number, digits = 0) => n.toLocaleString(getLanguage(), { maximumFractionDigits: digits });
 const delta = (n: number, digits = 1) => `${n > 0 ? '+' : ''}${fmt(n, digits)}`;
-const shapes = [
-  { id: 'saryarka', path: 'M65 55 L250 40 L280 150 L180 205 L45 160 Z', x: 160, y: 113 },
-  { id: 'baikonur', path: 'M260 40 L425 65 L425 200 L290 155 Z', x: 343, y: 118 },
-  { id: 'almaty', path: 'M437 70 L610 105 L585 260 L437 205 Z', x: 520, y: 167 },
-  { id: 'nura', path: 'M47 177 L177 220 L255 290 L215 405 L65 345 Z', x: 147, y: 292 },
-  { id: 'esil', path: 'M190 220 L289 172 L425 220 L407 380 L230 408 L272 285 Z', x: 330, y: 290 },
-  { id: 'saraishyk', path: 'M439 224 L586 280 L560 400 L422 380 Z', x: 500, y: 320 },
-] as const;
 function Trend({ current, baseline, metric, title }: { current: Point[]; baseline: Point[]; metric: TrendMetric; title: string }) {
   const values = [...current, ...baseline].map(p => p[metric]);
   const observedMin = Math.min(...values), observedMax = Math.max(...values);
@@ -48,7 +39,6 @@ export default function DigitalTwin({ active = true, decisions = [] }: { active?
   const { session, setSession, snapshots, save, remove, notice } = useTwinStorage();
   const { city, baseline } = session;
   const [selected, setSelected] = useState<DistrictId>('nura');
-  const [layer, setLayer] = useState<Layer>('transport');
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1200);
   const [error, setError] = useState('');
@@ -75,9 +65,6 @@ export default function DigitalTwin({ active = true, decisions = [] }: { active?
     catch (e) { setError(e instanceof Error ? e.message : 'Не удалось применить действие.'); }
   };
   const d = city.districts[selected], base = baseline.districts[selected];
-  const value = (district: typeof d) => layer === 'population' ? district.population : layer === 'transport' ? district.load : district.quality[layer];
-  const unit = layer === 'population' ? t('чел.') : layer === 'transport' ? '%' : '/ 100';
-  const metricColor = (v: number) => layer === 'population' ? `hsl(190 65% ${25 + Math.min(1, v / 350000) * 28}%)` : (layer === 'transport' ? v > 140 : v < 45) ? '#9f394b' : (layer === 'transport' ? v > 100 : v < 65) ? '#87692e' : '#187b71';
   return <main className="twin-shell">
     <header className="twin-heading"><div><p className="twin-eyebrow">{t('ГОРОДСКАЯ ЛАБОРАТОРИЯ / МОДЕЛЬ {0}.0', [CONFIG.version])}</p><h1>{t('Цифровой двойник')}</h1><p>{t('Астана · 6 районов · 5 взаимосвязанных систем')}</p></div><span className="twin-badge">{t(finished ? 'Расчёт завершён' : playing ? 'Симуляция идёт' : 'На паузе')}</span></header>
     <p className="twin-disclaimer">{t('Демонстрационная модель: синтетические данные, условные границы районов и денежные единицы. Результаты не являются прогнозом реальной Астаны.')}</p>
@@ -91,21 +78,8 @@ export default function DigitalTwin({ active = true, decisions = [] }: { active?
     <WorkspaceTabs idPrefix="twin-workspace" label={t('Разделы цифрового двойника')} items={views} value={view} onChange={setView} />
     <div className="twin-view" role="tabpanel" id="twin-workspace-panel-city" aria-labelledby="twin-workspace-tab-city" hidden={view !== 'city'} tabIndex={0}>
     <div className="twin-workspace"><section className="twin-card twin-map-panel" aria-label={t('Карта цифрового двойника')}>
-      <div className="twin-section-title"><h2>{t('Город в разрезе')}</h2><label>{t('Слой карты')} <select value={layer} onChange={e => setLayer(e.target.value as Layer)}>{Object.entries(LAYERS).map(([k,v]) => <option key={k} value={k}>{t(v)}</option>)}</select></label></div>
-      <svg className="twin-map" viewBox="0 0 650 440" aria-label={t('Схематическая карта: {0}', [LAYERS[layer]])}>
-        <defs><pattern id="twin-grid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0H0V25" fill="none" stroke="#263850" strokeWidth="0.5" /></pattern></defs>
-        <rect width="650" height="440" fill="url(#twin-grid)" rx="12" />
-        <path d="M0 168 Q130 163 194 212 T370 201 T650 277" stroke="#38bdf8" strokeOpacity=".45" strokeWidth="9" fill="none" />
-        {shapes.map(s => <g key={s.id} role="button" tabIndex={0} aria-label={t('Район {0}', [DISTRICTS[s.id].nameRu])} aria-pressed={selected === s.id} onClick={() => setSelected(s.id)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(s.id); } }}>
-          <path d={s.path} fill={metricColor(value(city.districts[s.id]))} stroke={selected === s.id ? '#e2fbff' : '#537083'} strokeWidth={selected === s.id ? 3 : 1} />
-          <text x={s.x} y={s.y} textAnchor="middle" className="twin-map-name">{t(DISTRICTS[s.id].nameRu)}</text>
-          <text x={s.x} y={s.y+24} textAnchor="middle">{fmt(value(city.districts[s.id]), layer === 'population' ? 0 : 1)} {unit}</text>
-          <text x={s.x} y={s.y+44} textAnchor="middle" className="twin-map-delta">{t('{0} к базе', [delta(value(city.districts[s.id])-value(baseline.districts[s.id]), layer === 'population' ? 0 : 1)])}</text>
-        </g>)}
-      </svg>
-      <p className="twin-legend">{t(layer === 'population' ? 'Бирюзовый: от тёмного (0) к светлому (350 тыс. жителей и более).' : layer === 'transport' ? 'Зелёный ≤100% · жёлтый 100–140% · красный >{t("140%. Меньше — лучше.' : 'Красный ")}<45 · жёлтый 45–65 · зелёный ≥65. Больше — лучше.')}</p>
-      <p className="twin-muted">{t('Изменения показаны относительно базового варианта на том же месяце.')}</p>
-      <div className="twin-district-summary"><h3>{t(DISTRICTS[selected].nameRu)}</h3><p>{t('{0} жителей · нагрузка транспорта {1}%', [fmt(d.population), fmt(d.load,1)])}</p><div className="twin-indicators">{DIRECTIONS.map(k => <div key={k}><span>{t(LABELS[k])}</span><strong>{fmt(d.quality[k],1)} <small>({delta(d.quality[k]-base.quality[k])})</small></strong><progress max="100" value={d.quality[k]} aria-label={t(LABELS[k])} /></div>)}</div></div>
+      <CityDistrictMap city={city} baseline={baseline} selected={selected} onSelect={setSelected} active={active && view === 'city'} />
+      <div className="twin-district-summary"><p className="twin-eyebrow">{t('ТЕКУЩИЙ СЦЕНАРИЙ / ВЫБРАННЫЙ РАЙОН')}</p><h3>{t(DISTRICTS[selected].nameRu)}</h3><p>{t('{0} жителей · нагрузка транспорта {1}%', [fmt(d.population), fmt(d.load,1)])}</p><div className="twin-indicators">{DIRECTIONS.map(k => <div key={k}><span>{t(LABELS[k])}</span><strong>{fmt(d.quality[k],1)} <small>({delta(d.quality[k]-base.quality[k])})</small></strong><progress max="100" value={d.quality[k]} aria-label={t(LABELS[k])} /></div>)}</div></div>
     </section>
     <aside className="twin-card twin-projects"><p className="twin-eyebrow">{t('РАЙОННЫЕ ИНВЕСТИЦИИ')}</p><h2>{t(DISTRICTS[selected].nameRu)}</h2><p className="twin-muted">{t('Строительство оплачивается сразу. Эффект — после ввода в эксплуатацию.')}</p>{DIRECTIONS.map(k => { const p = PROJECTS[k]; return <article key={k}><h3>{t(p.name)}</h3><p>{t('{0} у.е. · {1} мес. · содержание {2} у.е./мес.', [p.cost, p.months, p.upkeep])}</p><p>{t('Мощность +{0} жителей · состояние +{1} п.', [fmt(p.capacity), p.repair])}</p><button disabled={finished || city.budget < p.cost} onClick={() => act({ type: 'project', district: selected, direction: k })}>{t('Запустить: {0}', [p.name])}</button>{city.budget < p.cost && <small>{t('Недостаточно средств')}</small>}</article>; })}</aside></div>
     <section className="twin-card" aria-label={t('Решения акима в городе')}>
