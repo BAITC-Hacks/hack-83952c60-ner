@@ -22,6 +22,7 @@ export function DecisionJourney({ districtId, focus, simulation, savedCount, onD
     <p className="journey-eyebrow">Проблема → меры → последствия → сравнение</p>
     <h2>Кому поможет ваш бюджет?</h2>
     <p>Распределите 100 у.е. между пятью решениями. Узнайте, что улучшится и какие проблемы останутся через 8 кварталов.</p>
+    <p className="journey-note">«Район» в каталоге — территория действия меры, а не уровень полномочий районного акима.</p>
     <p className="journey-note">Учебная модель на синтетических данных, а не прогноз развития города.</p>
     <div className="journey-grid">
       <div>
@@ -43,7 +44,7 @@ export function DecisionJourney({ districtId, focus, simulation, savedCount, onD
       <div aria-live="polite">
         <h3>{simulation.isValid ? '3. Оцените последствия' : '2. Подберите меры'}</h3>
         {!simulation.isValid ? <>
-          <p>{focus ? `В каталоге — меры, улучшающие показатель «${INDICATORS[focus].nameRu}».` : 'Выберите проблему слева или изучите весь каталог ниже.'} Районные меры по умолчанию направлены в район {district.nameRu}.</p>
+          <p>{focus ? `В каталоге — меры, улучшающие показатель «${INDICATORS[focus].nameRu}».` : 'Выберите проблему слева или изучите весь каталог ниже.'} Меры для отдельного района по умолчанию направлены в район {district.nameRu}.</p>
           <p>Выбрано {simulation.validation.decisionCount} из 5. Осталось {simulation.validation.remainingBudget} у.е. Не более двух мер одного направления.</p>
           <p className="journey-note">Карточки показывают вклад отдельной меры. Итог с учётом сочетаний появится после пяти допустимых решений.</p>
           <a className="btn-primary" href="#measure-catalog">{focus ? 'Перейти к подходящим мерам' : 'Открыть каталог мер'}</a>

@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Header } from './components/Header';
+import { DistrictCouncil } from './components/DistrictCouncil';
 import { DecisionJourney } from './components/DecisionJourney';
 import { BudgetBar } from './components/BudgetBar';
 import { ScoreDashboard } from './components/ScoreDashboard';
@@ -116,6 +117,11 @@ export const App: React.FC = () => {
         simulation={simulation} savedCount={scenarios.length}
         onDistrict={selectDistrict} onProblem={setProblemFocus}
         onCompare={() => setIsCompareOpen(true)} />
+      <DistrictCouncil simulation={simulation} onRequest={(district, indicator) => {
+        selectDistrict(district);
+        setProblemFocus(indicator);
+        document.getElementById('measure-catalog')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+      }} />
       <ScoreDashboard simulation={simulation} />
 
       {/* 3. Budget and Decisions Slots Control Bar */}

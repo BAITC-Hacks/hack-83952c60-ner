@@ -29,3 +29,17 @@ it('reveals calculated consequences and the save/compare action only for a compl
   fireEvent.click(screen.getByRole('button', { name: 'Сохранить и сравнить варианты' }));
   expect(screen.getByRole('dialog', { name: 'Сценарии' })).toBeTruthy();
 });
+
+
+it('routes all six district council requests to their district and matching measures', () => {
+  render(<App />);
+  const council = screen.getByRole('region', { name: 'Совещание районных акимов' });
+  expect(within(council).getAllByRole('article')).toHaveLength(6);
+  fireEvent.click(within(council).getByRole('button', { name: 'Рассмотреть запрос: Сарайшык' }));
+  expect((screen.getByLabelText('Район для работы') as HTMLSelectElement).value).toBe('saraishyk');
+  expect(screen.getByTestId('measure-M1')).toBeTruthy();
+  expect(screen.queryByTestId('measure-M7')).toBeNull();
+  expect(within(council).queryByText(/Результат плана:/)).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Эталон ТЗ' }));
+  expect(within(council).getAllByText(/Результат плана:/)).toHaveLength(6);
+});
