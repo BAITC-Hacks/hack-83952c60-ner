@@ -170,9 +170,11 @@ describe('scenario selection', () => {
     expect(screen.getByRole('button', { name: 'Сценарии' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Эталон ТЗ' }));
     expect(screen.getByText('5/5')).toBeTruthy();
+    fireEvent.click(screen.getByRole('tab', { name: 'Аналитика' }));
     const annualTable = screen.getByRole('table', { name: 'Результаты и бюджет по годам' });
     const secondYear = within(annualTable).getByRole('row', { name: /Год 2/ });
     expect(within(secondYear).getByRole('cell', { name: '56,54' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('tab', { name: 'Решения и бюджет' }));
     expect((screen.getByRole('button', { name: 'Выбрать M1' }) as HTMLButtonElement).disabled).toBe(true);
     expect(screen.getByRole('button', { name: 'Выбрать M1' }).title).toMatch(/^При добавлении:/);
     expect(within(screen.getByTestId('measure-M6')).getByText('Возможная синергия с M5')).toBeTruthy();

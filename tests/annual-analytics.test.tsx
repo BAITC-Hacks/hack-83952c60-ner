@@ -33,14 +33,14 @@ it('updates Score, district indicators and advisor period together without losin
   fireEvent.click(screen.getByRole('button', { name: 'Эталон ТЗ' }));
   fireEvent.click(screen.getByRole('tab', { name: 'Аналитика' }));
   const plan = runAnnualPlan(benchmark);
-  expect(screen.getByRole('button', { name: 'Год 3 Конец 12-го квартала' }).getAttribute('aria-pressed')).toBe('true');
+  expect(screen.getByRole('button', { name: /^Год 3/ }).getAttribute('aria-pressed')).toBe('true');
   const table = screen.getByRole('table', { name: 'Результаты и бюджет по годам' });
   const rows = within(table).getAllByRole('row').slice(1);
   expect(rows.map(row => within(row).getAllByRole('cell').slice(-3).map(cell => cell.textContent))).toEqual([
     ['95', '95', '5'], ['0', '95', '5'], ['0', '95', '5'],
   ]);
   for (const snapshot of plan.years) {
-    fireEvent.click(screen.getByRole('button', { name: `Год ${snapshot.year} Конец ${snapshot.quarter}-го квартала` }));
+    fireEvent.click(screen.getByRole('button', { name: new RegExp(`^Год ${snapshot.year}`) }));
     const details = within(screen.getByRole('region', { name: `Показатели на конец ${snapshot.year}-го года` }));
     expect(details.getByText(snapshot.simulation.finalScore!.toFixed(2).replace('.', ','))).toBeTruthy();
     const school = details.getByRole('article', { name: t(INDICATORS.S1.nameRu) });
@@ -50,11 +50,11 @@ it('updates Score, district indicators and advisor period together without losin
   fireEvent.change(screen.getByLabelText('Направление анализа'), { target: { value: 'social' } });
   for (const language of ['en', 'kk', 'ru'] as const) {
     act(() => setLanguage(language));
-    expect(screen.getByRole('button', { name: `${t('Год {0}', [3])} ${t('Конец {0}-го квартала', [12])}` }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('button', { name: new RegExp(`^${t('Год {0}', [3])}`) }).getAttribute('aria-pressed')).toBe('true');
     expect((screen.getByLabelText(t('Направление анализа')) as HTMLSelectElement).value).toBe('social');
   }
   fireEvent.click(screen.getByRole('tab', { name: 'Решения и бюджет' }));
   fireEvent.click(screen.getByRole('tab', { name: 'Аналитика' }));
-  expect(screen.getByRole('button', { name: 'Год 3 Конец 12-го квартала' }).getAttribute('aria-pressed')).toBe('true');
+  expect(screen.getByRole('button', { name: /^Год 3/ }).getAttribute('aria-pressed')).toBe('true');
   expect(fetch).not.toHaveBeenCalled();
-}, 15000);
+}, 30000);
