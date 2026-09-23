@@ -3,6 +3,7 @@ import { t, useLanguage } from '../i18n';
 import { SimulationResult, DirectionId, DistrictId } from '../engine/types';
 import { INDICATOR_LIST, DIRECTION_LIST } from '../data/indicators';
 import { DISTRICT_LIST } from '../data/districts';
+import { ChartTooltip } from './ChartTooltip';
 import './RadarAnalytics.css';
 
 interface RadarAnalyticsProps {
@@ -94,11 +95,14 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
                     <div><dt>{t('После решений')}</dt><dd className={critical ? 'analytics-indicator__critical' : 'analytics-indicator__current'}>{current.toFixed(1)}</dd></div>
                     <div><dt>{t('Изменение')}</dt><dd className={delta > 0 ? 'analytics-indicator__positive' : delta < 0 ? 'analytics-indicator__critical' : ''}>{delta > 0 ? '+' : ''}{delta.toFixed(1)}</dd></div>
                   </dl>
+                  <ChartTooltip className="chart-tooltip-target--bar" label={t(indicator.nameRu)}
+                    description={t('До: {0}; после: {1}; изменение: {2}. Ниже 40 — критический уровень.', [baseline.toFixed(1), current.toFixed(1), `${delta > 0 ? '+' : ''}${delta.toFixed(1)}`])}>
                   <div className="analytics-indicator__bar" aria-hidden="true">
                     <span className={`analytics-indicator__fill${critical ? ' analytics-indicator__fill--critical' : ''}`} style={{ width: `${Math.min(100, Math.max(0, current))}%` }} />
                     <span className="analytics-indicator__baseline" style={{ left: `${Math.min(100, Math.max(0, baseline))}%` }} />
                     <span className="analytics-indicator__threshold" />
                   </div>
+                  </ChartTooltip>
                   <div className="analytics-indicator__footnote">
                     <span>{t('Вес показателя: {0}%', [(indicator.weight * 100).toFixed(0)])}</span>
                     {critical && <span className="analytics-indicator__critical">{t('Критический уровень')}</span>}

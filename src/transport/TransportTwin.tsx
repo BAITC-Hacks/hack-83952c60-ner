@@ -4,6 +4,7 @@ import type { SceneController, SceneOptions, Telemetry } from './scene';
 import { AGENT_COUNT, CameraView } from './simulation';
 import './transport.css';
 import { getLanguage, t, useLanguage } from '../i18n';
+import { ChartTooltip } from '../components/ChartTooltip';
 
 const initialTelemetry: Telemetry = { blend: 0, occupancy: [0, 0, 0], congestion: [0, 1, 0], fps: 0, elapsed: 0, completed: 0 };
 const number = (n: number) => Math.round(n).toLocaleString(getLanguage());
@@ -11,7 +12,14 @@ const number = (n: number) => Math.round(n).toLocaleString(getLanguage());
 function Sparkline({ project, type }: { project: number; type: 'speed' | 'delay' | 'impact' }) {
   const base = [22, 27, 20, 29, 25, 34, 29, 32, 26, 35, 30, 34, 29, 33, 31, 35, 32, 36];
   const points = base.map((v, i) => `${i * 7},${type === 'delay' ? 50 - v + project * i * 1.15 : v - project * i * 1.3}`).join(' ');
-  return <svg className={`tr-spark tr-spark-${type}`} viewBox="0 0 120 52" aria-hidden="true"><polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.8" /><polyline points={`0,52 ${points} 119,52`} fill="currentColor" opacity=".06" /></svg>;
+  const label = t(type === 'speed' ? 'Скорость потока' : type === 'delay' ? 'Средняя задержка' : 'Влияние на качество жизни');
+  const unit = t(type === 'speed' ? 'км/ч' : type === 'delay' ? 'мин' : 'пт.');
+  const current = type === 'speed' ? number(12 + project * 32) : type === 'delay' ? number(48 - project * 39) : (project * 8.4).toLocaleString(getLanguage(), { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const baseline = type === 'speed' ? '12' : type === 'delay' ? '48' : '0';
+  return <ChartTooltip className={`tr-spark tr-spark-${type}`} label={label}
+    description={t('Сценарий: {0}; база: {1}. Иллюстрация, не история измерений.', [`${current} ${unit}`, `${baseline} ${unit}`])}>
+    <svg width="100%" height="100%" viewBox="0 0 120 52" aria-hidden="true"><polyline points={points} fill="none" stroke="currentColor" strokeWidth="1.8" /><polyline points={`0,52 ${points} 119,52`} fill="currentColor" opacity=".06" /></svg>
+  </ChartTooltip>;
 }
 
 /** Drop-in React component. WebGL is dynamically imported and disposed on unmount. */
@@ -99,7 +107,7 @@ export default function TransportTwin() {
             <button className={`tr-scenario project ${project ? 'selected' : ''}`} onClick={() => choose(true)} aria-pressed={project}><span className="tr-scenario-top"><span className="tr-option-number">02</span><span className="tr-project-tag"><Sparkles size={10} />{t('ЧТО ЕСЛИ')}</span><span className="tr-radio" /></span><strong>{t("Новая развязка")}<br /><span>{t("+ выделенный Bus Lane")}</span></strong><span className="tr-scenario-meta"><GitBranch size={12} />{t("Симуляция проекта")}</span><span className="tr-scenario-caption">{t("Новый маршрут. Приоритет экспресса.")}<br />{t("Движение без узких мест.")}</span><span className="tr-scenario-cta">{t(project ? transitioning ? 'Преобразуем инфраструктуру' : 'Проект активен' : 'Запустить сценарий')}{project && !transitioning ? <Check size={15} /> : <ArrowRight size={15} />}</span></button>
             <div className="tr-transition-status" role="status"><span className={transitioning ? 'tr-status-dot' : ''} />{t(paused ? 'Симуляция приостановлена' : transitioning ? 'Агенты адаптируют маршруты…' : project ? 'Потоки перераспределены' : 'Модель готова к эксперименту')}</div>
           </section>
-          <section className="tr-panel tr-flow-panel"><div className="tr-panel-heading"><span><Route size={15} />{t("Распределение потока")}</span><span className="tr-panel-number">{t('В РЕАЛЬНОМ ВРЕМЕНИ')}</span></div><div className="tr-modal-split"><strong>{number(80 - p * 20)}<small>%</small></strong><span>{t("личный")}<br />{t("транспорт")}</span><strong className="tr-cyan">{number(20 + p * 20)}<small>%</small></strong><span>{t("общественный")}<br />{t("транспорт")}</span></div><div className="tr-split-bar"><span style={{ width: `${80 - p * 20}%` }} /><span /></div><div className="tr-reroute"><GitBranch size={14} /><span>{t("На новую развязку")}</span><strong>{number(p * 40)}%</strong></div></section>
+          <section className="tr-panel tr-flow-panel"><div className="tr-panel-heading"><span><Route size={15} />{t("Распределение потока")}</span><span className="tr-panel-number">{t('В РЕАЛЬНОМ ВРЕМЕНИ')}</span></div><div className="tr-modal-split"><strong>{number(80 - p * 20)}<small>%</small></strong><span>{t("личный")}<br />{t("транспорт")}</span><strong className="tr-cyan">{number(20 + p * 20)}<small>%</small></strong><span>{t("общественный")}<br />{t("транспорт")}</span></div><ChartTooltip className="chart-tooltip-target--bar" label={t('Распределение потока')} description={t('Личный транспорт: {0}%; общественный: {1}%. Доли заданы сценарием.', [number(80 - p * 20), number(20 + p * 20)])}><div className="tr-split-bar" aria-hidden="true"><span style={{ width: `${80 - p * 20}%` }} /><span /></div></ChartTooltip><div className="tr-reroute"><GitBranch size={14} /><span>{t("На новую развязку")}</span><strong>{number(p * 40)}%</strong></div></section>
           <div className="tr-sidebar-note"><ScanLine size={16} /><span>{t("Демонстрационная модель · Синтетические данные")}</span></div>
         </aside>
       </div>

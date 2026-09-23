@@ -20,6 +20,10 @@ import { runSimulation } from './engine/simulator';
 import { validateDecisions } from './engine/validator';
 import { RecommendationSwap } from './engine/optimizer';
 import { useScenarioStorage } from './scenarios/useScenarioStorage';
+import { FirstVisitGuide } from './components/FirstVisitGuide';
+import { GUIDE_STEPS, GuideStep, useFirstVisitGuide } from './onboarding/useFirstVisitGuide';
+import { DISTRICTS } from './data/districts';
+import { INDICATORS } from './data/indicators';
 
 const ENABLE_EXPERIMENTS = import.meta.env.VITE_ENABLE_EXPERIMENTS === 'true';
 type WorkspaceSection = 'decisions' | 'maps' | 'analytics' | 'requests';
@@ -33,6 +37,23 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
   };
   const { draft, setDraft, scenarios, saveScenario, deleteScenario, notices } = useScenarioStorage();
   const { decisions, selectedDistrictId } = draft;
+  const guide = useFirstVisitGuide(decisions.length > 0 || scenarios.length > 0);
+  const [guideFocusRequest, setGuideFocusRequest] = useState(0);
+  const navigateGuide = (step: GuideStep) => {
+    guide.setStep(step);
+    setSection(step === 'review' ? 'analytics' : 'decisions');
+    setGuideFocusRequest(value => value + 1);
+  };
+  useEffect(() => {
+    if (!guideFocusRequest) return;
+    const title = document.getElementById('first-visit-guide-title');
+    title?.focus({ preventScroll: true });
+    title?.closest('section')?.scrollIntoView?.({ block: 'start', behavior: 'auto' });
+  }, [guideFocusRequest]);
+  const dismissGuide = (result: 'complete' | 'skipped') => {
+    guide.dismiss(result);
+    queueMicrotask(() => document.getElementById(`planner-panel-${section}`)?.focus({ preventScroll: true }));
+  };
   useEffect(() => { onDecisionsChange?.(decisions); }, [decisions, onDecisionsChange]);
   const setDecisions = (next: SelectedDecision[]) => {
     setDraft((current) => ({ ...current, decisions: next.map((decision) => ({ ...decision })) }));
@@ -55,6 +76,18 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
 
   // Run simulation in real-time
   const simulation = runSimulation(decisions, activeEvents);
+  const guidePanel = guide.step && <FirstVisitGuide step={guide.step}
+    districtName={DISTRICTS[selectedDistrictId ?? 'nura'].nameRu}
+    problemName={problemFocus ? INDICATORS[problemFocus].nameRu : null}
+    decisionCount={simulation.validation.decisionCount} remainingBudget={simulation.validation.remainingBudget}
+    valid={simulation.isValid} onSkip={() => dismissGuide('skipped')}
+    onBack={() => navigateGuide(GUIDE_STEPS[Math.max(0, GUIDE_STEPS.indexOf(guide.step!) - 1)])}
+    onNext={() => {
+      if (guide.step === 'review') dismissGuide('complete');
+      else if (guide.step && (guide.step !== 'problem' || problemFocus) && (guide.step !== 'measures' || simulation.isValid)) {
+        navigateGuide(GUIDE_STEPS[GUIDE_STEPS.indexOf(guide.step) + 1]);
+      }
+    }} />;
 
   const handleAddDecision = (decision: SelectedDecision) => {
     const nextDecisions = [...decisions, decision];
@@ -114,6 +147,8 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
         onOpenPresentation={() => setIsPresentationOpen(true)}
         crisisActive={activeEvents.length > 0}
         enableExperiments={ENABLE_EXPERIMENTS}
+        onOpenGuide={() => navigateGuide(guide.step ?? 'district')}
+        guideActive={guide.step !== null}
       />
 
       {notices.length > 0 && <div role="status" className="analysis-notice">
@@ -140,11 +175,13 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
       ]} />
 
       <div id="planner-panel-decisions" role="tabpanel" aria-labelledby="planner-tab-decisions" hidden={section !== 'decisions'} className="workspace-panel" tabIndex={0}>
+        {(guide.step === 'district' || guide.step === 'problem') && guidePanel}
         <DecisionJourney districtId={selectedDistrictId ?? 'nura'} focus={problemFocus}
           simulation={simulation} savedCount={scenarios.length}
           onDistrict={selectDistrict} onProblem={setProblemFocus}
-          onCompare={() => setIsCompareOpen(true)} />
+          onCompare={() => setIsCompareOpen(true)} guideStep={guide.step} />
         {ENABLE_EXPERIMENTS && <OptimizerCard simulation={simulation} decisions={decisions} onApplySwap={handleApplySwap} />}
+        {guide.step === 'measures' && guidePanel}
         <DecisionPanel key={selectedDistrictId} districtId={selectedDistrictId ?? 'nura'}
           problemFocus={problemFocus} onClearProblem={() => setProblemFocus(null)}
           decisions={decisions} onAddDecision={handleAddDecision} onRemoveDecision={handleRemoveDecision} />
@@ -164,6 +201,7 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
       </div>
 
       <div id="planner-panel-analytics" role="tabpanel" aria-labelledby="planner-tab-analytics" hidden={section !== 'analytics'} className="workspace-panel" tabIndex={0}>
+        {guide.step === 'review' && guidePanel}
         <div className="workspace-panel-heading"><div><h2>{t('Аналитика')}</h2><p>{t('Сравните исходные и итоговые показатели по направлениям. Затем запросите объяснение у AI-советника.')}</p></div></div>
         <ScoreDashboard simulation={simulation} />
         <div className="workspace-analytics">

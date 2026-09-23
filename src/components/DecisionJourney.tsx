@@ -3,6 +3,7 @@ import { t, useLanguage } from '../i18n';
 import { DISTRICTS, DISTRICT_LIST } from '../data/districts';
 import { INDICATORS, INDICATOR_LIST } from '../data/indicators';
 import { DistrictId, IndicatorId, SimulationResult } from '../engine/types';
+import type { GuideStep } from '../onboarding/useFirstVisitGuide';
 
 interface Props {
   districtId: DistrictId;
@@ -12,9 +13,10 @@ interface Props {
   onDistrict: (id: DistrictId) => void;
   onProblem: (id: IndicatorId | null) => void;
   onCompare: () => void;
+  guideStep?: GuideStep | null;
 }
 
-export function DecisionJourney({ districtId, focus, simulation, savedCount, onDistrict, onProblem, onCompare }: Props) {
+export function DecisionJourney({ districtId, focus, simulation, savedCount, onDistrict, onProblem, onCompare, guideStep }: Props) {
   useLanguage();
   const district = DISTRICTS[districtId];
   const result = simulation.districts[districtId];
@@ -31,14 +33,14 @@ export function DecisionJourney({ districtId, focus, simulation, savedCount, onD
     <div className="journey-grid">
       <div>
         <h3>{t('1. Найдите проблему района')}</h3>
-        <label className="journey-label">{t('Район для работы')}
+        <label className={`journey-label${guideStep === 'district' ? ' guide-target' : ''}`}>{t('Район для работы')}
           <select value={districtId} onChange={(e) => onDistrict(e.target.value as DistrictId)}>
             {DISTRICT_LIST.map((d) => <option key={d.id} value={d.id}>{t(d.nameRu)}</option>)}
           </select>
         </label>
         <details className="journey-help"><summary>{t('О выбранном районе')}</summary><p>{t(district.profileRu)}</p></details>
         <p className="journey-note">{t('Три самых низких исходных показателя. Чем выше балл, тем лучше; ниже 40 — критический уровень.')}</p>
-        <div className="journey-problems">
+        <div className={`journey-problems${guideStep === 'problem' ? ' guide-target' : ''}`}>
           {priorities.map((indicator) => <button key={indicator.id} className="journey-problem" aria-pressed={focus === indicator.id} onClick={() => onProblem(focus === indicator.id ? null : indicator.id)}>
             <span>{t(indicator.nameRu)}</span><strong>{district.indicators[indicator.id]}/100</strong>
             <small>{t(district.indicators[indicator.id] < 40 ? 'Критический уровень' : 'Есть потенциал улучшения')} · {t('Показать меры')}</small>

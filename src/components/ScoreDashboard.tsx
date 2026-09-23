@@ -3,6 +3,7 @@ import React from 'react';
 import { TrendingUp, AlertOctagon, CheckCircle2, Zap, Scale, Target } from 'lucide-react';
 import { SimulationResult } from '../engine/types';
 import { DISTRICTS } from '../data/districts';
+import { ChartTooltip } from './ChartTooltip';
 
 interface ScoreDashboardProps {
   simulation: SimulationResult;
@@ -49,7 +50,10 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
         
         {/* Main Hero Score Gauge */}
         <div className="score-hero" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          
+          <ChartTooltip className="chart-tooltip-target--gauge" label={t('Astana Quality of Life Score')}
+            description={isValid
+              ? t('Индекс: {0}; база: {1}. Учитывает среднее, слабый район и критические показатели.', [finalScore.toFixed(2), baseScore.toFixed(2)])
+              : t('Индекс появится после пяти допустимых решений. База: {0}.', [baseScore.toFixed(2)])}>
           <div
             style={{
               position: 'relative',
@@ -92,6 +96,7 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
               </span>
             </div>
           </div>
+          </ChartTooltip>
 
           <div>
             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '4px' }}>

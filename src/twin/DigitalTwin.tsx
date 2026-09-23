@@ -8,6 +8,7 @@ import { Action, CONFIG, DIRECTIONS, LABELS, PROJECTS, Point, advanceSession, ap
 import { useTwinStorage } from './storage';
 import CityDistrictMap from './CityDistrictMap';
 import { WorkspaceTabs } from '../components/WorkspaceTabs';
+import { ChartTooltip } from '../components/ChartTooltip';
 import { getLanguage, t, useLanguage } from '../i18n';
 
 type TwinView = 'city' | 'budget' | 'scenarios';
@@ -25,14 +26,18 @@ function Trend({ current, baseline, metric, title }: { current: Point[]; baselin
   const max = metric === 'quality' ? Math.min(100, observedMax + padding) : observedMax + padding;
   const span = Math.max(1, max - min);
   const line = (points: Point[]) => points.map(p => `${40 + p.month / 60 * 510},${115 - (p[metric] - min) / span * 85}`).join(' ');
-  return <figure className="twin-trend"><figcaption>{title}</figcaption><svg viewBox="0 0 580 145" role="img" aria-label={t('{0}: ваш сценарий и базовый вариант, месяцы 0–60', [title])}>
+  const latest = current.at(-1)!;
+  const comparison = baseline.find(point => point.month === latest.month) ?? baseline.at(-1)!;
+  return <figure className="twin-trend"><figcaption>{title}</figcaption><ChartTooltip label={title}
+    description={t('Месяц {0}: сценарий {1}; база {2}. Бирюзовая линия — ваш сценарий.', [latest.month, fmt(latest[metric], metric === 'quality' ? 1 : 0), fmt(comparison[metric], metric === 'quality' ? 1 : 0)])}>
+    <svg viewBox="0 0 580 145" role="img" aria-label={t('{0}: ваш сценарий и базовый вариант, месяцы 0–60', [title])}>
     <path d="M40 20 V115 H550" fill="none" stroke="var(--chart-grid)" />
     <text x="2" y="26">{fmt(max, metric === 'quality' ? 1 : 0)}</text><text x="2" y="116">{fmt(min, metric === 'quality' ? 1 : 0)}</text>
     <polyline points={line(baseline)} fill="none" stroke="var(--text-muted)" strokeWidth="2" strokeDasharray="5 4" />
     <polyline points={line(current)} fill="none" stroke="var(--color-cyan)" strokeWidth="3" />
     <circle cx={40 + current.at(-1)!.month / 60 * 510} cy={115 - (current.at(-1)![metric]-min)/span*85} r="4" fill="var(--color-cyan)" />
     <text x="40" y="138">0</text><text x="280" y="138">30</text><text x="525" y="138">{t('60 мес.')}</text>
-  </svg></figure>;
+  </svg></ChartTooltip></figure>;
 }
 export default function DigitalTwin({ active = true, decisions = [] }: { active?: boolean; decisions?: SelectedDecision[] }) {
   useLanguage();
