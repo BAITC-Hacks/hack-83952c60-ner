@@ -29,6 +29,49 @@ function focusDistrict(name = 'Нура') {
   return screen.getByRole('complementary', { name: `Аудит района ${name}` });
 }
 
+it('keeps keyboard focus on map popups while a district audit is open', () => {
+  setup();
+  const audit = focusDistrict();
+  expect(document.activeElement).toBe(audit);
+  const settings = screen.getByRole('button', { name: 'Настройки визуализации' });
+  settings.focus();
+  fireEvent.click(settings);
+  expect(document.activeElement).toBe(settings);
+  expect(settings.getAttribute('aria-expanded')).toBe('true');
+  fireEvent.keyDown(document, { key: 'Escape' });
+  expect(settings.getAttribute('aria-expanded')).toBe('false');
+  expect(document.activeElement).toBe(settings);
+  expect(screen.getByRole('complementary', { name: 'Аудит района Нура' })).toBe(audit);
+
+  const layers = screen.getByRole('button', { name: 'Нагрузка транспорта' });
+  layers.focus();
+  fireEvent.click(layers);
+  expect(document.activeElement).toBe(layers);
+  fireEvent.click(screen.getByRole('button', { name: 'Экология' }));
+  expect(document.activeElement).toBe(layers);
+  expect(layers.getAttribute('aria-expanded')).toBe('false');
+});
+
+it('explains each audit bar with its current value and improvement direction', () => {
+  setup();
+  const audit = focusDistrict();
+  for (const [label, value, direction] of [
+    ['Дефицит школьных мест', '65%', 'Меньше — лучше'],
+    ['Рабочие места шаговой доступности', '22%', 'Больше — лучше'],
+    ['Доступность АЗС и сервисных хабов', '40%', 'Больше — лучше'],
+  ]) {
+    const indicator = within(audit).getByRole('group', { name: label });
+    act(() => indicator.focus());
+    expect(screen.getByRole('tooltip').textContent).toContain(value);
+    expect(screen.getByRole('tooltip').textContent).toContain(direction);
+  }
+  fireEvent.keyDown(document, { key: 'Escape' });
+  expect(screen.queryByRole('tooltip')).toBeNull();
+  expect(screen.getByRole('complementary', { name: 'Аудит района Нура' })).toBe(audit);
+  fireEvent.keyDown(document, { key: 'Escape' });
+  expect(screen.queryByRole('complementary', { name: 'Аудит района Нура' })).toBeNull();
+});
+
 it('opens an audit on selection and allows closing or resetting focus without changing the supplied selection', () => {
   const { select } = setup();
   expect(screen.queryByRole('complementary', { name: 'Аудит района Нура' })).toBeNull();

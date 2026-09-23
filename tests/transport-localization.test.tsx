@@ -92,6 +92,20 @@ it('displays live metrics and transition status for scenarios without an interch
     ];
     values.forEach((value, index) => expect(within(cards[index]).getByText(value.replace(/\s+/g, ' '), { exact: true })).toBeTruthy());
   };
+  const expectTooltips = (metrics: Telemetry['metrics']) => {
+    const descriptions = [
+      ['Скорость потока', `Сценарий: ${Math.round(metrics.speed)} км/ч; база: 12 км/ч.`],
+      ['Средняя задержка', `Сценарий: ${Math.round(metrics.delay)} мин; база: 48 мин.`],
+      ['Влияние на качество жизни', `Сценарий: ${metrics.impact.toLocaleString('ru', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} пт.; база: 0 пт..`],
+      ['Распределение потока', `Личный транспорт: ${Math.round(100 - metrics.transitShare)}%; общественный: ${Math.round(metrics.transitShare)}%.`],
+    ];
+    for (const [label, description] of descriptions) {
+      const chart = screen.getByRole('group', { name: label });
+      fireEvent.focus(chart);
+      expect(screen.getByRole('tooltip').textContent).toContain(description);
+      fireEvent.blur(chart);
+    }
+  };
   expectMetrics(SCENARIO_METRICS.baseline);
   fireEvent.click(screen.getByRole('button', { name: /Приоритет общественного транспорта/ }));
   const intermediate = { ...SCENARIO_METRICS.baseline, speed: 19, delay: 36, throughput: 2350, impact: 2.3 };
@@ -101,10 +115,12 @@ it('displays live metrics and transition status for scenarios without an interch
 
   publish(SCENARIO_METRICS.transit);
   expectMetrics(SCENARIO_METRICS.transit);
+  expectTooltips(SCENARIO_METRICS.transit);
   expect(screen.queryByText('Агенты адаптируют маршруты…')).toBeNull();
   fireEvent.click(screen.getByRole('button', { name: /Умные светофоры/ }));
   publish(SCENARIO_METRICS.signals);
   expectMetrics(SCENARIO_METRICS.signals);
+  expectTooltips(SCENARIO_METRICS.signals);
 
   fireEvent.click(screen.getByRole('button', { name: 'Сбросить' }));
   expectMetrics(SCENARIO_METRICS.baseline);

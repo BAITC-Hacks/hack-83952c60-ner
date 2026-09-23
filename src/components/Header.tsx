@@ -1,6 +1,6 @@
 import { t, useLanguage } from '../i18n';
 import React, { useState, useEffect } from 'react';
-import { Clock, ShieldAlert, Award, FileText, RotateCcw, Sparkles } from 'lucide-react';
+import { Clock, ShieldAlert, Award, FileText, RotateCcw, Sparkles, Compass } from 'lucide-react';
 import { SelectedDecision } from '../engine/types';
 
 interface HeaderProps {
@@ -11,6 +11,8 @@ interface HeaderProps {
   onOpenPresentation: () => void;
   crisisActive: boolean;
   enableExperiments: boolean;
+  onOpenGuide?: () => void;
+  guideActive?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -21,6 +23,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenPresentation,
   crisisActive,
   enableExperiments,
+  onOpenGuide,
+  guideActive,
 }) => {
   useLanguage();
   // 5-hour countdown timer simulation (5:00:00)
@@ -108,6 +112,9 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="planner-tools">
           <span className="planner-tools-label">{t('Работа со сценарием')}</span>
           <div className="planner-actions" role="group" aria-label={t('Работа со сценарием')}>
+          {onOpenGuide && <button type="button" onClick={onOpenGuide} className="btn-secondary">
+            <Compass size={15} aria-hidden="true" />{t(guideActive ? 'Продолжить знакомство' : 'Как начать')}
+          </button>}
           <button
             onClick={handleBenchmarkPreset}
             className="btn-secondary"

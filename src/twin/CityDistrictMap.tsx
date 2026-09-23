@@ -11,6 +11,7 @@ import type { DistrictScene, SceneSettings } from './districtScene';
 import './district-map.css';
 import './district-audit.css';
 import { getLanguage, t, useLanguage } from '../i18n';
+import { ChartTooltip } from '../components/ChartTooltip';
 
 const ICONS = { population: Users, transport: BusFront, ecology: Leaf, social: HeartPulse, safety: ShieldCheck, services: UtilityPole };
 const format = (n: number, digits = 1) => n.toLocaleString(getLanguage(), { maximumFractionDigits: digits });
@@ -23,6 +24,7 @@ export default function CityDistrictMap({ city, baseline, selected, onSelect, ac
   const [layer, setLayer] = useState<MapLayer>('transport');
   const [reference, setReference] = useState(true);
   const [focused, setFocused] = useState<DistrictId | null>(null);
+  const [focusRequest, setFocusRequest] = useState(0);
   const [audit, setAudit] = useState(initialAuditState);
   const [toast, setToast] = useState<{ district: DistrictId; reduction: number; action: AuditAction } | null>(null);
   const [hovered, setHovered] = useState<DistrictId | null>(null);
@@ -42,7 +44,7 @@ export default function CityDistrictMap({ city, baseline, selected, onSelect, ac
     const value = layer === 'transport' ? district.value - reduction : district.value;
     return { ...district, load: district.load - reduction, value, delta: district.delta - (layer === 'transport' ? reduction : 0), color: mapColor(value, layer) };
   }), [city, baseline, layer, reference, audit]);
-  const selectDistrict = (id: DistrictId) => { setFocused(id); setToast(null); onSelect(id); };
+  const selectDistrict = (id: DistrictId) => { setFocused(id); setFocusRequest(value => value + 1); setToast(null); onSelect(id); };
   const clearFocus = () => { setFocused(null); setHovered(null); setToast(null); if (focused) cards.current[focused]?.focus(); };
   const current = useRef({ data, focused, hovered, settings, active, reduced, selectDistrict, clearFocus });
   current.current = { data, focused, hovered, settings, active, reduced, selectDistrict, clearFocus };
@@ -61,12 +63,18 @@ export default function CityDistrictMap({ city, baseline, selected, onSelect, ac
     setToast({ district: focused, action, reduction: auditDistrict(focused, next).bridgeReduction });
   };
   useEffect(() => {
+    if (focusRequest && current.current.active) drawer.current?.focus({ preventScroll: true });
+  }, [focusRequest]);
+  useEffect(() => {
     if (!focused || !active) return;
     drawer.current?.focus({ preventScroll: true });
   }, [focused, active]);
   useEffect(() => {
     if (!focused || !active) return;
-    const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && !open) current.current.clearFocus(); };
+    const escape = (event: KeyboardEvent) => {
+      const hintOpen = drawer.current?.querySelector('.chart-tooltip-target[aria-describedby]');
+      if (event.key === 'Escape' && !open && !hintOpen) current.current.clearFocus();
+    };
     document.addEventListener('keydown', escape);
     return () => document.removeEventListener('keydown', escape);
   }, [focused, active, open]);
@@ -181,8 +189,10 @@ export default function CityDistrictMap({ city, baseline, selected, onSelect, ac
       <div className="dt-audit-load"><strong><AnimatedMetric value={focusLoad} animate={animated} /> <small>%</small></strong><span>{t('Нагрузка транспорта')}<small>{t(focusLoad > 140 ? 'КРИТИЧЕСКИЙ ПЕРЕГРУЗ' : focusLoad >= 100 ? 'ПОВЫШЕННАЯ НАГРУЗКА' : 'В ПРЕДЕЛАХ НОРМЫ')}</small></span></div>
       {details.loadReduction > 0 && <p className="dt-audit-gain"><ArrowDownRight size={14} />{t('−{0} п.п. нагрузки к исходному значению', [format(details.loadReduction)])}</p>}
       <section className="dt-audit-deficits"><h4>{t('Почему жители едут в другие районы')}</h4>{([
-        ['Дефицит школьных мест', details.schoolDeficit, '#b99aff'], ['Рабочие места шаговой доступности', details.nearbyJobs, '#63ddfa'], ['Доступность АЗС и сервисных хабов', details.serviceAccess, '#ffa65d'],
-      ] as const).map(([label, value, hue]) => <div className="dt-audit-indicator" key={label} style={{ '--indicator-color': hue } as React.CSSProperties}><div><label>{t(label)}</label><strong>{value}%</strong></div><progress max="100" value={value} aria-label={t(label)} /></div>)}</section>
+        ['Дефицит школьных мест', details.schoolDeficit, '#b99aff', 'Дефицит школьных мест: {0}%. Меньше — лучше: больше детей могут учиться в своём районе.'],
+        ['Рабочие места шаговой доступности', details.nearbyJobs, '#63ddfa', 'Рабочие места рядом: {0}%. Больше — лучше: меньше поездок на работу в другие районы.'],
+        ['Доступность АЗС и сервисных хабов', details.serviceAccess, '#ffa65d', 'Доступность местных сервисов: {0}%. Больше — лучше: меньше поездок за услугами в другие районы.'],
+      ] as const).map(([label, value, hue, description]) => <ChartTooltip key={label} label={t(label)} description={t(description, [format(value)])}><div className="dt-audit-indicator" style={{ '--indicator-color': hue } as React.CSSProperties}><div><label>{t(label)}</label><strong>{format(value)}%</strong></div><progress max="100" value={value} aria-label={t(label)} /></div></ChartTooltip>)}</section>
       <div className="dt-audit-routes">{details.flows.map(flow => <div key={flow.kind}><span>{flowLabel(flow)}</span><small>→ {t(DISTRICTS[flow.target].nameRu)}</small></div>)}</div>
       <section className="dt-audit-actions"><div className="dt-audit-budget"><h4>{t('Оперативные решения')}</h4><span><output aria-label={t('Бюджет эксперимента')}>{audit.remainingBudget}</output> {t('млрд ₸')}</span></div>
         {(Object.entries(AUDIT_ACTIONS) as [AuditAction, typeof AUDIT_ACTIONS[AuditAction]][]).map(([action, definition]) => {
