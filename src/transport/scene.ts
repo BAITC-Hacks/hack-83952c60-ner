@@ -18,14 +18,15 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
   scene.background = new THREE.Color('#0d141c');
   scene.fog = new THREE.FogExp2('#0d141c', .0032);
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.7));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
   renderer.setClearColor('#0d141c');
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.appendChild(renderer.domElement);
   renderer.domElement.setAttribute('aria-label', 'Интерактивная 3D-карта Астаны: река Ишим, три моста и 420 транспортных агентов');
   renderer.domElement.setAttribute('role', 'img');
   const camera = new THREE.PerspectiveCamera(39, 1, .1, 400);
-  camera.position.set(83, 80, 93);
+  if (initial.view === 'junction') camera.position.set(33, 31, 39);
+  else camera.position.set(83, 80, 93);
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = .07;
@@ -33,7 +34,7 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
   controls.maxDistance = 180;
   controls.maxPolarAngle = Math.PI * .44;
   controls.minPolarAngle = .2;
-  controls.target.set(0, 0, 0);
+  controls.target.set(0, initial.view === 'junction' ? 1 : 0, initial.view === 'junction' ? -3 : 0);
   scene.add(new THREE.AmbientLight('#7798ba', 1.4));
   const key = new THREE.DirectionalLight('#aacfe0', 2.3);
   key.position.set(-30, 70, 30);
@@ -98,13 +99,13 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
       edgeParts.push(edge.clone().applyMatrix4(dummy.matrix));
     }
   }
-  const city = new THREE.InstancedMesh(box, new THREE.MeshStandardMaterial({ color: '#1c303e', roughness: .5, metalness: .4 }), transforms.length);
+  const city = new THREE.InstancedMesh(box, new THREE.MeshStandardMaterial({ color: '#2e4957', roughness: .8, metalness: .1 }), transforms.length);
   transforms.forEach((matrix, i) => city.setMatrixAt(i, matrix));
   city.instanceMatrix.needsUpdate = true;
   buildings.add(city);
   const mergedEdges = mergeGeometries(edgeParts);
   edgeParts.forEach(part => part.dispose()); edge.dispose();
-  buildings.add(new THREE.LineSegments(mergedEdges, new THREE.LineBasicMaterial({ color: '#528292', transparent: true, opacity: .53 })));
+  buildings.add(new THREE.LineSegments(mergedEdges, new THREE.LineBasicMaterial({ color: '#6e9ca8', transparent: true, opacity: .62 })));
   scene.add(buildings);
 
   // Small architectural landmark: a geometric observation tower on the administrative bank.
@@ -130,7 +131,7 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
   // Procedural flyover deck, guard rails, piers and luminous construction outlines.
   const flyover = new THREE.Group();
   const deckVertices: number[] = [], deckIndices: number[] = [], railVertices: number[] = [];
-  const flyPoint = (t: number, offset: number): XYZ => [-26 + 52 * t, .45 + Math.sin(Math.PI * t) ** 2 * 5.8, -6 * Math.sin(Math.PI * t) ** 2 + offset];
+  const flyPoint = (t: number, offset: number): XYZ => [-26 + 52 * t, .28 + Math.sin(Math.PI * t) ** 2 * 5.8, -6 * Math.sin(Math.PI * t) ** 2 + offset];
   for (let i = 0; i <= 80; i++) {
     const t = i / 80;
     deckVertices.push(...flyPoint(t, -1.3), ...flyPoint(t, 1.3));
@@ -151,6 +152,22 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
   }
   scene.add(flyover);
 
+  // Feeder ramps connect both peripheral bridges to the elevated central spine.
+  for (const baseZ of [-24, 24]) {
+    const vertices: number[] = [], indices: number[] = [], edges: number[] = [];
+    const pointAt = (t: number, side: number): XYZ => [-26 + 52 * t, .28 + Math.sin(Math.PI * t) ** 2 * 5.8, baseZ + (-6 - baseZ) * Math.sin(Math.PI * t) ** 2 + side];
+    for (let i = 0; i <= 80; i++) {
+      vertices.push(...pointAt(i / 80, -.8), ...pointAt(i / 80, .8));
+      if (i < 80) {
+        const n = i * 2; indices.push(n, n + 1, n + 2, n + 1, n + 3, n + 2);
+        for (const side of [-.8, .8]) segment(edges, pointAt(i / 80, side), pointAt((i + 1) / 80, side));
+      }
+    }
+    const geometry = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setIndex(indices);
+    flyover.add(new THREE.Mesh(geometry, flyMaterial), lineObject(edges, '#62dbc6', .55));
+  }
+
   // GPU sprites provide a soft bloom halo without a costly fullscreen postprocessing pass.
   const TRAIL = 4, positions = new Float32Array(AGENT_COUNT * TRAIL * 3), colors = new Float32Array(positions.length);
   const sizes = new Float32Array(AGENT_COUNT * TRAIL);
@@ -165,7 +182,7 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
     vertexShader: `attribute float weight; varying vec3 vColor; varying float vWeight; uniform float pixelRatio;
       void main(){vColor=color; vWeight=weight; vec4 mv=modelViewMatrix*vec4(position,1.); gl_Position=projectionMatrix*mv; gl_PointSize=clamp(950.0/max(1.0,-mv.z),4.0,24.0)*pixelRatio*(.65+weight*.35);}`,
     fragmentShader: `varying vec3 vColor; varying float vWeight;
-      void main(){float d=length(gl_PointCoord-.5)*2.; if(d>1.)discard; float glow=exp(-d*d*5.5)*.6; float core=1.-smoothstep(.05,.28,d); gl_FragColor=vec4(vColor+core*.35,(glow+core*.7)*vWeight);}`,
+      void main(){float d=length(gl_PointCoord-.5)*2.; if(d>1.)discard; float glow=exp(-d*d*5.5)*.35; float core=1.-smoothstep(.05,.28,d); gl_FragColor=vec4(vColor,(glow+core*.65)*vWeight);}`,
   });
   const particles = new THREE.Points(particleGeometry, particleMaterial); particles.frustumCulled = false; scene.add(particles);
 
@@ -201,7 +218,9 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
   const resize = () => {
     width = host.clientWidth; height = host.clientHeight;
     if (!width || !height) return;
-    renderer.setSize(width, height, false); camera.aspect = width / height; camera.updateProjectionMatrix();
+    renderer.setSize(width, height, false); camera.aspect = width / height;
+    camera.zoom = Math.min(1, Math.max(.65, camera.aspect / 1.15));
+    camera.updateProjectionMatrix();
   };
   const observer = new ResizeObserver(resize); observer.observe(host); resize();
   let frame = 0, last = 0, lastReport = 0, frameCount = 0, fps = 60, disposed = false;
@@ -212,9 +231,13 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
   const animate = (now: number) => {
     if (disposed) return;
     frame = requestAnimationFrame(animate);
-    const dt = last ? Math.min((now - last) / 1000, .05) : 0; last = now;
+    const dt = last ? Math.min((now - last) / 1000, .25) : 0; last = now;
     if (document.hidden || !width || !height || lost) return;
-    if (!options.paused) stepTraffic(model, dt, options.project);
+    if (!options.paused) {
+      // Substeps preserve the two-second transition even when a frame takes > 50 ms.
+      const steps = Math.max(1, Math.ceil(dt / .05));
+      for (let i = 0; i < steps; i++) stepTraffic(model, dt / steps, options.project);
+    }
     const blend = smooth(model.blend);
     buildings.visible = options.buildingsVisible; particles.visible = options.agentsVisible;
     flyover.visible = blend > .001; flyover.scale.y = Math.max(.001, blend);
@@ -257,7 +280,7 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
       if (next.view !== options.view) { desiredPosition.copy(next.view === 'orbit' ? orbitPosition : junctionPosition); desiredTarget.set(0, next.view === 'orbit' ? 0 : 1, next.view === 'orbit' ? 0 : -3); flying = true; }
       options = next;
     },
-    reset() { model = createTraffic(); },
+    reset() { model = createTraffic(); desiredPosition.copy(orbitPosition); desiredTarget.set(0, 0, 0); flying = true; },
     dispose() {
       disposed = true; cancelAnimationFrame(frame); observer.disconnect(); controls.dispose();
       renderer.domElement.removeEventListener('webglcontextlost', contextLost);

@@ -57,7 +57,7 @@ export function createTraffic(): TrafficModel {
   return model;
 }
 
-/** Allocation-free polyline sampling, with rounded spline-like corners and an elevated bypass. */
+/** Road spline: straight streets joined with short quadratic Bézier corners. */
 export function sampleAgent(agent: Agent, progress: number, blend: number, out: XYZ): XYZ {
   const distance = ((progress % 1 + 1) % 1) * agent.length;
   let segment = 1;
@@ -67,6 +67,20 @@ export function sampleAgent(agent: Agent, progress: number, blend: number, out: 
   out[0] = a[0] + (b[0] - a[0]) * t;
   out[1] = .42;
   out[2] = a[2] + (b[2] - a[2]) * t;
+  const radius = 1.2;
+  const corner = distance - agent.lengths[segment - 1] < radius && segment > 1 ? segment - 1
+    : agent.lengths[segment] - distance < radius && segment < agent.nodes.length - 1 ? segment : -1;
+  if (corner > 0) {
+    const before = agent.nodes[corner - 1], at = agent.nodes[corner], after = agent.nodes[corner + 1];
+    const u = (distance - agent.lengths[corner] + radius) / (radius * 2), v = 1 - u;
+    const incoming = Math.max(.001, agent.lengths[corner] - agent.lengths[corner - 1]);
+    const outgoing = Math.max(.001, agent.lengths[corner + 1] - agent.lengths[corner]);
+    for (const axis of [0, 2] as const) {
+      const start = at[axis] + (before[axis] - at[axis]) * radius / incoming;
+      const end = at[axis] + (after[axis] - at[axis]) * radius / outgoing;
+      out[axis] = v * v * start + 2 * v * u * at[axis] + u * u * end;
+    }
+  }
   // The same route parameter survives project toggles: agents never teleport or respawn.
   if (agent.diverted && segment === 3) {
     const arch = Math.sin(Math.PI * t) ** 2;

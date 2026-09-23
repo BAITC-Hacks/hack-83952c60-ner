@@ -6,19 +6,10 @@ import { validateDecisions } from '../engine/validator';
 import { applyMandate, DECISION_COST_SCALE } from './model';
 import { Action, CONFIG, DIRECTIONS, LABELS, PROJECTS, Point, advanceSession, applyAction, initializeSession, population, quality } from './model';
 import { useTwinStorage } from './storage';
+import CityDistrictMap from './CityDistrictMap';
 
-type Layer = 'population' | 'transport' | 'ecology' | 'social' | 'safety' | 'services';
-const LAYERS: Record<Layer, string> = { ...LABELS, population: 'Население', transport: 'Нагрузка транспорта' };
 const fmt = (n: number, digits = 0) => n.toLocaleString('ru-RU', { maximumFractionDigits: digits });
 const delta = (n: number, digits = 1) => `${n > 0 ? '+' : ''}${fmt(n, digits)}`;
-const shapes = [
-  { id: 'saryarka', path: 'M65 55 L250 40 L280 150 L180 205 L45 160 Z', x: 160, y: 113 },
-  { id: 'baikonur', path: 'M260 40 L425 65 L425 200 L290 155 Z', x: 343, y: 118 },
-  { id: 'almaty', path: 'M437 70 L610 105 L585 260 L437 205 Z', x: 520, y: 167 },
-  { id: 'nura', path: 'M47 177 L177 220 L255 290 L215 405 L65 345 Z', x: 147, y: 292 },
-  { id: 'esil', path: 'M190 220 L289 172 L425 220 L407 380 L230 408 L272 285 Z', x: 330, y: 290 },
-  { id: 'saraishyk', path: 'M439 224 L586 280 L560 400 L422 380 Z', x: 500, y: 320 },
-] as const;
 function Trend({ current, baseline, metric, title }: { current: Point[]; baseline: Point[]; metric: 'quality' | 'budget' | 'population'; title: string }) {
   const values = [...current, ...baseline].map(p => p[metric]);
   const min = Math.min(...values), max = Math.max(...values), span = Math.max(1, max-min);
@@ -36,7 +27,6 @@ export default function DigitalTwin({ active = true, decisions = [] }: { active?
   const { session, setSession, snapshots, save, remove, notice } = useTwinStorage();
   const { city, baseline } = session;
   const [selected, setSelected] = useState<DistrictId>('nura');
-  const [layer, setLayer] = useState<Layer>('transport');
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(1200);
   const [error, setError] = useState('');
@@ -56,9 +46,6 @@ export default function DigitalTwin({ active = true, decisions = [] }: { active?
     catch (e) { setError(e instanceof Error ? e.message : 'Не удалось применить действие.'); }
   };
   const d = city.districts[selected], base = baseline.districts[selected];
-  const value = (district: typeof d) => layer === 'population' ? district.population : layer === 'transport' ? district.load : district.quality[layer];
-  const unit = layer === 'population' ? 'чел.' : layer === 'transport' ? '%' : '/ 100';
-  const metricColor = (v: number) => layer === 'population' ? `hsl(190 65% ${25 + Math.min(1, v / 350000) * 28}%)` : (layer === 'transport' ? v > 140 : v < 45) ? '#9f394b' : (layer === 'transport' ? v > 100 : v < 65) ? '#87692e' : '#187b71';
   return <main className="twin-shell">
     <header className="twin-heading"><div><p className="twin-eyebrow">ГОРОДСКАЯ ЛАБОРАТОРИЯ / МОДЕЛЬ {CONFIG.version}.0</p><h1>Цифровой двойник</h1><p>Астана · 6 районов · 5 взаимосвязанных систем</p></div><span className="twin-badge">{finished ? 'Расчёт завершён' : playing ? 'Симуляция идёт' : 'На паузе'}</span></header>
     <p className="twin-disclaimer">Демонстрационная модель: синтетические данные, условные границы районов и денежные единицы. Результаты не являются прогнозом реальной Астаны.</p>
@@ -86,21 +73,8 @@ export default function DigitalTwin({ active = true, decisions = [] }: { active?
     {city.finance.ratio < 1 && <p role="status" className="twin-notice">Дефицит бюджета. Фактически оплачено {fmt(city.finance.ratio*100,1)}% запрошенного финансирования каждого направления.</p>}
     {finished && <section className="twin-card twin-finish"><h2>Итоги пяти лет</h2><p>Качество жизни: {delta(quality(city)-quality(baseline))} пункта к базовому варианту. Завершено проектов: {city.projects.filter(p => p.completed !== null).length}. Незавершённых: {city.projects.filter(p => p.completed === null).length}. Сохраните сценарий или начните новый.</p></section>}
     <div className="twin-workspace"><section className="twin-card twin-map-panel" aria-label="Карта цифрового двойника">
-      <div className="twin-section-title"><h2>Город в разрезе</h2><label>Слой карты <select value={layer} onChange={e => setLayer(e.target.value as Layer)}>{Object.entries(LAYERS).map(([k,v]) => <option key={k} value={k}>{v}</option>)}</select></label></div>
-      <svg className="twin-map" viewBox="0 0 650 440" aria-label={`Схематическая карта: ${LAYERS[layer]}`}>
-        <defs><pattern id="twin-grid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0H0V25" fill="none" stroke="#263850" strokeWidth="0.5" /></pattern></defs>
-        <rect width="650" height="440" fill="url(#twin-grid)" rx="12" />
-        <path d="M0 168 Q130 163 194 212 T370 201 T650 277" stroke="#38bdf8" strokeOpacity=".45" strokeWidth="9" fill="none" />
-        {shapes.map(s => <g key={s.id} role="button" tabIndex={0} aria-label={`Район ${DISTRICTS[s.id].nameRu}`} aria-pressed={selected === s.id} onClick={() => setSelected(s.id)} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelected(s.id); } }}>
-          <path d={s.path} fill={metricColor(value(city.districts[s.id]))} stroke={selected === s.id ? '#e2fbff' : '#537083'} strokeWidth={selected === s.id ? 3 : 1} />
-          <text x={s.x} y={s.y} textAnchor="middle" className="twin-map-name">{DISTRICTS[s.id].nameRu}</text>
-          <text x={s.x} y={s.y+24} textAnchor="middle">{fmt(value(city.districts[s.id]), layer === 'population' ? 0 : 1)} {unit}</text>
-          <text x={s.x} y={s.y+44} textAnchor="middle" className="twin-map-delta">{delta(value(city.districts[s.id])-value(baseline.districts[s.id]), layer === 'population' ? 0 : 1)} к базе</text>
-        </g>)}
-      </svg>
-      <p className="twin-legend">{layer === 'population' ? 'Бирюзовый: от тёмного (0) к светлому (350 тыс. жителей и более).' : layer === 'transport' ? 'Зелёный ≤100% · жёлтый 100–140% · красный >140%. Меньше — лучше.' : 'Красный <45 · жёлтый 45–65 · зелёный ≥65. Больше — лучше.'}</p>
-      <p className="twin-muted">Изменения показаны относительно базового варианта на том же месяце.</p>
-      <div className="twin-district-summary"><h3>{DISTRICTS[selected].nameRu}</h3><p>{fmt(d.population)} жителей · нагрузка транспорта {fmt(d.load,1)}%</p><div className="twin-indicators">{DIRECTIONS.map(k => <div key={k}><span>{LABELS[k]}</span><strong>{fmt(d.quality[k],1)} <small>({delta(d.quality[k]-base.quality[k])})</small></strong><progress max="100" value={d.quality[k]} aria-label={LABELS[k]} /></div>)}</div></div>
+      <CityDistrictMap city={city} baseline={baseline} selected={selected} onSelect={setSelected} active={active} />
+      <div className="twin-district-summary"><p className="twin-eyebrow">ТЕКУЩИЙ СЦЕНАРИЙ / ВЫБРАННЫЙ РАЙОН</p><h3>{DISTRICTS[selected].nameRu}</h3><p>{fmt(d.population)} жителей · нагрузка транспорта {fmt(d.load,1)}%</p><div className="twin-indicators">{DIRECTIONS.map(k => <div key={k}><span>{LABELS[k]}</span><strong>{fmt(d.quality[k],1)} <small>({delta(d.quality[k]-base.quality[k])})</small></strong><progress max="100" value={d.quality[k]} aria-label={LABELS[k]} /></div>)}</div></div>
     </section>
     <aside className="twin-card twin-projects"><p className="twin-eyebrow">РАЙОННЫЕ ИНВЕСТИЦИИ</p><h2>{DISTRICTS[selected].nameRu}</h2><p className="twin-muted">Строительство оплачивается сразу. Эффект — после ввода в эксплуатацию.</p>{DIRECTIONS.map(k => { const p = PROJECTS[k]; return <article key={k}><h3>{p.name}</h3><p>{p.cost} у.е. · {p.months} мес. · содержание {p.upkeep} у.е./мес.</p><p>Мощность +{fmt(p.capacity)} жителей · состояние +{p.repair} п.</p><button disabled={finished || city.budget < p.cost} onClick={() => act({ type: 'project', district: selected, direction: k })}>Запустить: {p.name}</button>{city.budget < p.cost && <small>Недостаточно средств</small>}</article>; })}</aside></div>
     <section className="twin-card twin-time" aria-label="Управление временем"><div><strong data-testid="twin-month">Месяц {city.month} / 60</strong><p>{city.month === 0 ? 'Исходное состояние' : `${['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][(city.month-1)%12]} · год ${Math.ceil(city.month/12)}`}</p></div><button disabled={finished} onClick={() => setPlaying(v => !v)}>{playing ? 'Пауза' : 'Запустить время'}</button><button disabled={finished || playing} onClick={() => setSession(advanceSession)}>Следующий месяц</button><label>Скорость <select value={speed} onChange={e => setSpeed(Number(e.target.value))}><option value="1200">1×</option><option value="300">4×</option></select></label><progress max="60" value={city.month} aria-label="Горизонт симуляции" /></section>
