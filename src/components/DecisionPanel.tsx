@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Plus, Check, AlertCircle, Sparkles, Filter, Info } from 'lucide-react';
-import { DirectionId, DistrictId, MeasureInfo, SelectedDecision } from '../engine/types';
-import { MEASURE_LIST, MEASURES, SYNERGIES, INCOMPATIBILITIES } from '../data/measures';
+import { Plus, AlertCircle, Sparkles } from 'lucide-react';
+import { DirectionId, DistrictId, SelectedDecision } from '../engine/types';
+import { MEASURE_LIST, SYNERGIES } from '../data/measures';
+import { validateDecisions } from '../engine/validator';
 import { DIRECTIONS, DIRECTION_LIST } from '../data/indicators';
 import { DISTRICT_LIST } from '../data/districts';
 
@@ -9,14 +10,12 @@ interface DecisionPanelProps {
   decisions: SelectedDecision[];
   onAddDecision: (decision: SelectedDecision) => void;
   onRemoveDecision: (index: number) => void;
-  remainingBudget: number;
 }
 
 export const DecisionPanel: React.FC<DecisionPanelProps> = ({
   decisions,
   onAddDecision,
   onRemoveDecision,
-  remainingBudget,
 }) => {
   const [activeDirectionFilter, setActiveDirectionFilter] = useState<DirectionId | 'all'>('all');
   const [selectedDistricts, setSelectedDistricts] = useState<Record<string, DistrictId>>({
@@ -42,33 +41,14 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
     setSelectedDistricts((prev) => ({ ...prev, [measureId]: districtId }));
   };
 
-  const isMeasureConflicting = (measure: MeasureInfo): { hasConflict: boolean; reason?: string } => {
-    for (const rule of INCOMPATIBILITIES) {
-      const [m1, m2] = rule.pair;
-      const otherId = measure.id === m1 ? m2 : measure.id === m2 ? m1 : null;
-      if (!otherId) continue;
-
-      const existingDecision = decisions.find((d) => d.measureId === otherId);
-      if (existingDecision) {
-        if (rule.scope === 'any_district') {
-          return { hasConflict: true, reason: rule.reasonRu };
-        } else if (rule.scope === 'same_district') {
-          const targetDistrict = selectedDistricts[measure.id];
-          if (targetDistrict && targetDistrict === existingDecision.districtId) {
-            return { hasConflict: true, reason: `Конфликт с ${otherId} в районе ${targetDistrict}` };
-          }
-        }
-      }
-    }
-    return { hasConflict: false };
-  };
-
   const getSynergyBonus = (measureId: string): string | null => {
     for (const rule of SYNERGIES) {
       if (rule.pair.includes(measureId)) {
         const partner = rule.pair.find((id) => id !== measureId)!;
         if (selectedMeasureIds.has(partner)) {
-          return `Синергия активна с ${partner}!`;
+          return selectedMeasureIds.has(measureId)
+            ? `Синергия активна с ${partner}!`
+            : `Возможная синергия с ${partner}`;
         }
       }
     }
@@ -135,31 +115,35 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
       </div>
 
       {/* Grid of Measure Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '14px' }}>
         {filteredMeasures.map((measure) => {
           const isSelected = selectedMeasureIds.has(measure.id);
           const decisionIndex = decisions.findIndex((d) => d.measureId === measure.id);
           const synergyNotice = getSynergyBonus(measure.id);
-          const conflict = isMeasureConflicting(measure);
           const dirMeta = DIRECTIONS[measure.direction];
-          const isAffordable = measure.cost <= remainingBudget || isSelected;
-          const isLimitReached = decisions.length >= 5 && !isSelected;
 
           const chosenDistrict =
             measure.type === 'Район'
               ? (isSelected ? decisions[decisionIndex]?.districtId : selectedDistricts[measure.id]) || 'nura'
               : undefined;
+          const proposedDecision: SelectedDecision = chosenDistrict
+            ? { measureId: measure.id, districtId: chosenDistrict }
+            : { measureId: measure.id };
+          const candidateValidation = validateDecisions([...decisions, proposedDecision], { allowIncomplete: true });
+          const isBlocked = !isSelected && !candidateValidation.isValid;
+          const blockedReason = `При добавлении: ${candidateValidation.errors.join(' ')}`;
 
           return (
             <div
               key={measure.id}
+              data-testid={`measure-${measure.id}`}
               style={{
                 background: isSelected
                   ? 'rgba(59, 130, 246, 0.12)'
                   : 'rgba(255, 255, 255, 0.02)',
                 border: isSelected
                   ? '1px solid #3b82f6'
-                  : conflict.hasConflict
+                  : isBlocked
                   ? '1px solid rgba(244, 63, 94, 0.4)'
                   : '1px solid rgba(255, 255, 255, 0.07)',
                 borderRadius: '12px',
@@ -258,7 +242,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                 )}
 
                 {/* Conflict notice */}
-                {conflict.hasConflict && (
+                {isBlocked && (
                   <div
                     style={{
                       display: 'flex',
@@ -273,7 +257,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                     }}
                   >
                     <AlertCircle size={11} />
-                    <span>{conflict.reason}</span>
+                    <span id={`measure-${measure.id}-restriction`}>{blockedReason}</span>
                   </div>
                 )}
               </div>
@@ -282,6 +266,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
               <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 {measure.type === 'Район' ? (
                   <select
+                    aria-label={`Район для ${measure.id}`}
                     disabled={isSelected}
                     value={chosenDistrict}
                     onChange={(e) => handleDistrictChange(measure.id, e.target.value as DistrictId)}
@@ -326,19 +311,17 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                   </button>
                 ) : (
                   <button
-                    disabled={isLimitReached || !isAffordable || conflict.hasConflict}
-                    onClick={() =>
-                      onAddDecision({
-                        measureId: measure.id,
-                        districtId: measure.type === 'Район' ? (chosenDistrict as DistrictId) : undefined,
-                      })
-                    }
+                    disabled={isBlocked}
+                    aria-label={`Выбрать ${measure.id}`}
+                    aria-describedby={isBlocked ? `measure-${measure.id}-restriction` : undefined}
+                    title={isBlocked ? blockedReason : `Выбрать ${measure.nameRu}`}
+                    onClick={() => onAddDecision(proposedDecision)}
                     className="btn-primary"
                     style={{
                       padding: '6px 12px',
                       fontSize: '0.75rem',
-                      opacity: isLimitReached || !isAffordable || conflict.hasConflict ? 0.45 : 1,
-                      cursor: isLimitReached || !isAffordable || conflict.hasConflict ? 'not-allowed' : 'pointer',
+                      opacity: isBlocked ? 0.45 : 1,
+                      cursor: isBlocked ? 'not-allowed' : 'pointer',
                     }}
                   >
                     <Plus size={13} />

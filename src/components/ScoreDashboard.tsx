@@ -23,7 +23,7 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
     activeSynergies,
   } = simulation;
 
-  const isPositive = scoreDelta > 0;
+  const isPositive = scoreDelta !== null && scoreDelta > 0;
   const weakestDistrictName = DISTRICTS[weakestDistrictId]?.nameRu || weakestDistrictId;
 
   return (
@@ -43,15 +43,16 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
         }}
       />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px', alignItems: 'center' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '20px', alignItems: 'center' }}>
         
         {/* Main Hero Score Gauge */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <div className="score-hero" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           
           <div
             style={{
               position: 'relative',
               width: '110px',
+              flexShrink: 0,
               height: '110px',
               borderRadius: '50%',
               background: isValid
@@ -86,13 +87,13 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
                   color: isValid ? '#38bdf8' : '#f43f5e',
                 }}
               >
-                {isValid ? finalScore.toFixed(2) : '—'}
+                {isValid ? finalScore.toFixed(2).replace('.', ',') : '—'}
               </span>
             </div>
           </div>
 
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '4px' }}>
               <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>
                 Astana Quality of Life Score
               </h2>
@@ -102,14 +103,14 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
                 </span>
               ) : (
                 <span className="badge badge-red" style={{ fontSize: '0.7rem' }}>
-                  <AlertOctagon size={12} /> Требует правок
+                  <AlertOctagon size={12} /> Сценарий не завершён
                 </span>
               )}
             </div>
 
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px' }}>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                Базовый уровень: <strong>{baseScore.toFixed(2)}</strong>
+                Базовый уровень: <strong>{baseScore.toFixed(2).replace('.', ',')}</strong>
               </span>
               {isValid && (
                 <span

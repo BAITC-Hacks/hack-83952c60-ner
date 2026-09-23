@@ -1,4 +1,4 @@
-import { DirectionId, SelectedDecision, ValidationResult } from './types';
+import { DirectionId, DistrictId, SelectedDecision, ValidationResult } from './types';
 import { MEASURES, INCOMPATIBILITIES } from '../data/measures';
 import { DISTRICTS } from '../data/districts';
 
@@ -6,100 +6,97 @@ export const TOTAL_BUDGET = 100;
 export const REQUIRED_DECISIONS_COUNT = 5;
 export const MAX_MEASURES_PER_DIRECTION = 2;
 
-export function validateDecisions(decisions: SelectedDecision[]): ValidationResult {
+export interface ValidationOptions {
+  /** Used while choosing measures; all rules except the minimum count still apply. */
+  allowIncomplete?: boolean;
+}
+
+export function validateDecisions(input: unknown, options: ValidationOptions = {}): ValidationResult {
   const errors: string[] = [];
-  const warnings: string[] = [];
-
-  // Track counts by direction
   const directionCounts: Record<DirectionId, number> = {
-    transport: 0,
-    ecology: 0,
-    social: 0,
-    safety: 0,
-    services: 0,
+    transport: 0, ecology: 0, social: 0, safety: 0, services: 0,
   };
-
-  let totalCost = 0;
+  const decisions: SelectedDecision[] = [];
   const seenMeasureIds = new Set<string>();
+  const items: unknown[] = Array.isArray(input) ? input : [];
+  let totalCost = 0;
 
-  // Check decision count
-  if (decisions.length !== REQUIRED_DECISIONS_COUNT) {
-    errors.push(`Требуется принять ровно ${REQUIRED_DECISIONS_COUNT} управленческих решений (сейчас выбрано: ${decisions.length}).`);
+  if (!Array.isArray(input)) {
+    errors.push('Решения должны быть переданы массивом.');
+  }
+  if (items.length > REQUIRED_DECISIONS_COUNT || (!options.allowIncomplete && items.length !== REQUIRED_DECISIONS_COUNT)) {
+    errors.push(`Требуется принять ровно ${REQUIRED_DECISIONS_COUNT} управленческих решений (сейчас выбрано: ${items.length}).`);
   }
 
-  for (const decision of decisions) {
-    const measure = MEASURES[decision.measureId];
-    if (!measure) {
-      errors.push(`Неизвестное мероприятие: ${decision.measureId}`);
+  // The input also comes from HTTP. Types alone cannot validate its runtime shape.
+  for (const [index, item] of items.entries()) {
+    if (item === null || typeof item !== 'object' || Array.isArray(item)) {
+      errors.push(`Решение №${index + 1} должно быть объектом с идентификатором мероприятия.`);
       continue;
     }
-
-    // Rule 3: No duplicate measures
-    if (seenMeasureIds.has(decision.measureId)) {
-      errors.push(`Мероприятие ${decision.measureId} («${measure.nameRu}») выбрано повторно. Каждое мероприятие разрешено использовать максимум один раз.`);
+    const candidate = item as Record<string, unknown>;
+    if (!Object.hasOwn(candidate, 'measureId') || typeof candidate.measureId !== 'string') {
+      errors.push(`В решении №${index + 1} требуется строковый идентификатор мероприятия measureId.`);
+      continue;
     }
-    seenMeasureIds.add(decision.measureId);
-
-    // Sum cost
+    const measureId = candidate.measureId;
+    if (!Object.hasOwn(MEASURES, measureId)) {
+      errors.push(`Неизвестное мероприятие: ${measureId}`);
+      continue;
+    }
+    const measure = MEASURES[measureId];
+    if (seenMeasureIds.has(measureId)) {
+      errors.push(`Мероприятие ${measureId} («${measure.nameRu}») выбрано повторно. Каждое мероприятие разрешено использовать максимум один раз.`);
+    }
+    seenMeasureIds.add(measureId);
     totalCost += measure.cost;
+    directionCounts[measure.direction]++;
 
-    // Direction count
-    directionCounts[measure.direction] = (directionCounts[measure.direction] || 0) + 1;
-
-    // Rule 4: District validation
     if (measure.type === 'Район') {
-      if (!decision.districtId) {
+      if (!Object.hasOwn(candidate, 'districtId') || candidate.districtId === undefined) {
         errors.push(`Для районного мероприятия ${measure.id} («${measure.nameRu}») необходимо указать конкретный целевой район.`);
-      } else if (!DISTRICTS[decision.districtId]) {
-        errors.push(`Для мероприятия ${measure.id} указан некорректный район: ${decision.districtId}`);
+      } else if (typeof candidate.districtId !== 'string' || !Object.hasOwn(DISTRICTS, candidate.districtId)) {
+        errors.push(`Для мероприятия ${measure.id} указан некорректный район.`);
+      } else {
+        decisions.push({ measureId, districtId: candidate.districtId as DistrictId });
       }
-    } else if (measure.type === 'Город') {
-      if (decision.districtId) {
-        // Warning or clear error
-        warnings.push(`Мероприятие ${measure.id} («${measure.nameRu}») является общегородским. Выбранный район игнорируется.`);
-      }
+    } else if ('districtId' in candidate) {
+      errors.push(`Мероприятие ${measure.id} («${measure.nameRu}») является общегородским: район указывать нельзя.`);
+    } else {
+      decisions.push({ measureId });
     }
   }
 
-  // Rule 1: Budget limit
   if (totalCost > TOTAL_BUDGET) {
     errors.push(`Превышен бюджет города: потрачено ${totalCost} у.е. из доступных ${TOTAL_BUDGET} у.е. (перерасход: ${totalCost - TOTAL_BUDGET} у.е.).`);
   }
-
-  // Rule 5: Direction limits (<= 2 per direction)
   for (const [direction, count] of Object.entries(directionCounts)) {
     if (count > MAX_MEASURES_PER_DIRECTION) {
-      errors.push(`Превышен лимит мер по направлению «${direction}»: выбрано ${count} мер (разрешено максимум ${MAX_MEASURES_PER_DIRECTION}). Должно быть охвачено минимум 3 направления.`);
+      errors.push(`Превышен лимит мер по направлению «${direction}»: выбрано ${count} мер (разрешено максимум ${MAX_MEASURES_PER_DIRECTION}).`);
     }
   }
 
-  // Rule 6: Incompatibilities
   for (const rule of INCOMPATIBILITIES) {
-    const [m1Id, m2Id] = rule.pair;
-    const d1 = decisions.find((d) => d.measureId === m1Id);
-    const d2 = decisions.find((d) => d.measureId === m2Id);
-
-    if (d1 && d2) {
-      if (rule.scope === 'any_district') {
-        errors.push(rule.reasonRu);
-      } else if (rule.scope === 'same_district') {
-        if (d1.districtId && d2.districtId && d1.districtId === d2.districtId) {
-          const districtName = DISTRICTS[d1.districtId]?.nameRu || d1.districtId;
-          errors.push(`${rule.reasonRu} (Конфликт в районе ${districtName}).`);
-        }
+    const first = decisions.filter((decision) => decision.measureId === rule.pair[0]);
+    const second = decisions.filter((decision) => decision.measureId === rule.pair[1]);
+    if (!first.length || !second.length) continue;
+    if (rule.scope === 'any_district') {
+      errors.push(rule.reasonRu);
+    } else {
+      const conflict = first.find((a) => second.some((b) => a.districtId === b.districtId));
+      if (conflict?.districtId) {
+        errors.push(`${rule.reasonRu} (Конфликт в районе ${DISTRICTS[conflict.districtId].nameRu}).`);
       }
     }
   }
-
-  const remainingBudget = TOTAL_BUDGET - totalCost;
 
   return {
     isValid: errors.length === 0,
     errors,
-    warnings,
+    warnings: [],
     totalCost,
-    remainingBudget,
-    decisionCount: decisions.length,
+    remainingBudget: TOTAL_BUDGET - totalCost,
+    decisionCount: items.length,
     directionCounts,
   };
 }

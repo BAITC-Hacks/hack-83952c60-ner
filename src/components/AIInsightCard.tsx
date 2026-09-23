@@ -1,302 +1,85 @@
 import React, { useState } from 'react';
-import { Bot, Sparkles, AlertTriangle, CheckCircle2, Send, Key } from 'lucide-react';
-import { SimulationResult } from '../engine/types';
-import { generateAIAnalysis } from '../ai/analyzer';
-import { askAICityAdvisor, LLMConfig } from '../ai/llmClient';
+import { Bot, AlertTriangle, CheckCircle2, Sparkles } from 'lucide-react';
+import type { SimulationResult } from '../engine/types';
+import { useScenarioAnalysis } from '../ai/useScenarioAnalysis';
 
 interface AIInsightCardProps {
   simulation: SimulationResult;
+  scenarioRevision: number;
+  hasExperimentalEvents?: boolean;
 }
 
-export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
-  const [activeTab, setActiveTab] = useState<'briefing' | 'advisor'>('briefing');
-  const [userQuery, setUserQuery] = useState('');
-  const [chatLog, setChatLog] = useState<Array<{ sender: 'user' | 'ai'; text: string }>>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [apiKey, setApiKey] = useState('');
-  const [provider, setProvider] = useState<'local' | 'openai'>('local');
+const fallbackReasons = {
+  missing_key: 'LLM не подключён на сервере. Показано объяснение по правилам.',
+  timeout: 'LLM не ответил за 20 секунд. Показано объяснение по правилам.',
+  provider_error: 'Сервис LLM временно недоступен. Показано объяснение по правилам.',
+  invalid_response: 'Ответ LLM не прошёл проверку. Показано объяснение по правилам.',
+};
 
-  const analysis = generateAIAnalysis(simulation);
-
-  const handleAskQuestion = async (question: string) => {
-    if (!question.trim()) return;
-    const q = question.trim();
-    setUserQuery('');
-    setChatLog((prev) => [...prev, { sender: 'user', text: q }]);
-    setIsLoading(true);
-
-    try {
-      const config: LLMConfig = {
-        provider,
-        apiKey: apiKey.trim() || undefined,
-      };
-      const response = await askAICityAdvisor(simulation, q, config);
-      setChatLog((prev) => [...prev, { sender: 'ai', text: response }]);
-    } catch (e: any) {
-      setChatLog((prev) => [...prev, { sender: 'ai', text: `Ошибка: ${e.message}` }]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation, scenarioRevision, hasExperimentalEvents = false }) => {
+  const [question, setQuestion] = useState('');
+  const { result, isStale, isLoading, error, analyze } = useScenarioAnalysis(simulation, scenarioRevision);
+  const analysis = result?.analysis;
+  const canAnalyze = simulation.isValid && !hasExperimentalEvents && !isLoading;
 
   return (
-    <div className="glass-panel" style={{ padding: '20px' }}>
-      
-      {/* Header and Tab Selector */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, #8b5cf6, #3b82f6)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 0 15px rgba(139, 92, 246, 0.4)',
-            }}
-          >
-            <Bot size={20} color="#ffffff" />
-          </div>
-          <div>
-            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
-              Agentic AI Аналитик &amp; Советник Акима
-            </h3>
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Глубокий анализ последствий, компромиссов и рисков управления городом
-            </p>
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <button
-            onClick={() => setActiveTab('briefing')}
-            style={{
-              padding: '6px 12px',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              borderRadius: '8px',
-              border: activeTab === 'briefing' ? '1px solid #3b82f6' : '1px solid rgba(255, 255, 255, 0.08)',
-              background: activeTab === 'briefing' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 255, 255, 0.03)',
-              color: activeTab === 'briefing' ? '#93c5fd' : 'var(--text-dim)',
-              cursor: 'pointer',
-            }}
-          >
-            Сводный отчет
-          </button>
-          <button
-            onClick={() => setActiveTab('advisor')}
-            style={{
-              padding: '6px 12px',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              borderRadius: '8px',
-              border: activeTab === 'advisor' ? '1px solid #8b5cf6' : '1px solid rgba(255, 255, 255, 0.08)',
-              background: activeTab === 'advisor' ? 'rgba(139, 92, 246, 0.2)' : 'rgba(255, 255, 255, 0.03)',
-              color: activeTab === 'advisor' ? '#c4b5fd' : 'var(--text-dim)',
-              cursor: 'pointer',
-            }}
-          >
-            Диалог с Советником
-          </button>
+    <section className="glass-panel ai-panel" aria-labelledby="analysis-heading" style={{ padding: '20px' }}>
+      <div className="panel-heading" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+        <Bot size={28} color="#a78bfa" style={{ flexShrink: 0 }} />
+        <div>
+          <h3 id="analysis-heading" style={{ fontSize: '1rem', fontWeight: 700 }}>AI-анализ городского сценария</h3>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Объяснение результатов, сильных сторон, рисков и компромиссов</p>
         </div>
       </div>
 
-      {activeTab === 'briefing' ? (
-        <div>
-          {/* Akimat Rating Verdict Banner */}
-          <div
-            style={{
-              padding: '12px 16px',
-              background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15))',
-              border: '1px solid rgba(59, 130, 246, 0.3)',
-              borderRadius: '10px',
-              marginBottom: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '10px',
-            }}
-          >
-            <div>
-              <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: '#93c5fd', fontWeight: 700 }}>
-                Оценка управленческого стиля Акима
-              </div>
-              <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>
-                {analysis.akimatRatingVerdict}
-              </div>
-            </div>
-            <span className="badge badge-purple" style={{ padding: '4px 10px' }}>
-              <Sparkles size={12} /> AI-верифицировано
-            </span>
-          </div>
-
-          {/* Executive Summary */}
-          <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '16px' }}>
-            {analysis.executiveSummary}
-          </p>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
-            
-            {/* Strengths */}
-            <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', padding: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: '#34d399', fontSize: '0.85rem', fontWeight: 700 }}>
-                <CheckCircle2 size={16} />
-                <span>Сильные стороны сценария</span>
-              </div>
-              {analysis.strengths.length > 0 ? (
-                <ul style={{ paddingLeft: '18px', fontSize: '0.78rem', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {analysis.strengths.map((str, i) => (
-                    <li key={i}>{str}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-                  Пока не выявлено ключевых преимуществ. Добавьте синергетические или точечные меры.
-                </p>
-              )}
-            </div>
-
-            {/* Risks & Trade-offs */}
-            <div style={{ background: 'rgba(244, 63, 94, 0.05)', border: '1px solid rgba(244, 63, 94, 0.2)', borderRadius: '10px', padding: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: '#fb7185', fontSize: '0.85rem', fontWeight: 700 }}>
-                <AlertTriangle size={16} />
-                <span>Скрытые риски и компромиссы</span>
-              </div>
-              {analysis.risksAndTradeoffs.length > 0 ? (
-                <ul style={{ paddingLeft: '18px', fontSize: '0.78rem', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  {analysis.risksAndTradeoffs.map((r, i) => (
-                    <li key={i}>{r}</li>
-                  ))}
-                </ul>
-              ) : (
-                <p style={{ fontSize: '0.75rem', color: '#34d399' }}>
-                  Существенных скрытых рисков не обнаружено. Баланс соблюден.
-                </p>
-              )}
-            </div>
-
-          </div>
-
-          {/* Actionable recommendations */}
-          {analysis.actionableRecommendations.length > 0 && (
-            <div style={{ marginTop: '16px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '14px' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#38bdf8', marginBottom: '8px' }}>
-                💡 Стратегические рекомендации по оптимизации:
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem', color: '#e2e8f0' }}>
-                {analysis.actionableRecommendations.map((rec, i) => (
-                  <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
-                    <span style={{ color: '#38bdf8' }}>•</span>
-                    <span>{rec}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
+      <form onSubmit={(event) => { event.preventDefault(); if (canAnalyze) void analyze(question); }}>
+        <label htmlFor="advisor-question" style={{ display: 'block', fontSize: '0.8rem', marginBottom: '6px', color: 'var(--text-muted)' }}>
+          Вопрос советнику (необязательно)
+        </label>
+        <textarea id="advisor-question" value={question} onChange={(event) => setQuestion(event.target.value)} maxLength={2000} rows={2}
+          placeholder="Какие компромиссы есть в моём сценарии?" className="advisor-input" />
+        <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '10px', margin: '10px 0 16px' }}>
+          <button type="submit" className="btn-primary" disabled={!canAnalyze}>
+            <Sparkles size={15} />{isLoading ? 'Анализируем…' : result ? 'Обновить AI-анализ' : 'Получить AI-анализ'}
+          </button>
+          {!simulation.isValid && <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Сначала выберите пять допустимых решений.</span>}
+          {hasExperimentalEvents && <span style={{ fontSize: '0.78rem', color: '#fbbf24' }}>Для AI-анализа отключите экспериментальные кризисы.</span>}
+          {isLoading && <span role="status" style={{ fontSize: '0.78rem', color: '#93c5fd' }}>Сервер рассчитывает сценарий и готовит объяснение.</span>}
         </div>
-      ) : (
-        /* Interactive AI Advisor Chat Tab */
-        <div style={{ display: 'flex', flexDirection: 'column', height: '360px' }}>
-          
-          {/* Quick preset questions */}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
-            {[
-              'Как поднять показатели Нуры?',
-              'Какие синергии можно активировать?',
-              'Как использовать остаток бюджета?',
-            ].map((prompt, i) => (
-              <button
-                key={i}
-                onClick={() => handleAskQuestion(prompt)}
-                className="btn-secondary"
-                style={{ fontSize: '0.7rem', padding: '4px 8px' }}
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
+      </form>
 
-          {/* Chat Messages */}
-          <div
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              background: 'rgba(10, 15, 29, 0.5)',
-              borderRadius: '8px',
-              padding: '12px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px',
-              marginBottom: '10px',
-              border: '1px solid rgba(255, 255, 255, 0.05)',
-            }}
-          >
-            {chatLog.length === 0 ? (
-              <div style={{ textAlign: 'center', margin: 'auto', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
-                Советник готов к консультации. Задайте вопрос по текущему сценарию.
-              </div>
-            ) : (
-              chatLog.map((msg, i) => (
-                <div
-                  key={i}
-                  style={{
-                    alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                    maxWidth: '85%',
-                    background: msg.sender === 'user' ? 'rgba(59, 130, 246, 0.25)' : 'rgba(255, 255, 255, 0.05)',
-                    border: msg.sender === 'user' ? '1px solid rgba(59, 130, 246, 0.4)' : '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '10px',
-                    padding: '8px 12px',
-                    fontSize: '0.8rem',
-                    color: '#f8fafc',
-                    whiteSpace: 'pre-line',
-                  }}
-                >
-                  {msg.text}
-                </div>
-              ))
-            )}
-            {isLoading && (
-              <div style={{ color: '#38bdf8', fontSize: '0.75rem', fontStyle: 'italic' }}>
-                Советник анализирует городской контекст...
-              </div>
-            )}
+      {error && <p role="alert" className="analysis-notice">{error}</p>}
+      {isStale && <p role="status" className="analysis-notice">Анализ устарел: решения изменились. Обновите его для текущего сценария.</p>}
+      {!result && !isLoading && <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Запустите анализ кнопкой. Числовые показатели выше вычисляются математической моделью симулятора.</p>}
+      {result && analysis && (
+        <div style={{ opacity: isStale ? 0.6 : 1 }} aria-label={isStale ? 'Устаревший анализ' : 'Анализ текущего сценария'}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <strong style={{ fontSize: '0.92rem' }}>{analysis.akimatRatingVerdict}</strong>
+            <span className={`badge ${result.source === 'llm' ? 'badge-purple' : 'badge-amber'}`}>{result.source === 'llm' ? 'Анализ LLM' : 'Анализ по правилам'}</span>
           </div>
-
-          {/* Input Box */}
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <input
-              type="text"
-              value={userQuery}
-              onChange={(e) => setUserQuery(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleAskQuestion(userQuery)}
-              placeholder="Спросите советника о компромиссах, синергиях или рисках..."
-              style={{
-                flex: 1,
-                background: 'rgba(15, 23, 42, 0.7)',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                color: '#f8fafc',
-                fontSize: '0.8rem',
-                padding: '8px 12px',
-                borderRadius: '8px',
-                outline: 'none',
-              }}
-            />
-            <button
-              onClick={() => handleAskQuestion(userQuery)}
-              className="btn-primary"
-              style={{ padding: '8px 14px' }}
-            >
-              <Send size={15} />
-            </button>
+          {(result.notice || result.reason) && <p className="analysis-notice">{result.notice || (result.reason && fallbackReasons[result.reason])}</p>}
+          <p style={{ fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '16px' }}>{analysis.executiveSummary}</p>
+          {result.answer && <div className="analysis-answer"><strong>Ответ советника</strong><p style={{ whiteSpace: 'pre-line', marginTop: '6px' }}>{result.answer}</p></div>}
+          <div className="analysis-grid">
+            <div className="analysis-box analysis-strengths">
+              <h4><CheckCircle2 size={16} />Сильные стороны</h4>
+              <ul>{analysis.strengths.map((item, index) => <li key={index}>{item}</li>)}</ul>
+            </div>
+            <div className="analysis-box analysis-risks">
+              <h4><AlertTriangle size={16} />Риски и компромиссы</h4>
+              <ul>{analysis.risksAndTradeoffs.map((item, index) => <li key={index}>{item}</li>)}</ul>
+            </div>
           </div>
-
+          {analysis.districtHighlights.length > 0 && <div className="analysis-answer">
+            <h4>Последствия для районов</h4>
+            <ul>{analysis.districtHighlights.map((item, index) => <li key={index}><strong>{item.district}:</strong> {item.verdict}{item.criticalWarning && ` ${item.criticalWarning}`}</li>)}</ul>
+          </div>}
+          {analysis.actionableRecommendations.length > 0 && <div className="analysis-answer">
+            <h4>Рекомендации</h4>
+            <ul>{analysis.actionableRecommendations.map((item, index) => <li key={index}>{item}</li>)}</ul>
+          </div>}
         </div>
       )}
-
-    </div>
+    </section>
   );
 };

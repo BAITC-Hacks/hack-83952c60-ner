@@ -19,11 +19,19 @@ jspm_packages/
 # Production build outputs
 dist/
 dist-ssr/
+dist-server/
 build/
 *.local
 
 # Environment variables and secrets
 .env
+*.env
+.env.*
+*.env
+*.env.*
+env
+env/
+!.env.example
 .env.local
 .env.development.local
 .env.test.local

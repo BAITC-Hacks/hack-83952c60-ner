@@ -18,7 +18,7 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
 }) => {
   const [copied, setCopied] = React.useState(false);
 
-  if (!isOpen) return null;
+  if (!isOpen || !simulation.isValid) return null;
 
   const analysis = generateAIAnalysis(simulation);
 
@@ -224,7 +224,7 @@ ${analysis.risksAndTradeoffs.join('\n')}
           <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.2)', padding: '14px', borderRadius: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: '#38bdf8', marginBottom: '4px' }}>
               <Sparkles size={14} />
-              <span>Резюме AI-Аналитика:</span>
+              <span>Резюме по правилам:</span>
             </div>
             <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: 1.5 }}>
               {analysis.executiveSummary}

@@ -86,8 +86,7 @@ export interface DistrictSimulationResult {
   criticalIndicators: IndicatorId[];
 }
 
-export interface SimulationResult {
-  isValid: boolean;
+interface SimulationResultBase {
   validation: ValidationResult;
   decisions: SelectedDecision[];
   districts: Record<DistrictId, DistrictSimulationResult>;
@@ -100,11 +99,23 @@ export interface SimulationResult {
   finalCritCount: number;
   criticalPairs: Array<{ districtId: DistrictId; indicatorId: IndicatorId; value: number }>;
   baseScore: number;
-  finalScore: number;
-  scoreDelta: number;
   activeSynergies: string[];
   appliedEvents?: CityEvent[];
 }
+
+export interface ValidSimulationResult extends SimulationResultBase {
+  isValid: true;
+  finalScore: number;
+  scoreDelta: number;
+}
+
+export interface InvalidSimulationResult extends SimulationResultBase {
+  isValid: false;
+  finalScore: null;
+  scoreDelta: null;
+}
+
+export type SimulationResult = ValidSimulationResult | InvalidSimulationResult;
 
 export interface CityEvent {
   id: string;

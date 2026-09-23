@@ -34,7 +34,7 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
   return (
     <div className="glass-panel" style={{ padding: '20px' }}>
       
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
         <div>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
             Аналитика 10 показателей (До и После)
@@ -51,13 +51,13 @@ export const RadarAnalytics: React.FC<RadarAnalyticsProps> = ({
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <span style={{ width: '8px', height: '8px', background: '#38bdf8', borderRadius: '2px' }} />
-            <span style={{ color: '#38bdf8', fontWeight: 600 }}>Текущий итог</span>
+            <span style={{ color: '#38bdf8', fontWeight: 600 }}>{simulation.isValid ? 'Текущий итог' : 'База до 5 решений'}</span>
           </div>
         </div>
       </div>
 
       {/* Grid of indicators */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))', gap: '12px' }}>
         {INDICATOR_LIST.map((ind) => {
           const baseVal = targetDistrict.initialIndicators[ind.id];
           const currVal = targetDistrict.finalIndicators[ind.id];

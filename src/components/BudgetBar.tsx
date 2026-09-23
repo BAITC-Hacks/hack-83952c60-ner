@@ -3,6 +3,7 @@ import { Coins, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
 import { SelectedDecision, ValidationResult } from '../engine/types';
 import { MEASURES } from '../data/measures';
 import { DIRECTIONS } from '../data/indicators';
+import { DISTRICTS } from '../data/districts';
 import { TOTAL_BUDGET, REQUIRED_DECISIONS_COUNT } from '../engine/validator';
 
 interface BudgetBarProps {
@@ -55,7 +56,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
         </div>
 
         {/* 5 Decisions Slots Status */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
             Принято решений: <strong>{decisions.length}/{REQUIRED_DECISIONS_COUNT}</strong>
           </span>
@@ -192,6 +193,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
+                  flexWrap: 'wrap',
                   background: 'rgba(59, 130, 246, 0.12)',
                   border: '1px solid rgba(59, 130, 246, 0.3)',
                   padding: '4px 10px',
@@ -203,7 +205,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                 <span style={{ color: '#e2e8f0' }}>{m.nameRu}</span>
                 {d.districtId && (
                   <span className="badge badge-purple" style={{ padding: '1px 5px', fontSize: '0.68rem' }}>
-                    {d.districtId}
+                    {DISTRICTS[d.districtId].nameRu}
                   </span>
                 )}
                 <span style={{ color: '#94a3b8' }}>({m.cost} у.е.)</span>

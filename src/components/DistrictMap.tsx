@@ -1,6 +1,6 @@
 import React from 'react';
 import { DistrictId, DistrictSimulationResult, SelectedDecision } from '../engine/types';
-import { DISTRICT_LIST } from '../data/districts';
+import { DISTRICTS } from '../data/districts';
 import { MEASURES } from '../data/measures';
 import { INDICATORS } from '../data/indicators';
 
@@ -34,13 +34,13 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
   return (
     <div className="glass-panel" style={{ padding: '20px', height: '100%', display: 'flex', flexDirection: 'column' }}>
       
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
         <div>
           <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
             Карта районов Астаны
           </h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Тепловая карта качества жизни и распределение мер по районам
+            Схематичная карта учебного датасета: качество жизни в пяти районах
           </p>
         </div>
         
@@ -198,7 +198,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
                 className="badge badge-blue"
                 style={{ fontSize: '0.68rem', background: 'rgba(15, 23, 42, 0.85)', backdropFilter: 'blur(4px)' }}
               >
-                {d.measureId}: {d.districtId || 'Город'}
+                {d.measureId}: {d.districtId ? DISTRICTS[d.districtId].nameRu : 'Город'}
               </span>
             );
           })}
@@ -217,8 +217,8 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
             border: '1px solid rgba(255, 255, 255, 0.08)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
               <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>
                 Район {selectedData.nameRu}
               </h4>
@@ -237,7 +237,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
           </div>
 
           {/* Indicators mini-grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px', marginTop: '10px' }}>
+          <div className="district-indicators" style={{ display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: '6px', marginTop: '10px' }}>
             {Object.entries(selectedData.finalIndicators).map(([indId, val]) => {
               const delta = selectedData.indicatorDeltas[indId as keyof typeof selectedData.indicatorDeltas] || 0;
               const isCrit = val < 40;

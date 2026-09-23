@@ -9,6 +9,7 @@ interface HeaderProps {
   onOpenCrisis: () => void;
   onOpenPresentation: () => void;
   crisisActive: boolean;
+  enableExperiments: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,6 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenCrisis,
   onOpenPresentation,
   crisisActive,
+  enableExperiments,
 }) => {
   // 5-hour countdown timer simulation (5:00:00)
   const [secondsRemaining, setSecondsRemaining] = useState(5 * 3600);
@@ -68,7 +70,7 @@ export const Header: React.FC<HeaderProps> = ({
             <span style={{ fontSize: '24px' }}>🏛️</span>
           </div>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
               <h1 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#f8fafc' }}>
                 «Аким на 5 часов»
               </h1>
@@ -108,14 +110,14 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={handleBenchmarkPreset}
             className="btn-secondary"
-            title="Загрузить контрольный эталонный набор из ТЗ (Score ~56.5)"
+            title="Загрузить контрольный набор из ТЗ (Score 56,54)"
             style={{ fontSize: '0.8rem', padding: '7px 12px' }}
           >
             <Sparkles size={15} color="#38bdf8" />
             Эталон ТЗ
           </button>
 
-          <button
+          {enableExperiments && <><button
             onClick={onOpenCrisis}
             className={`btn-secondary ${crisisActive ? 'badge-amber' : ''}`}
             title="Смоделировать неожиданное городское событие / форс-мажор"
@@ -143,12 +145,13 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <FileText size={15} />
             Презентация
-          </button>
+          </button></>}
 
           <button
             onClick={onReset}
             className="btn-secondary"
             title="Сбросить все решения"
+            aria-label="Сбросить все решения"
             style={{ padding: '7px 10px' }}
           >
             <RotateCcw size={15} color="#94a3b8" />

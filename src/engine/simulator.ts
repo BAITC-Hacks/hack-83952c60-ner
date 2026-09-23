@@ -7,7 +7,7 @@ import {
   SimulationResult,
 } from './types';
 import { DISTRICTS, DISTRICT_LIST } from '../data/districts';
-import { INDICATORS, INDICATOR_LIST } from '../data/indicators';
+import { INDICATOR_LIST } from '../data/indicators';
 import { MEASURES, SYNERGIES } from '../data/measures';
 import { validateDecisions } from './validator';
 
@@ -69,33 +69,43 @@ export function calculateBaseScore(): {
 }
 
 export function runSimulation(
-  decisions: SelectedDecision[],
+  input: unknown,
   events: CityEvent[] = []
 ): SimulationResult {
-  const validation = validateDecisions(decisions);
+  const validation = validateDecisions(input);
   const baseData = calculateBaseScore();
 
   if (!validation.isValid) {
     return {
       isValid: false,
       validation,
-      decisions,
+      decisions: [],
       districts: baseData.districts,
       baseCityAverage: baseData.baseCityAverage,
       finalCityAverage: baseData.baseCityAverage,
       baseMinDistrictScore: baseData.baseMinDistrictScore,
       finalMinDistrictScore: baseData.baseMinDistrictScore,
-      weakestDistrictId: 'nura',
+      weakestDistrictId: DISTRICT_LIST.reduce((weakest, district) =>
+        baseData.districts[district.id].initialDistrictScore < baseData.districts[weakest].initialDistrictScore
+          ? district.id : weakest, DISTRICT_LIST[0].id),
       baseCritCount: baseData.baseCritCount,
       finalCritCount: baseData.baseCritCount,
-      criticalPairs: [],
+      criticalPairs: DISTRICT_LIST.flatMap((district) =>
+        baseData.districts[district.id].criticalIndicators.map((indicatorId) => ({
+          districtId: district.id, indicatorId, value: district.indicators[indicatorId],
+        }))),
       baseScore: baseData.baseScore,
-      finalScore: 0,
-      scoreDelta: 0,
+      finalScore: null,
+      scoreDelta: null,
       activeSynergies: [],
       appliedEvents: events,
     };
   }
+
+  // Runtime validation above proves the shape. Copy only the accepted input fields.
+  const decisions = (input as SelectedDecision[]).map((decision) => decision.districtId
+    ? { measureId: decision.measureId, districtId: decision.districtId }
+    : { measureId: decision.measureId });
 
   // Initialize indicator values for each district
   const modifiedIndicators: Record<DistrictId, Record<IndicatorId, number>> = {
@@ -213,7 +223,7 @@ export function runSimulation(
       }
     }
 
-    const initialScore = dist.baseDistrictScore;
+    const initialScore = baseData.districts[dist.id].initialDistrictScore;
     districtsResult[dist.id] = {
       districtId: dist.id,
       nameRu: dist.nameRu,

@@ -12,18 +12,15 @@ import { CrisisModal } from './components/CrisisModal';
 import { PresentationModal } from './components/PresentationModal';
 import { CityEvent, DistrictId, SelectedDecision } from './engine/types';
 import { runSimulation } from './engine/simulator';
+import { validateDecisions } from './engine/validator';
 import { RecommendationSwap } from './engine/optimizer';
 
+const ENABLE_EXPERIMENTS = import.meta.env.VITE_ENABLE_EXPERIMENTS === 'true';
+
 export const App: React.FC = () => {
-  // Start with the official benchmark example from ТЗ Section 3:
-  // M7(Нура) + M8(Нура) + M10(Нура) + M12(Город) + M5(Сарыарка)
-  const [decisions, setDecisions] = useState<SelectedDecision[]>([
-    { measureId: 'M7', districtId: 'nura' },
-    { measureId: 'M8', districtId: 'nura' },
-    { measureId: 'M10', districtId: 'nura' },
-    { measureId: 'M12' },
-    { measureId: 'M5', districtId: 'saryarka' },
-  ]);
+  const [decisions, setDecisions] = useState<SelectedDecision[]>([]);
+  const [scenarioRevision, setScenarioRevision] = useState(0);
+  const [selectionErrors, setSelectionErrors] = useState<string[]>([]);
 
   const [activeEvents, setActiveEvents] = useState<CityEvent[]>([]);
   const [selectedDistrictId, setSelectedDistrictId] = useState<DistrictId | null>('nura');
@@ -37,25 +34,38 @@ export const App: React.FC = () => {
   const simulation = runSimulation(decisions, activeEvents);
 
   const handleAddDecision = (decision: SelectedDecision) => {
-    if (decisions.length < 5) {
-      setDecisions([...decisions, decision]);
-    }
+    const nextDecisions = [...decisions, decision];
+    const validation = validateDecisions(nextDecisions, { allowIncomplete: true });
+    setSelectionErrors(validation.errors);
+    if (!validation.isValid) return;
+    setDecisions(nextDecisions);
+    setScenarioRevision((revision) => revision + 1);
   };
 
   const handleRemoveDecision = (index: number) => {
     setDecisions(decisions.filter((_, i) => i !== index));
+    setSelectionErrors([]);
+    setScenarioRevision((revision) => revision + 1);
   };
 
   const handleReset = () => {
     setDecisions([]);
     setActiveEvents([]);
+    setSelectionErrors([]);
+    setScenarioRevision((revision) => revision + 1);
   };
 
   const handleLoadPreset = (preset: SelectedDecision[]) => {
+    const validation = validateDecisions(preset);
+    setSelectionErrors(validation.errors);
+    if (!validation.isValid) return;
     setDecisions(preset);
+    setActiveEvents([]);
+    setScenarioRevision((revision) => revision + 1);
   };
 
   const handleToggleEvent = (event: CityEvent) => {
+    setScenarioRevision((revision) => revision + 1);
     setActiveEvents((prev) =>
       prev.some((e) => e.id === event.id)
         ? prev.filter((e) => e.id !== event.id)
@@ -66,11 +76,11 @@ export const App: React.FC = () => {
   const handleApplySwap = (swap: RecommendationSwap) => {
     const nextDecisions = decisions.filter((d) => d.measureId !== swap.removeMeasureId);
     nextDecisions.push(swap.addDecision);
-    setDecisions(nextDecisions);
+    handleLoadPreset(nextDecisions);
   };
 
   return (
-    <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '24px 20px 60px' }}>
+    <main className="app-shell" style={{ maxWidth: '1440px', margin: '0 auto', padding: '24px 20px 60px' }}>
       
       {/* 1. Header with shift timer and actions */}
       <Header
@@ -80,6 +90,7 @@ export const App: React.FC = () => {
         onOpenCrisis={() => setIsCrisisOpen(true)}
         onOpenPresentation={() => setIsPresentationOpen(true)}
         crisisActive={activeEvents.length > 0}
+        enableExperiments={ENABLE_EXPERIMENTS}
       />
 
       {/* 2. Hero Score Dashboard */}
@@ -91,13 +102,14 @@ export const App: React.FC = () => {
         decisions={decisions}
         onRemoveDecision={handleRemoveDecision}
       />
+      {selectionErrors.length > 0 && <div role="alert" className="analysis-notice">{selectionErrors.join(' ')}</div>}
 
       {/* 4. AI Optimizer recommendations */}
-      <OptimizerCard
+      {ENABLE_EXPERIMENTS && <OptimizerCard
         simulation={simulation}
         decisions={decisions}
         onApplySwap={handleApplySwap}
-      />
+      />}
 
       {/* 5. Main Simulation Workspace Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '24px' }}>
@@ -114,11 +126,10 @@ export const App: React.FC = () => {
             decisions={decisions}
             onAddDecision={handleAddDecision}
             onRemoveDecision={handleRemoveDecision}
-            remainingBudget={simulation.validation.remainingBudget}
           />
         </div>
 
-        {/* Right Column: Map, Indicators, and Agentic AI (7 cols on wide screens) */}
+        {/* Right Column: Map, Indicators, and AI analysis (7 cols on wide screens) */}
         <div style={{ gridColumn: 'span 12', display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }} className="lg:grid-column-7">
           
           {/* Interactive District Heatmap of Astana */}
@@ -135,15 +146,15 @@ export const App: React.FC = () => {
             selectedDistrictId={selectedDistrictId}
           />
 
-          {/* Agentic AI Analysis & Interactive Advisor */}
-          <AIInsightCard simulation={simulation} />
+          {/* Server analysis and optional question */}
+          <AIInsightCard simulation={simulation} scenarioRevision={scenarioRevision} hasExperimentalEvents={activeEvents.length > 0} />
 
         </div>
 
       </div>
 
       {/* Modals for Optional Features */}
-      <CompareModal
+      {ENABLE_EXPERIMENTS && <><CompareModal
         isOpen={isCompareOpen}
         onClose={() => setIsCompareOpen(false)}
         currentSim={simulation}
@@ -161,9 +172,9 @@ export const App: React.FC = () => {
         isOpen={isPresentationOpen}
         onClose={() => setIsPresentationOpen(false)}
         simulation={simulation}
-      />
+      /></>}
 
-    </div>
+    </main>
   );
 };
 

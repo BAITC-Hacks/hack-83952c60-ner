@@ -98,7 +98,8 @@ export function findBestImprovements(currentDecisions: SelectedDecision[]): Reco
   if (currentDecisions.length !== 5) return [];
 
   const currentSim = runSimulation(currentDecisions);
-  const currentScore = currentSim.isValid ? currentSim.finalScore : 0;
+  if (!currentSim.isValid) return [];
+  const currentScore = currentSim.finalScore;
   const recommendations: RecommendationSwap[] = [];
 
   const currentMeasureIds = new Set(currentDecisions.map((d) => d.measureId));
@@ -120,7 +121,7 @@ export function findBestImprovements(currentDecisions: SelectedDecision[]): Reco
         const candidateDecisions = [...currentDecisions];
         candidateDecisions[i] = {
           measureId: candMeasure.id,
-          districtId: targetDist,
+          ...(targetDist ? { districtId: targetDist } : {}),
         };
 
         const testSim = runSimulation(candidateDecisions);
@@ -138,7 +139,7 @@ export function findBestImprovements(currentDecisions: SelectedDecision[]): Reco
           recommendations.push({
             removeMeasureId: toRemove.measureId,
             removeMeasureName: remMeasure.nameRu,
-            addDecision: { measureId: candMeasure.id, districtId: targetDist },
+            addDecision: { measureId: candMeasure.id, ...(targetDist ? { districtId: targetDist } : {}) },
             addMeasureName: candMeasure.nameRu,
             scoreGain: Number(gain.toFixed(2)),
             projectedScore: Number(testSim.finalScore.toFixed(2)),
