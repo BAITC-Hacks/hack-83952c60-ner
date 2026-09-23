@@ -146,6 +146,10 @@ export const CompareModal: React.FC<CompareModalProps> = ({
             <button type="submit" className="btn-primary" disabled={!canSave} aria-describedby={saveHelpId}><Plus size={16} aria-hidden="true" />Сохранить сценарий</button>
             <p id={saveHelpId} className="scenarios-help">{saveHelp}</p>
             {saveStatus && <p role="status" className="scenarios-help">{saveStatus}</p>}
+            {saveStatus === 'Сценарий добавлен в библиотеку.' && <div>
+              <p className="scenarios-help">Чтобы проверить другой подход, вернитесь к мерам, измените решения и сохраните их под новым названием. Первый вариант останется в библиотеке.</p>
+              <button type="button" className="btn-secondary" onClick={onClose}>Вернуться к мерам</button>
+            </div>}
           </form>
 
           <section aria-label="Библиотека сценариев" className="scenarios-section">

@@ -363,3 +363,23 @@ button:focus-visible, select:focus-visible, textarea:focus-visible {
   .scenarios-pair-fields, .scenarios-decision-lists { grid-template-columns: minmax(0, 1fr); }
   .scenarios-table th, .scenarios-table td { padding: 10px; }
 }
+.journey { padding: 24px; margin-bottom: 24px; }
+.journey h2 { font-size: 1.5rem; margin: 8px 0; }
+.journey h3 { font-size: 1rem; margin: 0 0 12px; }
+.journey p, .journey li { line-height: 1.6; margin-bottom: 12px; }
+.journey ul { padding-left: 20px; }
+.journey-eyebrow { color: #7dd3fc; font-size: .85rem; }
+.journey-note { color: var(--text-muted); font-size: .85rem; }
+.journey-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; margin-top: 24px; }
+.journey-label { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px; }
+.journey select { background: #0f172a; color: #f8fafc; padding: 10px; border: 1px solid #64748b; border-radius: 8px; font: inherit; }
+.journey-problems { display: grid; gap: 8px; }
+.journey-problem { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 12px; text-align: left; background: rgba(255,255,255,.03); color: #f8fafc; border: 1px solid #475569; border-radius: 10px; cursor: pointer; font: inherit; }
+.journey-problem small { grid-column: 1 / -1; color: #cbd5e1; }
+.journey-problem[aria-pressed="true"] { background: #173450; border-color: #38bdf8; }
+.journey button:focus-visible, .journey select:focus-visible { outline: 2px solid #7dd3fc; outline-offset: 3px; }
+.journey-filter { margin-bottom: 16px; padding: 12px; border-left: 3px solid #38bdf8; background: rgba(56,189,248,.08); }
+.journey-filter p { margin-bottom: 10px; }
+.journey a { color: #7dd3fc; }
+.journey a.btn-primary { color: #fff; text-decoration: none; margin-bottom: 12px; }
+@media (max-width: 760px) { .journey-grid { grid-template-columns: minmax(0, 1fr); } .journey { padding: 18px; } }
