@@ -2,6 +2,8 @@
 
 Откройте `/#/transport` или вкладку «Транспорт · 3D». Запуск: `npm install`, затем `npm run dev:client`. Если порт 3000 занят: `npm run dev:client -- --port 5175`.
 
+Общая верхняя панель переключает язык (русский, казахский, английский) и светлую/тёмную тему. Подписи 3D-сцены обновляются без сброса движения или камеры; сама сцена сохраняет ночную палитру.
+
 ## Управление
 
 - «Текущая ситуация»: час пик, три моста, красный затор центрального узла, 12 км/ч и +48 минут.
@@ -22,7 +24,7 @@ export default function Page() {
 Компонент зависит от React, Three.js и lucide-react. Стили изолированы префиксом `tr-`; внешний API и сервер не нужны. Three.js загружается отдельным чанком при открытии режима. Шрифты Manrope и JetBrains Mono используют системные запасные шрифты при отсутствии сети.
 
 - `src/transport/TransportTwin.tsx` — управление и HUD. React получает телеметрию 8 раз в секунду.
-- `src/transport/scene.ts` — WebGL-сцена, OrbitControls, геометрия города, шейдер точек, процедурная эстакада и очистка ресурсов. Контракт `createTransportScene()` возвращает `setOptions`, `reset`, `dispose`.
+- `src/transport/scene.ts` — WebGL-сцена, OrbitControls, геометрия города, шейдер точек, процедурная эстакада и очистка ресурсов. Контракт `createTransportScene()` возвращает `setOptions`, `updateLanguage`, `reset`, `dispose`.
 - `src/transport/simulation.ts` — чистая детерминированная модель без браузерных зависимостей. `createTraffic`, `stepTraffic` и `sampleAgent` можно подключить к другой визуализации.
 - `src/transport/transport.css` — адаптивная оболочка.
 

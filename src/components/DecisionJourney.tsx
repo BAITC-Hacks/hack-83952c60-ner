@@ -24,8 +24,10 @@ export function DecisionJourney({ districtId, focus, simulation, savedCount, onD
     <p className="journey-eyebrow">{t('Проблема → меры → последствия → сравнение')}</p>
     <h2>{t('Кому поможет ваш бюджет?')}</h2>
     <p>{t('Распределите 100 у.е. между пятью решениями. Узнайте, что улучшится и какие проблемы останутся через 8 кварталов.')}</p>
-    <p className="journey-note">{t('«Район» в каталоге — территория действия меры, а не уровень полномочий районного акима.')}</p>
-    <p className="journey-note">{t('Учебная модель на синтетических данных, а не прогноз развития города.')}</p>
+    <details className="journey-help"><summary>{t('Как работает планирование')}</summary>
+      <p>{t('«Район» в каталоге — территория действия меры, а не уровень полномочий районного акима.')}</p>
+      <p>{t('Учебная модель на синтетических данных, а не прогноз развития города.')}</p>
+    </details>
     <div className="journey-grid">
       <div>
         <h3>{t('1. Найдите проблему района')}</h3>
@@ -34,7 +36,7 @@ export function DecisionJourney({ districtId, focus, simulation, savedCount, onD
             {DISTRICT_LIST.map((d) => <option key={d.id} value={d.id}>{t(d.nameRu)}</option>)}
           </select>
         </label>
-        <p>{t(district.profileRu)}</p>
+        <details className="journey-help"><summary>{t('О выбранном районе')}</summary><p>{t(district.profileRu)}</p></details>
         <p className="journey-note">{t('Три самых низких исходных показателя. Чем выше балл, тем лучше; ниже 40 — критический уровень.')}</p>
         <div className="journey-problems">
           {priorities.map((indicator) => <button key={indicator.id} className="journey-problem" aria-pressed={focus === indicator.id} onClick={() => onProblem(focus === indicator.id ? null : indicator.id)}>

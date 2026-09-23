@@ -59,57 +59,26 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
         <button className="btn-secondary" onClick={() => { setActiveDirectionFilter('all'); onClearProblem?.(); }}>{t('Показать все меры')}</button>
       </div>}
       
-      {/* Header and Direction Filter Pills */}
+      {/* Category selector keeps all five direction names readable. */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
         <div>
-          <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f8fafc' }}>
+          <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-main)' }}>
             {t("Каталог управленческих мероприятий (14 инициатив)")}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
             {t("Выберите ровно 5 мер. Максимум 2 на одно направление.")}</p>
         </div>
 
-        {/* Filter buttons */}
-        <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-          <button
-            onClick={() => { setActiveDirectionFilter('all'); onClearProblem?.(); }}
-            style={{
-              fontSize: '0.72rem',
-              padding: '4px 10px',
-              borderRadius: '8px',
-              border: activeDirectionFilter === 'all' ? '1px solid #3b82f6' : '1px solid rgba(255, 255, 255, 0.08)',
-              background: activeDirectionFilter === 'all' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 255, 255, 0.03)',
-              color: activeDirectionFilter === 'all' ? '#93c5fd' : 'var(--text-dim)',
-              cursor: 'pointer',
-              fontWeight: 600,
-            }}
-          >
-            {t("Все (14)")}</button>
-          {DIRECTION_LIST.map((dir) => {
-            const isActive = activeDirectionFilter === dir.id;
-            return (
-              <button
-                key={dir.id}
-                onClick={() => { setActiveDirectionFilter(dir.id); onClearProblem?.(); }}
-                style={{
-                  fontSize: '0.72rem',
-                  padding: '4px 10px',
-                  borderRadius: '8px',
-                  border: isActive ? `1px solid ${dir.color}` : '1px solid rgba(255, 255, 255, 0.08)',
-                  background: isActive ? `${dir.color}25` : 'rgba(255, 255, 255, 0.03)',
-                  color: isActive ? '#f8fafc' : 'var(--text-dim)',
-                  cursor: 'pointer',
-                  fontWeight: 600,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
-              >
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: dir.color }} />
-                <span>{t(dir.nameRu).split(' ')[0]}</span>
-              </button>
-            );
-          })}
-        </div>
+        <label className="measure-category"><span>{t('Категория мер')}</span>
+          <select value={problemFocus ? 'all' : activeDirectionFilter} onChange={event => {
+            setActiveDirectionFilter(event.target.value as DirectionId | 'all');
+            onClearProblem?.();
+          }}>
+            <option value="all">{t('Все (14)')}</option>
+            {DIRECTION_LIST.map(direction => <option key={direction.id} value={direction.id}>
+              {t(direction.nameRu)} ({MEASURE_LIST.filter(measure => measure.direction === direction.id).length})
+            </option>)}
+          </select>
+        </label>
       </div>
 
       {/* Grid of Measure Cards */}
@@ -138,12 +107,12 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
               style={{
                 background: isSelected
                   ? 'rgba(59, 130, 246, 0.12)'
-                  : 'rgba(255, 255, 255, 0.02)',
+                  : 'var(--surface-subtle)',
                 border: isSelected
                   ? '1px solid #3b82f6'
                   : isBlocked
                   ? '1px solid rgba(244, 63, 94, 0.4)'
-                  : '1px solid rgba(255, 255, 255, 0.07)',
+                  : '1px solid var(--border-subtle)',
                 borderRadius: '12px',
                 padding: '14px',
                 display: 'flex',
@@ -161,7 +130,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                         fontFamily: 'var(--font-mono)',
                         fontWeight: 800,
                         fontSize: '0.85rem',
-                        color: dirMeta.color,
+                        color: 'var(--text-main)',
                         background: `${dirMeta.color}15`,
                         padding: '2px 6px',
                         borderRadius: '6px',
@@ -170,7 +139,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                     >
                       {measure.id}
                     </span>
-                    <span className="badge" style={{ fontSize: '0.68rem', background: 'rgba(255, 255, 255, 0.06)', color: 'var(--text-muted)' }}>
+                    <span className="badge" style={{ fontSize: '0.68rem', background: 'var(--surface-soft)', color: 'var(--text-muted)' }}>
                       {t(measure.type)}
                     </span>
                   </div>
@@ -181,7 +150,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                         fontFamily: 'var(--font-mono)',
                         fontSize: '0.9rem',
                         fontWeight: 700,
-                        color: isSelected ? '#38bdf8' : '#f8fafc',
+                        color: isSelected ? 'var(--color-cyan)' : 'var(--text-main)',
                       }}
                     >
                       {measure.cost} {t("у.е.")}</span>
@@ -189,7 +158,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                 </div>
 
                 {/* Measure Name */}
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc', lineHeight: 1.35, marginBottom: '6px' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)', lineHeight: 1.35, marginBottom: '6px' }}>
                   {t(measure.nameRu)}
                 </h4>
 
@@ -208,7 +177,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                         padding: '2px 6px',
                         borderRadius: '4px',
                         background: (val || 0) > 0 ? 'rgba(16, 185, 129, 0.12)' : 'rgba(244, 63, 94, 0.12)',
-                        color: (val || 0) > 0 ? '#34d399' : '#fb7185',
+                        color: (val || 0) > 0 ? 'var(--color-green)' : 'var(--color-rose)',
                         border: (val || 0) > 0 ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(244, 63, 94, 0.25)',
                         fontWeight: 600,
                       }}
@@ -226,7 +195,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                       alignItems: 'center',
                       gap: '4px',
                       fontSize: '0.68rem',
-                      color: '#38bdf8',
+                      color: 'var(--color-cyan)',
                       marginBottom: '8px',
                       background: 'rgba(6, 182, 212, 0.1)',
                       padding: '3px 6px',
@@ -246,7 +215,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                       alignItems: 'center',
                       gap: '4px',
                       fontSize: '0.68rem',
-                      color: '#fb7185',
+                      color: 'var(--color-rose)',
                       marginBottom: '8px',
                       background: 'rgba(244, 63, 94, 0.1)',
                       padding: '3px 6px',
@@ -269,9 +238,9 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                     onChange={(e) => handleDistrictChange(measure.id, e.target.value as DistrictId)}
                     style={{
                       flex: 1,
-                      background: 'rgba(15, 23, 42, 0.7)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      color: '#f8fafc',
+                      background: 'var(--surface-input)',
+                      border: '1px solid var(--border-strong)',
+                      color: 'var(--text-main)',
                       fontSize: '0.75rem',
                       padding: '6px 8px',
                       borderRadius: '8px',
@@ -295,7 +264,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                     onClick={() => onRemoveDecision(decisionIndex)}
                     style={{
                       background: 'rgba(244, 63, 94, 0.15)',
-                      color: '#fb7185',
+                      color: 'var(--color-rose)',
                       border: '1px solid rgba(244, 63, 94, 0.3)',
                       borderRadius: '8px',
                       padding: '6px 12px',

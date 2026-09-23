@@ -1,0 +1,98 @@
+/* The transport dashboard shares the app preference; 3D scenes keep their own night palette. */
+:root[data-theme='light'] .tr-app {
+  --tr-bg: var(--bg-primary);
+  --tr-panel: var(--bg-card);
+  --tr-line: var(--border-color);
+  --tr-text: var(--text-main);
+  --tr-muted: var(--text-muted);
+  --tr-mint: var(--color-green);
+  color-scheme: light;
+}
+
+:root[data-theme='light'] .tr-brand-symbol,
+:root[data-theme='light'] .tr-avatar {
+  background: var(--surface-soft);
+  border-color: var(--border-strong);
+  color: var(--color-green);
+}
+:root[data-theme='light'] .tr-version { border-color: var(--border-color); }
+:root[data-theme='light'] :is(.tr-brand-sub, .tr-version, .tr-nav, .tr-system, .tr-breadcrumb, .tr-heading p, .tr-heading p > span, .tr-location) { color: var(--text-muted); }
+:root[data-theme='light'] :is(.tr-breadcrumb strong, .tr-nav a:hover, .tr-panel-heading > span:first-child, .tr-insight strong) { color: var(--text-main); }
+:root[data-theme='light'] :is(.tr-eyebrow, .tr-heading-dot, .tr-nav a[aria-current='page']) { color: var(--color-green); }
+:root[data-theme='light'] .tr-nav a[aria-current='page'] { border-bottom-color: var(--color-green); }
+:root[data-theme='light'] .tr-system .tr-status-dot { background: var(--color-green); box-shadow: none; }
+:root[data-theme='light'] .tr-help-button { background: var(--surface-input); border-color: var(--border-strong); }
+:root[data-theme='light'] .tr-help-button:hover { background: var(--surface-soft); }
+
+:root[data-theme='light'] :is(.tr-panel-description, .tr-panel-heading svg, .tr-panel-number, .tr-option-number, .tr-scenario-caption, .tr-transition-status, .tr-modal-split > span, .tr-reroute, .tr-sidebar-note, .tr-sidebar-note svg) { color: var(--text-muted); }
+:root[data-theme='light'] .tr-scenario { background: var(--surface-subtle); border-color: var(--border-color); }
+:root[data-theme='light'] .tr-scenario:hover { background: var(--surface-soft); border-color: var(--border-strong); }
+:root[data-theme='light'] .tr-scenario.selected.baseline { background: #fff7e8; border-color: #a78140; }
+:root[data-theme='light'] :is(.tr-scenario-meta, .baseline .tr-option-number, .tr-modal-split > strong) { color: var(--color-amber); }
+:root[data-theme='light'] .tr-radio { border-color: var(--border-strong); }
+:root[data-theme='light'] .selected .tr-radio { border-color: var(--color-amber); }
+:root[data-theme='light'] .selected .tr-radio::after { background: var(--color-amber); }
+:root[data-theme='light'] .tr-scenario.project { background: #f1faf6; border-color: #a4cabc; }
+:root[data-theme='light'] .tr-scenario.project.selected { background: #e1f4eb; border-color: #43836a; }
+:root[data-theme='light'] :is(.tr-project-tag, .project .tr-option-number, .project .tr-scenario-meta, .tr-scenario-cta, .tr-reroute > strong) { color: var(--color-green); }
+:root[data-theme='light'] .tr-project-tag { background: #fff9; border-color: #aacdbc; }
+:root[data-theme='light'] .tr-scenario-cta { border-top-color: #adcdbb; }
+:root[data-theme='light'] .project.selected .tr-radio { border-color: var(--color-green); }
+:root[data-theme='light'] .project.selected .tr-radio::after { background: var(--color-green); }
+:root[data-theme='light'] .tr-modal-split .tr-cyan { color: var(--color-cyan); }
+:root[data-theme='light'] .tr-reroute { border-top-color: var(--border-color); }
+
+:root[data-theme='light'] :is(.tr-metric-label, .tr-metric-label svg, .tr-metric-index, .tr-metric-value > span, .tr-metric-footer) { color: var(--text-muted); }
+:root[data-theme='light'] .tr-metric-footer { border-top-color: var(--border-color); }
+:root[data-theme='light'] .tr-spark { color: var(--color-green); }
+:root[data-theme='light'] .tr-spark-delay { color: var(--color-amber); }
+/* The upstream status classes use !important; retain their state-specific meaning. */
+:root[data-theme='light'] .tr-positive { color: var(--color-green) !important; }
+:root[data-theme='light'] .tr-negative { color: var(--color-amber) !important; }
+:root[data-theme='light'] .tr-impact { background: #edf8f2; border-color: #b9d7c7; }
+:root[data-theme='light'] .tr-impact .tr-metric-value > strong { color: var(--color-green); }
+:root[data-theme='light'] .tr-insight { background: #edf8f2; border-color: #b9d7c7; }
+:root[data-theme='light'] .tr-insight-icon { background: #deefe5; border-color: #adcdbb; color: var(--color-green); }
+:root[data-theme='light'] .tr-insight p { color: var(--text-muted); }
+:root[data-theme='light'] .tr-insight-tag { color: var(--color-green); }
+:root[data-theme='light'] :is(.tr-footer, .tr-footer-separator, .tr-footer button) { color: var(--text-muted); }
+:root[data-theme='light'] .tr-footer button:hover { color: var(--color-green); }
+:root[data-theme='light'] .tr-notice { background: #e1f4eb; color: var(--color-green); }
+
+:root[data-theme='light'] .tr-modal-backdrop { background: var(--overlay); }
+:root[data-theme='light'] .tr-modal { background: var(--surface-modal); border-color: var(--border-strong); box-shadow: var(--shadow-card); }
+:root[data-theme='light'] .tr-modal p { color: var(--text-muted); }
+:root[data-theme='light'] .tr-modal-action { background: #e1f4eb; border-color: #43836a; color: var(--color-green) !important; }
+:root[data-theme='light'] .tr-modal .tr-icon-button { background: var(--surface-soft); border-color: var(--border-strong); color: var(--text-main) !important; }
+
+/* In-scene overlays stay readable against the dark geographic canvas. */
+:root[data-theme='light'] .tr-map { --tr-mint: #9bf5d0; color: #e4eaed; color-scheme: dark; }
+:root[data-theme='light'] .tr-viewbar { --tr-mint: var(--color-green); background: var(--surface-input); border-top-color: var(--border-color); color: var(--text-main); color-scheme: light; }
+:root[data-theme='light'] .tr-view-switch button { color: var(--text-muted); }
+:root[data-theme='light'] .tr-view-switch button[aria-pressed='true'] { background: #e1f4eb; border-color: #a4cabc; color: var(--color-green); }
+:root[data-theme='light'] .tr-viewbar .tr-icon-button { background: var(--surface-soft); border-color: var(--border-strong); color: var(--text-main) !important; }
+:root[data-theme='light'] .tr-viewbar .tr-icon-button:hover { background: #e1f4eb; color: var(--color-green) !important; }
+:root[data-theme='light'] .tr-map-hint { color: var(--text-muted); }
+
+/* District-map chrome follows the page. Its night scene, cards and animation retain their palette. */
+:root[data-theme='light'] .twin-shell .twin-map-panel { background: var(--bg-card); border-color: var(--border-color); }
+:root[data-theme='light'] .twin-map-panel > .twin-district-summary { border-top-color: var(--border-color); }
+:root[data-theme='light'] .dt-map { --dt-muted: var(--text-muted); background: var(--bg-card); color: var(--text-main); }
+:root[data-theme='light'] :is(.dt-header, .dt-footer) { background: var(--bg-card); border-color: var(--border-color); }
+:root[data-theme='light'] .dt-logo { color: var(--color-cyan); background: var(--surface-soft); border-color: var(--border-strong); box-shadow: none; }
+:root[data-theme='light'] :is(.dt-kicker, .dt-version, .dt-field-label, .dt-settings small, .dt-legend-title, .dt-legend-item, .dt-better, .dt-source > span) { color: var(--text-muted); }
+:root[data-theme='light'] .dt-version { border-color: var(--border-strong); }
+:root[data-theme='light'] .dt-header-divider { background: var(--border-color); }
+:root[data-theme='light'] .dt-map :is(.dt-layer-trigger, .dt-icon-button) { background: var(--surface-input); border-color: var(--border-strong); color: var(--text-main); }
+:root[data-theme='light'] .dt-layer-trigger svg:first-child { color: var(--color-cyan); }
+:root[data-theme='light'] .dt-account i { background: var(--color-green); border-color: var(--surface-input); }
+:root[data-theme='light'] .dt-popover { background: var(--surface-modal); color: var(--text-main); border-color: var(--border-strong); box-shadow: var(--shadow-card); }
+:root[data-theme='light'] .dt-map .dt-layer-menu button { color: var(--text-main); }
+:root[data-theme='light'] .dt-map .dt-layer-menu button[aria-pressed='true'] { background: var(--surface-selected); color: var(--color-cyan); }
+:root[data-theme='light'] .dt-check { color: var(--color-green); }
+:root[data-theme='light'] .dt-settings input { accent-color: var(--color-green); }
+:root[data-theme='light'] .dt-source { border-top-color: var(--border-color); }
+:root[data-theme='light'] .dt-map .dt-source button { color: var(--text-muted); }
+:root[data-theme='light'] .dt-map .dt-source button[aria-pressed='true'] { background: var(--surface-selected); color: var(--color-cyan); border-color: var(--border-strong); }
+:root[data-theme='light'] .dt-stage { color: #dce8ec; color-scheme: dark; }
+:root[data-theme='light'] .dt-legend-item i { filter: brightness(.6); opacity: 1; }

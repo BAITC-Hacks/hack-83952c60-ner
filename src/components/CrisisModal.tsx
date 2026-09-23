@@ -25,13 +25,13 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
   const getEventIcon = (id: string) => {
     switch (id) {
       case 'blizzard':
-        return <Wind size={20} color="#38bdf8" />;
+        return <Wind size={20} color="var(--color-cyan)" />;
       case 'heating_pipe_break':
-        return <Flame size={20} color="#f43f5e" />;
+        return <Flame size={20} color="var(--color-rose)" />;
       case 'smog_inversion':
         return <AlertTriangle size={20} color="#f59e0b" />;
       default:
-        return <Users size={20} color="#a78bfa" />;
+        return <Users size={20} color="var(--color-purple)" />;
     }
   };
 
@@ -40,7 +40,7 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        backgroundColor: 'var(--overlay)',
         backdropFilter: 'blur(8px)',
         zIndex: 50,
         display: 'flex',
@@ -55,14 +55,14 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
           width: '100%',
           maxWidth: '680px',
           padding: '24px',
-          background: 'rgba(15, 23, 42, 0.95)',
+          background: 'var(--surface-modal)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <ShieldAlert size={22} color="#f59e0b" />
             <div>
-              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
+              <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>
                 {t("Городские форс-мажоры (Стресс-тестирование)")}</h3>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 {t("Проверьте устойчивость выбранного сценария к непредвиденным городским кризисам Астаны")}</p>
@@ -85,8 +85,8 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
                 key={event.id}
                 style={{
                   padding: '14px',
-                  background: active ? 'rgba(245, 158, 11, 0.1)' : 'rgba(255, 255, 255, 0.02)',
-                  border: active ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: active ? 'rgba(245, 158, 11, 0.1)' : 'var(--surface-subtle)',
+                  border: active ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid var(--border-subtle)',
                   borderRadius: '12px',
                   display: 'flex',
                   alignItems: 'center',
@@ -100,7 +100,7 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
                     style={{
                       padding: '10px',
                       borderRadius: '10px',
-                      background: 'rgba(255, 255, 255, 0.05)',
+                      background: 'var(--surface-soft)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
@@ -109,7 +109,7 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
                     {getEventIcon(event.id)}
                   </div>
                   <div>
-                    <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', marginBottom: '4px' }}>
+                    <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '4px' }}>
                       {t(event.titleRu)}
                     </h4>
                     <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
@@ -127,6 +127,7 @@ export const CrisisModal: React.FC<CrisisModalProps> = ({
                     flexShrink: 0,
                     background: active ? '#f59e0b' : undefined,
                     borderColor: active ? '#d97706' : undefined,
+                    color: active ? '#17263c' : undefined,
                   }}
                 >
                   {active ? t("Активен") : t("Смоделировать")}

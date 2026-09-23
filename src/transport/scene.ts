@@ -2,10 +2,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { AGENT_COUNT, BRIDGES, CameraView, createTraffic, sampleAgent, seededRandom, smooth, stepTraffic, XYZ } from './simulation';
+import { getLanguage, t } from '../i18n';
 
 export interface SceneOptions { project: boolean; paused: boolean; view: CameraView; agentsVisible: boolean; buildingsVisible: boolean }
 export interface Telemetry { blend: number; occupancy: number[]; congestion: number[]; fps: number; elapsed: number; completed: number }
-export interface SceneController { setOptions(options: SceneOptions): void; reset(): void; dispose(): void }
+export interface SceneController { setOptions(options: SceneOptions): void; updateLanguage(): void; reset(): void; dispose(): void }
 
 const C = { amber: new THREE.Color('#ffbd60'), cyan: new THREE.Color('#5ffff0'), red: new THREE.Color('#ff455b') };
 const riverX = (z: number) => Math.sin(z * .048) * 4;
@@ -22,7 +23,11 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
   renderer.setClearColor('#0d141c');
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   host.appendChild(renderer.domElement);
-  renderer.domElement.setAttribute('aria-label', 'Интерактивная 3D-карта Астаны: река Ишим, три моста и 420 транспортных агентов');
+  const updateCanvasDescription = () => {
+    renderer.domElement.setAttribute('aria-label', t('Интерактивная 3D-карта Астаны: река Ишим, три моста и {0} транспортных агентов', [AGENT_COUNT]));
+    renderer.domElement.lang = getLanguage();
+  };
+  updateCanvasDescription();
   renderer.domElement.setAttribute('role', 'img');
   const camera = new THREE.PerspectiveCamera(39, 1, .1, 400);
   if (initial.view === 'junction') camera.position.set(33, 31, 39);
@@ -188,24 +193,35 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
 
   // Map labels are canvas-backed sprites and remain attached to world coordinates during orbit.
   const textures: THREE.Texture[] = [];
-  const label = (text: string, position: XYZ, color = '#9db6c1', scale = 1) => {
+  const redrawLabels: Array<() => void> = [];
+  const label = (source: string, position: XYZ, color = '#9db6c1', scale = 1, spaced = false) => {
     const canvas = document.createElement('canvas'); canvas.width = 512; canvas.height = 96;
     const ctx = canvas.getContext('2d')!;
-    ctx.fillStyle = color; ctx.font = '500 30px sans-serif'; ctx.textAlign = 'center';
-    ctx.fillText(text, 256, 57);
     const texture = new THREE.CanvasTexture(canvas); textures.push(texture);
+    const redraw = () => {
+      const translated = t(source).toLocaleUpperCase(getLanguage());
+      const text = spaced ? Array.from(translated).join(' ') : translated;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = color; ctx.font = '500 30px sans-serif'; ctx.textAlign = 'center';
+      // Longer translations fit the same world-space label without clipping.
+      const fontSize = Math.min(30, 30 * 490 / Math.max(1, ctx.measureText(text).width));
+      ctx.font = `500 ${fontSize}px sans-serif`;
+      ctx.fillText(text, 256, 57);
+      texture.needsUpdate = true;
+    };
+    redrawLabels.push(redraw); redraw();
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture, transparent: true, depthTest: false, opacity: .85 }));
     sprite.position.set(...position); sprite.scale.set(22 * scale, 4.12 * scale, 1); scene.add(sprite);
     return sprite;
   };
-  label('С А Р Ы А Р К А', [-29, 1, -44], '#b4c5cb');
-  label('Н У Р А', [33, 1, 40], '#b4c5cb');
-  label('Е С И Л Ь', [35, 1, -43], '#b4c5cb');
-  label('И Ш И М', [-1, .3, 39], '#53b7c3', .65);
-  label('ПРАВЫЙ БЕРЕГ', [-43, 1, 27], '#63828f', .68);
-  label('ЛЕВЫЙ БЕРЕГ', [45, 1, -9], '#63828f', .68);
-  const junctionLabel = label('01 / ЦЕНТРАЛЬНЫЙ УЗЕЛ', [1, 9, 1], '#ff929a', .76);
-  const newLabel = label('BUS LANE / +40% ПОТОКА', [0, 10, -9], '#7affe1', .74);
+  label('Сарыарка', [-29, 1, -44], '#b4c5cb', 1, true);
+  label('Нура', [33, 1, 40], '#b4c5cb', 1, true);
+  label('Есиль', [35, 1, -43], '#b4c5cb', 1, true);
+  label('Ишим', [-1, .3, 39], '#53b7c3', .65, true);
+  label('Правый берег', [-43, 1, 27], '#63828f', .68);
+  label('Левый берег', [45, 1, -9], '#63828f', .68);
+  const junctionLabel = label('01 / Центральный узел', [1, 9, 1], '#ff929a', .76);
+  const newLabel = label('Автобусная полоса / +40% потока', [0, 10, -9], '#7affe1', .74);
   newLabel.visible = false;
 
   const pulse = new THREE.Mesh(new THREE.RingGeometry(4.7, 4.78, 64), new THREE.MeshBasicMaterial({ color: '#ff5968', transparent: true, opacity: .4, side: THREE.DoubleSide, depthWrite: false }));
@@ -276,6 +292,11 @@ export function createTransportScene(host: HTMLDivElement, initial: SceneOptions
   };
   frame = requestAnimationFrame(animate);
   return {
+    updateLanguage() {
+      if (disposed) return;
+      updateCanvasDescription();
+      redrawLabels.forEach(redraw => redraw());
+    },
     setOptions(next) {
       if (next.view !== options.view) { desiredPosition.copy(next.view === 'orbit' ? orbitPosition : junctionPosition); desiredTarget.set(0, next.view === 'orbit' ? 0 : 1, next.view === 'orbit' ? 0 : -3); flying = true; }
       options = next;

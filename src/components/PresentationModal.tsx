@@ -40,7 +40,7 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+        backgroundColor: 'var(--overlay)',
         backdropFilter: 'blur(8px)',
         zIndex: 50,
         display: 'flex',
@@ -58,15 +58,15 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
           display: 'flex',
           flexDirection: 'column',
           padding: '28px',
-          background: 'rgba(15, 23, 42, 0.98)',
+          background: 'var(--surface-modal)',
         }}
       >
         {/* Header Actions */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <FileText size={22} color="#38bdf8" />
+            <FileText size={22} color="var(--color-cyan)" />
             <div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: '#f8fafc' }}>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 800, color: 'var(--text-main)' }}>
                 {t("Презентация решения Акимата г. Астаны")}</h3>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                 {t("Готовый исполнительный слайд для защиты перед комиссией")}</p>
@@ -75,7 +75,7 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
 
           <div style={{ display: 'flex', gap: '8px' }}>
             <button onClick={handleCopy} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
-              {copied ? <Check size={14} color="#34d399" /> : <Copy size={14} />}
+              {copied ? <Check size={14} color="var(--color-green)" /> : <Copy size={14} />}
               {copied ? t("Скопировано!") : t("Копировать")}
             </button>
             <button onClick={handlePrint} className="btn-secondary" style={{ padding: '6px 12px', fontSize: '0.75rem' }}>
@@ -96,64 +96,64 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
           style={{
             flex: 1,
             overflowY: 'auto',
-            background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.6))',
+            background: 'var(--surface-inset)',
             border: '1px solid rgba(59, 130, 246, 0.25)',
             borderRadius: '16px',
             padding: '24px',
           }}
         >
           {/* Slide Top Banner */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '16px', marginBottom: '20px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '16px', marginBottom: '20px' }}>
             <div>
               <span className="badge badge-blue" style={{ marginBottom: '6px' }}>
                 {t("ГОРОДСКОЙ СИМУЛЯТОР «АКИМ НА 5 ЧАСОВ»")}</span>
-              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#f8fafc' }}>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-main)' }}>
                 {t("Стратегия развития качества жизни в Астане")}</h2>
-              <p style={{ fontSize: '0.8rem', color: '#94a3b8' }}>
-                {t("Стиль управления:")}{' '}<strong style={{ color: '#38bdf8' }}>{analysis.akimatRatingVerdict}</strong>
+              <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                {t("Стиль управления:")}{' '}<strong style={{ color: 'var(--color-cyan)' }}>{analysis.akimatRatingVerdict}</strong>
               </p>
             </div>
 
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', textTransform: 'uppercase' }}>
                 {t("Astana QoL Score")}</div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '2rem', fontWeight: 800, color: '#38bdf8' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '2rem', fontWeight: 800, color: 'var(--color-cyan)' }}>
                 {simulation.finalScore.toFixed(2)}
               </div>
-              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#34d399' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--color-green)' }}>
                 +{simulation.scoreDelta.toFixed(2)} {t("к базе (52.56)")}</div>
             </div>
           </div>
 
           {/* 3 Metric Summary Boxes */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginBottom: '20px' }}>
-            <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '12px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            <div style={{ background: 'var(--surface-subtle)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>{t("Бюджет проекта")}</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: '#f8fafc' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--text-main)' }}>
                 {simulation.validation.totalCost} {t("/ 100 у.е.")}</div>
-              <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{t("Остаток:")}{' '}{simulation.validation.remainingBudget} {t("у.е.")}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{t("Остаток:")}{' '}{simulation.validation.remainingBudget} {t("у.е.")}</div>
             </div>
 
-            <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '12px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            <div style={{ background: 'var(--surface-subtle)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>{t("Слабейший район")}</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>
                 {t(DISTRICTS[simulation.weakestDistrictId]?.nameRu)}
               </div>
-              <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{t("Балл:")}{' '}{simulation.finalMinDistrictScore.toFixed(2)}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{t("Балл:")}{' '}{simulation.finalMinDistrictScore.toFixed(2)}</div>
             </div>
 
-            <div style={{ background: 'rgba(255, 255, 255, 0.03)', padding: '12px', borderRadius: '10px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            <div style={{ background: 'var(--surface-subtle)', padding: '12px', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>{t("Критические провалы")}</div>
-              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: simulation.finalCritCount === 0 ? '#34d399' : '#f43f5e' }}>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: simulation.finalCritCount === 0 ? 'var(--color-green)' : 'var(--color-rose)' }}>
                 {simulation.finalCritCount === 0 ? t("Ликвидированы (0)") : t("{0} шт.", [simulation.finalCritCount])}
               </div>
-              <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{t("Штраф: -")}{simulation.finalCritCount}{t(".0 баллов")}</div>
+              <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{t("Штраф: -")}{simulation.finalCritCount}{t(".0 баллов")}</div>
             </div>
           </div>
 
           {/* 5 Decisions Grid */}
           <div style={{ marginBottom: '20px' }}>
-            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f8fafc', marginBottom: '8px' }}>
+            <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '8px' }}>
               {t("Пять ключевых управленческих решений Акима:")}{' '}</h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
               {simulation.decisions.map((d, i) => {
@@ -166,18 +166,18 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      background: 'rgba(255, 255, 255, 0.03)',
+                      background: 'var(--surface-subtle)',
                       padding: '8px 12px',
                       borderRadius: '8px',
-                      border: '1px solid rgba(255, 255, 255, 0.05)',
+                      border: '1px solid var(--border-subtle)',
                       fontSize: '0.8rem',
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontWeight: 800, color: '#38bdf8', fontFamily: 'var(--font-mono)' }}>
+                      <span style={{ fontWeight: 800, color: 'var(--color-cyan)', fontFamily: 'var(--font-mono)' }}>
                         {m.id}
                       </span>
-                      <span style={{ color: '#f8fafc', fontWeight: 600 }}>{t(m.nameRu)}</span>
+                      <span style={{ color: 'var(--text-main)', fontWeight: 600 }}>{t(m.nameRu)}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span className="badge badge-purple" style={{ fontSize: '0.7rem' }}>{target}</span>
@@ -191,11 +191,11 @@ export const PresentationModal: React.FC<PresentationModalProps> = ({
 
           {/* AI Executive Summary paragraph */}
           <div style={{ background: 'rgba(59, 130, 246, 0.08)', border: '1px solid rgba(59, 130, 246, 0.2)', padding: '14px', borderRadius: '10px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: '#38bdf8', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-cyan)', marginBottom: '4px' }}>
               <Sparkles size={14} />
               <span>{t("Резюме по правилам:")}</span>
             </div>
-            <p style={{ fontSize: '0.78rem', color: '#cbd5e1', lineHeight: 1.5 }}>
+            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
               {analysis.executiveSummary}
             </p>
           </div>

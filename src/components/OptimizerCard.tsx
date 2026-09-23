@@ -26,7 +26,7 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
   if (recommendations.length === 0) {
     return (
       <div className="glass-panel" style={{ padding: '16px 20px', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#34d399', fontSize: '0.85rem', fontWeight: 600 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-green)', fontSize: '0.85rem', fontWeight: 600 }}>
           <Sparkles size={16} />
           <span>{t("Сценарий близок к локальному оптимуму! Очевидных одиночных замен с заметным приростом Score не найдено.")}</span>
         </div>
@@ -51,7 +51,7 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
           <Zap size={18} color="#06b6d4" />
         </div>
         <div>
-          <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>
+          <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--text-main)' }}>
             {t("AI-Оптимизатор сценария (Рекомендации по улучшению)")}</h3>
           <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
             {t("Алгоритмический поиск точечных замен для максимизации Astana Quality of Life Score")}</p>
@@ -68,7 +68,7 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
             <div
               key={idx}
               style={{
-                background: 'rgba(255, 255, 255, 0.02)',
+                background: 'var(--surface-subtle)',
                 border: '1px solid rgba(6, 182, 212, 0.25)',
                 borderRadius: '10px',
                 padding: '12px 14px',
@@ -87,7 +87,7 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
                       fontFamily: 'var(--font-mono)',
                       fontSize: '0.85rem',
                       fontWeight: 700,
-                      color: '#34d399',
+                      color: 'var(--color-green)',
                       display: 'flex',
                       alignItems: 'center',
                       gap: '3px',
@@ -99,11 +99,11 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
 
                 {/* Replacement flow */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.75rem', marginBottom: '8px' }}>
-                  <span style={{ color: '#fb7185', textDecoration: 'line-through' }}>
+                  <span style={{ color: 'var(--color-rose)', textDecoration: 'line-through' }}>
                     {rec.removeMeasureId}
                   </span>
                   <ArrowRight size={13} color="var(--text-dim)" />
-                  <span style={{ color: '#38bdf8', fontWeight: 600 }}>
+                  <span style={{ color: 'var(--color-cyan)', fontWeight: 600 }}>
                     {rec.addDecision.measureId} ({targetDistName})
                   </span>
                 </div>
@@ -113,9 +113,9 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
                 </p>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid var(--border-subtle)' }}>
                 <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
-                  {t("Прогноз Score:")}{' '}<strong style={{ color: '#f8fafc' }}>{rec.projectedScore.toFixed(2)}</strong>
+                  {t("Прогноз Score:")}{' '}<strong style={{ color: 'var(--text-main)' }}>{rec.projectedScore.toFixed(2)}</strong>
                 </span>
 
                 <button

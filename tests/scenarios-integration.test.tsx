@@ -57,13 +57,13 @@ describe('persistent scenarios in the application', () => {
     vi.stubGlobal('fetch', fetchMock);
     const first = render(<StrictMode><App /></StrictMode>);
     expect(screen.getByText('2/5')).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Район Алматы' })).toBeTruthy();
+    expect((screen.getByLabelText('Район для работы') as HTMLSelectElement).value).toBe('almaty');
     expect(readDraft()).toEqual({ decisions: benchmark.slice(0, 2), selectedDistrictId: 'almaty' });
     fireEvent.click(screen.getByRole('button', { name: 'Выбрать M12' }));
     first.unmount();
     render(<StrictMode><App /></StrictMode>);
     expect(screen.getByText('3/5')).toBeTruthy();
-    expect(screen.getByRole('heading', { name: 'Район Алматы' })).toBeTruthy();
+    expect((screen.getByLabelText('Район для работы') as HTMLSelectElement).value).toBe('almaty');
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
@@ -112,6 +112,7 @@ describe('persistent scenarios in the application', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Эталон ТЗ' }));
     saveCurrent('Для загрузки');
     closeLibrary();
+    fireEvent.click(screen.getByRole('tab', { name: 'Аналитика' }));
     fireEvent.click(screen.getByRole('button', { name: 'Получить AI-анализ' }));
     const signal = fetchMock.mock.calls[0][1].signal as AbortSignal;
     const dialog = openLibrary();
@@ -125,6 +126,7 @@ describe('persistent scenarios in the application', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(apiResponse()));
     render(<App />);
     fireEvent.click(screen.getByRole('button', { name: 'Эталон ТЗ' }));
+    fireEvent.click(screen.getByRole('tab', { name: 'Аналитика' }));
     fireEvent.click(screen.getByRole('button', { name: 'Получить AI-анализ' }));
     await screen.findByText('Проверенный анализ сценария');
     saveCurrent('Первый вариант');
