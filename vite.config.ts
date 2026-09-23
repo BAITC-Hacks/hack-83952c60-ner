@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
     port: 3000,
     strictPort: true,
     open: false,
+    watch: { ignored: ['**/.tmp/**'] },
     proxy: { '/api': `http://${address}:${port}` },
   },
   };

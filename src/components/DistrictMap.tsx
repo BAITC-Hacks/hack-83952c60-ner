@@ -59,7 +59,7 @@ export const DistrictMap: React.FC<DistrictMapProps> = ({
       </div>
 
       {/* SVG Interactive Map */}
-      <div style={{ position: 'relative', width: '100%', height: '310px', background: 'rgba(10, 15, 29, 0.6)', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
+      <div style={{ position: 'relative', width: '100%', minHeight: '310px', flex: '1 0 310px', background: 'rgba(10, 15, 29, 0.6)', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255, 255, 255, 0.05)' }}>
         <svg
           viewBox="0 0 600 380"
           style={{ width: '100%', height: '100%', cursor: 'pointer' }}

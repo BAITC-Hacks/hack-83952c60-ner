@@ -395,3 +395,14 @@ button:focus-visible, select:focus-visible, textarea:focus-visible {
 .council-card { padding: 16px; border: 1px solid var(--border-color, #334155); border-radius: 12px; background: rgba(255,255,255,.025); }
 .council-card .btn-secondary { white-space: normal; text-align: left; }
 .council-report { margin-top: 16px; border-top: 1px solid #334155; padding-top: 12px; }
+.city-map-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+  margin-bottom: 24px;
+}
+.city-map-pair > * { min-width: 0; }
+@media (max-width: 959px) {
+  .city-map-pair { grid-template-columns: minmax(0, 1fr); }
+}
