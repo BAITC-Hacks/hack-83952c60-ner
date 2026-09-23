@@ -7,6 +7,7 @@ import { BudgetBar } from './components/BudgetBar';
 import { ScoreDashboard } from './components/ScoreDashboard';
 import { DistrictMap } from './components/DistrictMap';
 import { AstanaTransitMap } from './components/AstanaTransitMap';
+import { WorkspaceTabs } from './components/WorkspaceTabs';
 import { DecisionPanel } from './components/DecisionPanel';
 import { RadarAnalytics } from './components/RadarAnalytics';
 import { AIInsightCard } from './components/AIInsightCard';
@@ -21,9 +22,15 @@ import { RecommendationSwap } from './engine/optimizer';
 import { useScenarioStorage } from './scenarios/useScenarioStorage';
 
 const ENABLE_EXPERIMENTS = import.meta.env.VITE_ENABLE_EXPERIMENTS === 'true';
+type WorkspaceSection = 'decisions' | 'maps' | 'analytics' | 'requests';
 
 export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[]) => void }> = ({ onDecisionsChange }) => {
   useLanguage();
+  const [section, setSection] = useState<WorkspaceSection>('decisions');
+  const openSection = (next: WorkspaceSection) => {
+    setSection(next);
+    queueMicrotask(() => document.getElementById(`planner-panel-${next}`)?.focus());
+  };
   const { draft, setDraft, scenarios, saveScenario, deleteScenario, notices } = useScenarioStorage();
   const { decisions, selectedDistrictId } = draft;
   useEffect(() => { onDecisionsChange?.(decisions); }, [decisions, onDecisionsChange]);
@@ -116,18 +123,6 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
         {t('Черновик сохраняет только выбранные меры. После перезагрузки экспериментальные кризисы будут отключены.')}
       </p>}
 
-      {/* 2. Hero Score Dashboard */}
-      <DecisionJourney districtId={selectedDistrictId ?? 'nura'} focus={problemFocus}
-        simulation={simulation} savedCount={scenarios.length}
-        onDistrict={selectDistrict} onProblem={setProblemFocus}
-        onCompare={() => setIsCompareOpen(true)} />
-      <DistrictCouncil simulation={simulation} onRequest={(district, indicator) => {
-        selectDistrict(district);
-        setProblemFocus(indicator);
-        document.getElementById('measure-catalog')?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
-      }} />
-      <ScoreDashboard simulation={simulation} />
-      <p className="analysis-notice">{t('Решения могут изменить цифровой двойник: расходы, состояние городских систем и жизнь районов.')} <a href="#/digital-twin">{t('Перейти в симулятор города →')}</a> {t('Примите выбранные пять решений и наблюдайте последствия по месяцам. Экспериментальные кризисы не переносятся.')}</p>
 
       {/* 3. Budget and Decisions Slots Control Bar */}
       <BudgetBar
@@ -137,59 +132,58 @@ export const App: React.FC<{ onDecisionsChange?: (decisions: SelectedDecision[])
       />
       {selectionErrors.length > 0 && <div role="alert" className="analysis-notice">{selectionErrors.join(' ')}</div>}
 
-      {/* 4. AI Optimizer recommendations */}
-      {ENABLE_EXPERIMENTS && <OptimizerCard
-        simulation={simulation}
-        decisions={decisions}
-        onApplySwap={handleApplySwap}
-      />}
+      <WorkspaceTabs idPrefix="planner" label={t('Разделы планирования')} value={section} onChange={setSection} items={[
+        { id: 'decisions', label: t('Решения и бюджет'), description: t('Выберите пять мер') },
+        { id: 'maps', label: t('Карты города'), description: t('Районы, автобусы и LRT') },
+        { id: 'analytics', label: t('Аналитика'), description: t('Показатели и AI-советник') },
+        { id: 'requests', label: t('Запросы районов'), description: t('Приоритеты жителей') },
+      ]} />
 
-      <div className="city-map-pair">
-        <DistrictMap
-          districts={simulation.districts}
-          selectedDistrictId={selectedDistrictId}
-          onSelectDistrict={selectDistrict}
-          decisions={decisions}
-        />
-        <AstanaTransitMap />
+      <div id="planner-panel-decisions" role="tabpanel" aria-labelledby="planner-tab-decisions" hidden={section !== 'decisions'} className="workspace-panel" tabIndex={0}>
+        <DecisionJourney districtId={selectedDistrictId ?? 'nura'} focus={problemFocus}
+          simulation={simulation} savedCount={scenarios.length}
+          onDistrict={selectDistrict} onProblem={setProblemFocus}
+          onCompare={() => setIsCompareOpen(true)} />
+        {ENABLE_EXPERIMENTS && <OptimizerCard simulation={simulation} decisions={decisions} onApplySwap={handleApplySwap} />}
+        <DecisionPanel key={selectedDistrictId} districtId={selectedDistrictId ?? 'nura'}
+          problemFocus={problemFocus} onClearProblem={() => setProblemFocus(null)}
+          decisions={decisions} onAddDecision={handleAddDecision} onRemoveDecision={handleRemoveDecision} />
+        <div className="glass-panel workspace-next">
+          <p>{t('Проверьте, как выбранные меры меняют показатели города.')}</p>
+          <button className="btn-primary" onClick={() => openSection('analytics')}>{t('Открыть аналитику')}</button>
+        </div>
       </div>
 
-      {/* 5. Main Simulation Workspace Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: '24px' }}>
-
-        {/* Left Column: 14 Measures Catalog (5 cols on wide screens) */}
-        <div style={{ gridColumn: 'span 12', minWidth: 0 }} className="lg:grid-column-5">
-          <style>{`
-            @media (min-width: 1024px) {
-              .lg\\:grid-column-5 { grid-column: span 5 !important; }
-              .lg\\:grid-column-7 { grid-column: span 7 !important; }
-            }
-          `}</style>
-          <DecisionPanel
-            key={selectedDistrictId}
-            districtId={selectedDistrictId ?? 'nura'}
-            problemFocus={problemFocus}
-            onClearProblem={() => setProblemFocus(null)}
-            decisions={decisions}
-            onAddDecision={handleAddDecision}
-            onRemoveDecision={handleRemoveDecision}
-          />
+      <div id="planner-panel-maps" role="tabpanel" aria-labelledby="planner-tab-maps" hidden={section !== 'maps'} className="workspace-panel" tabIndex={0}>
+        <div className="workspace-panel-heading"><div><h2>{t('Карты города')}</h2><p>{t('Выберите район на схеме или изучите остановки на транспортной карте.')}</p></div></div>
+        <div className="city-map-pair">
+          <DistrictMap districts={simulation.districts} selectedDistrictId={selectedDistrictId} onSelectDistrict={selectDistrict} decisions={decisions} />
+          <AstanaTransitMap />
         </div>
+        <div className="glass-panel workspace-next"><p>{t('Выбранный район используется в каталоге мер и аналитике.')}</p><button className="btn-primary" onClick={() => openSection('decisions')}>{t('К выбору мер')}</button></div>
+      </div>
 
-        {/* Right Column: Indicators and AI analysis (7 cols on wide screens) */}
-        <div style={{ gridColumn: 'span 12', display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }} className="lg:grid-column-7">
-
-          {/* Detailed 10 Indicators Before/After */}
-          <RadarAnalytics
-            simulation={simulation}
-            selectedDistrictId={selectedDistrictId}
-          />
-
-          {/* Server analysis and optional question */}
+      <div id="planner-panel-analytics" role="tabpanel" aria-labelledby="planner-tab-analytics" hidden={section !== 'analytics'} className="workspace-panel" tabIndex={0}>
+        <div className="workspace-panel-heading"><div><h2>{t('Аналитика')}</h2><p>{t('Сравните исходные и итоговые показатели по направлениям. Затем запросите объяснение у AI-советника.')}</p></div></div>
+        <ScoreDashboard simulation={simulation} />
+        <div className="workspace-analytics">
+          <RadarAnalytics simulation={simulation} selectedDistrictId={selectedDistrictId} onSelectDistrict={selectDistrict} />
           <AIInsightCard simulation={simulation} scenarioRevision={scenarioRevision} hasExperimentalEvents={activeEvents.length > 0} />
-
         </div>
+        <div className="glass-panel workspace-next"><p>{t('Примите выбранные пять решений и наблюдайте последствия по месяцам. Экспериментальные кризисы не переносятся.')}</p><a className="btn-primary" href="#/digital-twin">{t('Перейти в симулятор города →')}</a></div>
+      </div>
 
+      <div id="planner-panel-requests" role="tabpanel" aria-labelledby="planner-tab-requests" hidden={section !== 'requests'} className="workspace-panel" tabIndex={0}>
+        <DistrictCouncil simulation={simulation} onRequest={(district, indicator) => {
+          selectDistrict(district);
+          setProblemFocus(indicator);
+          setSection('decisions');
+          queueMicrotask(() => {
+            const catalog = document.getElementById('measure-catalog');
+            catalog?.scrollIntoView?.({ behavior: 'smooth', block: 'start' });
+            catalog?.focus({ preventScroll: true });
+          });
+        }} />
       </div>
 
       <CompareModal

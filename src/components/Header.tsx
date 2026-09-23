@@ -1,5 +1,4 @@
 import { t, useLanguage } from '../i18n';
-import { languages, setLanguage } from '../i18n';
 import React, { useState, useEffect } from 'react';
 import { Clock, ShieldAlert, Award, FileText, RotateCcw, Sparkles } from 'lucide-react';
 import { SelectedDecision } from '../engine/types';
@@ -23,7 +22,7 @@ export const Header: React.FC<HeaderProps> = ({
   crisisActive,
   enableExperiments,
 }) => {
-  const language = useLanguage();
+  useLanguage();
   // 5-hour countdown timer simulation (5:00:00)
   const [secondsRemaining, setSecondsRemaining] = useState(5 * 3600);
 
@@ -53,11 +52,11 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   return (
-    <header className="glass-panel" style={{ padding: '16px 24px', marginBottom: '24px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
+    <header className="glass-panel planner-header">
+      <div className="planner-header-top">
         
         {/* Title and emblem */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+        <div className="planner-identity">
           <div
             style={{
               width: '46px',
@@ -74,9 +73,8 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-              <h1 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#f8fafc' }}>
+              <h1 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>
                 {t("«Аким на 5 часов»")}</h1>
-              <span className="badge badge-blue">{t("AI-СИМУЛЯТОР АСТАНЫ")}</span>
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
               {t("Интеллектуальная система распределения бюджета и расчета Astana Quality of Life Score")}</p>
@@ -89,38 +87,34 @@ export const Header: React.FC<HeaderProps> = ({
             display: 'flex',
             alignItems: 'center',
             gap: '12px',
-            background: 'rgba(15, 23, 42, 0.6)',
+            background: 'var(--surface-subtle)',
             padding: '6px 14px',
             borderRadius: '12px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            border: '1px solid var(--border-subtle)',
           }}
         >
-          <Clock size={18} color="#38bdf8" />
+          <Clock size={18} color="var(--color-cyan)" />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-dim)', fontWeight: 700 }}>
               {t('Смена акима города (5 часов)')}
             </span>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: '#38bdf8' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: 'var(--color-cyan)' }}>
               {formatTime(secondsRemaining)}
             </span>
           </div>
         </div>
 
-        {/* Action Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-          <div className="language-switch" role="group" aria-label={t('Язык интерфейса')}>
-            {languages.map(({ code, label }) => (
-              <button key={code} type="button" lang={code} aria-pressed={language === code}
-                onClick={() => setLanguage(code)}>{label}</button>
-            ))}
-          </div>
+      </div>
+        <div className="planner-tools">
+          <span className="planner-tools-label">{t('Работа со сценарием')}</span>
+          <div className="planner-actions" role="group" aria-label={t('Работа со сценарием')}>
           <button
             onClick={handleBenchmarkPreset}
             className="btn-secondary"
             title={t("Загрузить контрольный набор из ТЗ (Score 56,54)")}
             style={{ fontSize: '0.8rem', padding: '7px 12px' }}
           >
-            <Sparkles size={15} color="#38bdf8" />
+            <Sparkles size={15} color="var(--color-cyan)" />
             {t("Эталон ТЗ")}</button>
 
           <button
@@ -129,7 +123,7 @@ export const Header: React.FC<HeaderProps> = ({
             title={t("Сохранить сценарий и сравнить варианты бюджета")}
             style={{ fontSize: '0.8rem', padding: '7px 12px' }}
           >
-            <Award size={15} color="#a78bfa" />
+            <Award size={15} color="var(--color-purple)" />
             {t("Сценарии")}{' '}</button>
 
           {enableExperiments && <><button
@@ -138,7 +132,7 @@ export const Header: React.FC<HeaderProps> = ({
             title={t("Смоделировать неожиданное городское событие / форс-мажор")}
             style={{ fontSize: '0.8rem', padding: '7px 12px' }}
           >
-            <ShieldAlert size={15} color={crisisActive ? '#f59e0b' : '#94a3b8'} />
+            <ShieldAlert size={15} color={crisisActive ? 'var(--color-amber)' : 'var(--text-muted)'} />
             {t("Форс-мажор")}{crisisActive && '●'}
           </button>
 
@@ -158,7 +152,7 @@ export const Header: React.FC<HeaderProps> = ({
             aria-label={t("Сбросить все решения")}
             style={{ padding: '7px 10px' }}
           >
-            <RotateCcw size={15} color="#94a3b8" />
+            <RotateCcw size={15} color="var(--text-muted)" />
           </button>
         </div>
 

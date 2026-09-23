@@ -40,17 +40,17 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
               justifyContent: 'center',
             }}
           >
-            <Coins size={22} color={isOverBudget ? '#f43f5e' : '#10b981'} />
+            <Coins size={22} color={isOverBudget ? 'var(--color-rose)' : 'var(--color-green)'} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-              <span style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: isOverBudget ? '#f43f5e' : '#f8fafc' }}>
+              <span style={{ fontSize: '1.4rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: isOverBudget ? 'var(--color-rose)' : 'var(--text-main)' }}>
                 {validation.totalCost}
               </span>
               <span style={{ fontSize: '0.85rem', color: 'var(--text-dim)' }}>
                 / {TOTAL_BUDGET} {t("у.е.")}</span>
             </div>
-            <div style={{ fontSize: '0.75rem', color: isOverBudget ? '#fb7185' : 'var(--text-muted)' }}>
+            <div style={{ fontSize: '0.75rem', color: isOverBudget ? 'var(--color-rose)' : 'var(--text-muted)' }}>
               {isOverBudget ? t("Превышение на {0} у.е.!", [validation.totalCost - TOTAL_BUDGET]) : t("Остаток бюджета: {0} у.е.", [validation.remainingBudget])}
             </div>
           </div>
@@ -77,9 +77,9 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                     justifyContent: 'center',
                     fontSize: '0.75rem',
                     fontWeight: 700,
-                    background: measure ? 'rgba(59, 130, 246, 0.2)' : 'rgba(255, 255, 255, 0.04)',
-                    border: measure ? '1px solid #3b82f6' : '1px dashed rgba(255, 255, 255, 0.15)',
-                    color: measure ? '#93c5fd' : 'var(--text-dim)',
+                    background: measure ? 'rgba(59, 130, 246, 0.2)' : 'var(--surface-soft)',
+                    border: measure ? '1px solid #3b82f6' : '1px dashed var(--border-strong)',
+                    color: measure ? 'var(--color-blue)' : 'var(--text-dim)',
                     transition: 'all 0.2s',
                   }}
                   title={measure ? `${measure.id}: ${t(measure.nameRu)}` : t("Слот {0}: свободно", [idx + 1])}
@@ -106,14 +106,14 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                   background: isExcess
                     ? 'rgba(244, 63, 94, 0.2)'
                     : count > 0
-                    ? 'rgba(255, 255, 255, 0.08)'
+                    ? 'var(--surface-strong)'
                     : 'transparent',
                   border: isExcess
-                    ? '1px solid #f43f5e'
+                    ? '1px solid var(--color-rose)'
                     : count > 0
                     ? `1px solid ${dirMeta.color}`
-                    : '1px solid rgba(255, 255, 255, 0.06)',
-                  color: isExcess ? '#fb7185' : count > 0 ? '#f8fafc' : 'var(--text-dim)',
+                    : '1px solid var(--border-subtle)',
+                  color: isExcess ? 'var(--color-rose)' : count > 0 ? 'var(--text-main)' : 'var(--text-dim)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '4px',
@@ -135,7 +135,7 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
         style={{
           width: '100%',
           height: '8px',
-          background: 'rgba(255, 255, 255, 0.05)',
+          background: 'var(--surface-soft)',
           borderRadius: '4px',
           overflow: 'hidden',
           position: 'relative',
@@ -146,8 +146,8 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
             height: '100%',
             width: `${percentage}%`,
             background: isOverBudget
-              ? 'linear-gradient(90deg, #f43f5e, #e11d48)'
-              : 'linear-gradient(90deg, #10b981, #06b6d4, #3b82f6)',
+              ? 'linear-gradient(90deg, var(--color-rose), #e11d48)'
+              : 'linear-gradient(90deg, var(--color-green), #06b6d4, #3b82f6)',
             borderRadius: '4px',
             transition: 'width 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
             boxShadow: isOverBudget ? '0 0 10px rgba(244, 63, 94, 0.6)' : '0 0 10px rgba(6, 182, 212, 0.4)',
@@ -170,8 +170,8 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
           }}
         >
           {validation.errors.map((err, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: '#fca5a5' }}>
-              <XCircle size={14} color="#f87171" style={{ flexShrink: 0 }} />
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', color: 'var(--color-rose)' }}>
+              <XCircle size={14} color="var(--color-rose)" style={{ flexShrink: 0 }} />
               <span>{err}</span>
             </div>
           ))}
@@ -201,20 +201,20 @@ export const BudgetBar: React.FC<BudgetBarProps> = ({
                   fontSize: '0.75rem',
                 }}
               >
-                <span style={{ fontWeight: 700, color: '#38bdf8' }}>{m.id}</span>
-                <span style={{ color: '#e2e8f0' }}>{t(m.nameRu)}</span>
+                <span style={{ fontWeight: 700, color: 'var(--color-cyan)' }}>{m.id}</span>
+                <span style={{ color: 'var(--text-main)' }}>{t(m.nameRu)}</span>
                 {d.districtId && (
                   <span className="badge badge-purple" style={{ padding: '1px 5px', fontSize: '0.68rem' }}>
                     {t(DISTRICTS[d.districtId].nameRu)}
                   </span>
                 )}
-                <span style={{ color: '#94a3b8' }}>({m.cost} {t("у.е.)")}</span>
+                <span style={{ color: 'var(--text-muted)' }}>({m.cost} {t("у.е.)")}</span>
                 <button
                   onClick={() => onRemoveDecision(index)}
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: '#94a3b8',
+                    color: 'var(--text-muted)',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',

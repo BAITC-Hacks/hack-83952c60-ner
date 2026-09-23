@@ -28,7 +28,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation, scenar
   return (
     <section className="glass-panel ai-panel" aria-labelledby="analysis-heading" style={{ padding: '20px' }}>
       <div className="panel-heading" style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
-        <Bot size={28} color="#a78bfa" style={{ flexShrink: 0 }} />
+        <Bot size={28} color="var(--color-purple)" style={{ flexShrink: 0 }} />
         <div>
           <h3 id="analysis-heading" style={{ fontSize: '1rem', fontWeight: 700 }}>{t("AI-анализ городского сценария")}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{t("Объяснение результатов, сильных сторон, рисков и компромиссов")}</p>
@@ -45,8 +45,8 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation, scenar
             <Sparkles size={15} />{isLoading ? t("Анализируем…") : result ? t("Обновить AI-анализ") : t("Получить AI-анализ")}
           </button>
           {!simulation.isValid && <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{t("Сначала выберите пять допустимых решений.")}</span>}
-          {hasExperimentalEvents && <span style={{ fontSize: '0.78rem', color: '#fbbf24' }}>{t("Для AI-анализа отключите экспериментальные кризисы.")}</span>}
-          {isLoading && <span role="status" style={{ fontSize: '0.78rem', color: '#93c5fd' }}>{t("Сервер рассчитывает сценарий и готовит объяснение.")}</span>}
+          {hasExperimentalEvents && <span style={{ fontSize: '0.78rem', color: 'var(--color-amber)' }}>{t("Для AI-анализа отключите экспериментальные кризисы.")}</span>}
+          {isLoading && <span role="status" style={{ fontSize: '0.78rem', color: 'var(--color-blue)' }}>{t("Сервер рассчитывает сценарий и готовит объяснение.")}</span>}
         </div>
       </form>
 
@@ -60,7 +60,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation, scenar
             <span className={`badge ${result.source === 'llm' ? 'badge-purple' : 'badge-amber'}`}>{result.source === 'llm' ? t("Анализ LLM") : t("Анализ по правилам")}</span>
           </div>
           {(result.notice || result.reason) && <p className="analysis-notice">{result.notice || (result.reason && getFallbackReasons()[result.reason])}</p>}
-          <p style={{ fontSize: '0.85rem', color: '#cbd5e1', marginBottom: '16px' }}>{analysis.executiveSummary}</p>
+          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '16px' }}>{analysis.executiveSummary}</p>
           {result.answer && <div className="analysis-answer"><strong>{t("Ответ советника")}</strong><p style={{ whiteSpace: 'pre-line', marginTop: '6px' }}>{result.answer}</p></div>}
           <div className="analysis-grid">
             <div className="analysis-box analysis-strengths">

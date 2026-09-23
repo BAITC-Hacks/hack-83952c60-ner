@@ -58,8 +58,8 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
               height: '110px',
               borderRadius: '50%',
               background: isValid
-                ? 'conic-gradient(#06b6d4 0deg, #3b82f6 240deg, rgba(255, 255, 255, 0.05) 240deg)'
-                : 'conic-gradient(#f43f5e 0deg, #e11d48 240deg, rgba(255, 255, 255, 0.05) 240deg)',
+                ? 'conic-gradient(#06b6d4 0deg, #3b82f6 240deg, var(--surface-soft) 240deg)'
+                : 'conic-gradient(var(--color-rose) 0deg, #e11d48 240deg, var(--surface-soft) 240deg)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -85,7 +85,7 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
                   fontFamily: 'var(--font-mono)',
                   fontSize: '1.45rem',
                   fontWeight: 800,
-                  color: isValid ? '#38bdf8' : '#f43f5e',
+                  color: isValid ? 'var(--color-cyan)' : 'var(--color-rose)',
                 }}
               >
                 {isValid ? finalScore.toFixed(2).replace('.', ',') : '—'}
@@ -95,7 +95,7 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
 
           <div>
             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', marginBottom: '4px' }}>
-              <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc' }}>
+              <h2 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)' }}>
                 {t("Astana Quality of Life Score")}</h2>
               {isValid ? (
                 <span className="badge badge-green" style={{ fontSize: '0.7rem' }}>
@@ -116,7 +116,7 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
                     fontFamily: 'var(--font-mono)',
                     fontSize: '0.9rem',
                     fontWeight: 700,
-                    color: isPositive ? '#34d399' : '#fb7185',
+                    color: isPositive ? 'var(--color-green)' : 'var(--color-rose)',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '2px',
@@ -140,20 +140,20 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
           {/* Component 1: D_avg */}
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              background: 'var(--surface-subtle)',
+              border: '1px solid var(--border-subtle)',
               padding: '12px',
               borderRadius: '12px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '4px' }}>
-              <Scale size={13} color="#60a5fa" />
+              <Scale size={13} color="var(--color-blue)" />
               <span>{t("D_avg (70%)")}</span>
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>
               {isValid ? finalCityAverage.toFixed(2) : baseCityAverage.toFixed(2)}
             </div>
-            <div style={{ fontSize: '0.7rem', color: isValid && finalCityAverage > baseCityAverage ? '#34d399' : 'var(--text-dim)' }}>
+            <div style={{ fontSize: '0.7rem', color: isValid && finalCityAverage > baseCityAverage ? 'var(--color-green)' : 'var(--text-dim)' }}>
               {isValid && finalCityAverage > baseCityAverage
                 ? t("+{0} к базе", [(finalCityAverage - baseCityAverage).toFixed(2)])
                 : t("База: ") + baseCityAverage.toFixed(2)}
@@ -163,17 +163,17 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
           {/* Component 2: min(D_d) */}
           <div
             style={{
-              background: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              background: 'var(--surface-subtle)',
+              border: '1px solid var(--border-subtle)',
               padding: '12px',
               borderRadius: '12px',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '4px' }}>
-              <Target size={13} color="#a78bfa" />
+              <Target size={13} color="var(--color-purple)" />
               <span>{t("min(D_d) (30%)")}</span>
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: 'var(--text-main)' }}>
               {isValid ? finalMinDistrictScore.toFixed(2) : baseMinDistrictScore.toFixed(2)}
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
@@ -190,11 +190,11 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
               borderRadius: '12px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: finalCritCount > 0 ? '#fb7185' : '#34d399', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: finalCritCount > 0 ? 'var(--color-rose)' : 'var(--color-green)', marginBottom: '4px' }}>
               <AlertOctagon size={13} />
               <span>{t("Штраф N_crit (<40)")}</span>
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: finalCritCount > 0 ? '#f43f5e' : '#10b981' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: finalCritCount > 0 ? 'var(--color-rose)' : 'var(--color-green)' }}>
               {finalCritCount > 0 ? t("-{0}.0 балла", [finalCritCount]) : t("0 (нет штрафа)")}
             </div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
@@ -205,17 +205,17 @@ export const ScoreDashboard: React.FC<ScoreDashboardProps> = ({ simulation }) =>
           {/* Component 4: Active Synergies */}
           <div
             style={{
-              background: activeSynergies.length > 0 ? 'rgba(6, 182, 212, 0.08)' : 'rgba(255, 255, 255, 0.03)',
-              border: activeSynergies.length > 0 ? '1px solid rgba(6, 182, 212, 0.3)' : '1px solid rgba(255, 255, 255, 0.08)',
+              background: activeSynergies.length > 0 ? 'rgba(6, 182, 212, 0.08)' : 'var(--surface-subtle)',
+              border: activeSynergies.length > 0 ? '1px solid rgba(6, 182, 212, 0.3)' : '1px solid var(--border-subtle)',
               padding: '12px',
               borderRadius: '12px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: activeSynergies.length > 0 ? '#38bdf8' : 'var(--text-dim)', marginBottom: '4px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.7rem', color: activeSynergies.length > 0 ? 'var(--color-cyan)' : 'var(--text-dim)', marginBottom: '4px' }}>
               <Zap size={13} />
               <span>{t("Синергии")}</span>
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: activeSynergies.length > 0 ? '#38bdf8' : 'var(--text-dim)' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: activeSynergies.length > 0 ? 'var(--color-cyan)' : 'var(--text-dim)' }}>
               {activeSynergies.length} {t("активна(о)")}</div>
             <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
               {activeSynergies.length > 0 ? t("Бонусы начислены") : t("Связок нет")}

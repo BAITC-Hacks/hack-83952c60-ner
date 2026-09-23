@@ -6,8 +6,9 @@ import DigitalTwin from '../src/twin/DigitalTwin';
 import App from '../src/App';
 import { STORAGE_KEY } from '../src/twin/storage';
 import { advanceSession, initializeSession } from '../src/twin/model';
+import { setLanguage } from '../src/i18n';
 
-afterEach(()=>{cleanup();localStorage.clear();window.location.hash='';vi.useRealTimers();vi.restoreAllMocks();});
+afterEach(()=>{cleanup();setLanguage('ru');localStorage.clear();window.location.hash='';vi.useRealTimers();vi.restoreAllMocks();});
 it('selects map layers and districts, runs projects, saves and restores independent snapshots',()=>{
   localStorage.setItem('classic-unrelated','preserved');
   render(<DigitalTwin/>);
@@ -16,6 +17,7 @@ it('selects map layers and districts, runs projects, saves and restores independ
   fireEvent.click(screen.getByRole('button',{name:'Район Есиль'}));
   fireEvent.click(screen.getByRole('button',{name:'Запустить: Зелёный пояс'}));
   fireEvent.click(screen.getByRole('button',{name:'Следующий месяц'}));
+  fireEvent.click(screen.getByRole('tab',{name:/Сценарии и события/}));
   fireEvent.change(screen.getByLabelText('Название сценария'),{target:{value:'Озеленение'}});
   fireEvent.click(screen.getByRole('button',{name:'Сохранить снимок'}));
   fireEvent.click(screen.getByRole('button',{name:'Следующий месяц'}));
@@ -26,6 +28,41 @@ it('selects map layers and districts, runs projects, saves and restores independ
   expect(screen.getByTestId('twin-month').textContent).toContain('0 / 60');
   expect(screen.getByRole('button',{name:'Загрузить Озеленение'})).toBeTruthy();
   expect(localStorage.getItem('classic-unrelated')).toBe('preserved');
+});
+it('groups tools into distinct views, expands one chart and preserves selections between views',()=>{
+  render(<DigitalTwin/>);
+  expect(screen.getAllByRole('tabpanel')).toHaveLength(1);
+  expect(screen.queryByRole('heading',{name:'Траектория города'})).toBeNull();
+  expect(screen.queryByRole('button',{name:'Новый сценарий'})).toBeNull();
+  fireEvent.click(screen.getByRole('button',{name:'Район Есиль'}));
+  fireEvent.click(screen.getByRole('tab',{name:/Бюджет и динамика/}));
+  expect(screen.getAllByRole('tabpanel')).toHaveLength(1);
+  expect(screen.queryByRole('button',{name:'Район Есиль'})).toBeNull();
+  expect(screen.getAllByRole('img')).toHaveLength(1);
+  expect(screen.getByRole('img').getAttribute('aria-label')).toContain('Качество жизни');
+  fireEvent.change(screen.getByLabelText('Показатель графика'),{target:{value:'population'}});
+  expect(screen.getByRole('img').getAttribute('aria-label')).toContain('Население');
+  fireEvent.click(screen.getByRole('button',{name:'Следующий месяц'}));
+  fireEvent.click(screen.getByRole('tab',{name:/Сценарии и события/}));
+  fireEvent.change(screen.getByLabelText('Название сценария'),{target:{value:'Черновик'}});
+  fireEvent.click(screen.getByRole('tab',{name:/Город и проекты/}));
+  expect(screen.getByRole('button',{name:'Район Есиль'}).getAttribute('aria-pressed')).toBe('true');
+  expect(screen.getByTestId('twin-month').textContent).toContain('1 / 60');
+  fireEvent.click(screen.getByRole('tab',{name:/Бюджет и динамика/}));
+  expect((screen.getByLabelText('Показатель графика') as HTMLSelectElement).value).toBe('population');
+  fireEvent.click(screen.getByRole('tab',{name:/Сценарии и события/}));
+  expect((screen.getByLabelText('Название сценария') as HTMLInputElement).value).toBe('Черновик');
+});
+it('updates workspace and chart controls instantly in English and Kazakh',()=>{
+  render(<DigitalTwin/>);
+  act(()=>setLanguage('en'));
+  fireEvent.click(screen.getByRole('tab',{name:/Budget & trends/}));
+  expect(screen.getByLabelText('Chart metric')).toBeTruthy();
+  expect(screen.getByRole('img').getAttribute('aria-label')).toContain('Quality of life');
+  act(()=>setLanguage('kk'));
+  expect(screen.getByRole('tab',{name:/Бюджет және динамика/}).getAttribute('aria-selected')).toBe('true');
+  expect(screen.getByLabelText('График көрсеткіші')).toBeTruthy();
+  expect(screen.getByRole('img').getAttribute('aria-label')).toContain('Өмір сапасы');
 });
 it('plays at both speeds, pauses and cleans up on unmount',()=>{
   vi.useFakeTimers();
