@@ -170,7 +170,7 @@ describe('scenario selection', () => {
   });
 
   it('rechecks same-district incompatibilities when changing district', () => {
-    render(<DecisionPanel decisions={[{ measureId: 'M7', districtId: 'esil' }]} onAddDecision={vi.fn()} onRemoveDecision={vi.fn()} />);
+    render(<DecisionPanel districtId="esil" decisions={[{ measureId: 'M7', districtId: 'esil' }]} onAddDecision={vi.fn()} onRemoveDecision={vi.fn()} />);
     const measure = screen.getByTestId('measure-M4');
     expect((within(measure).getByRole('button', { name: 'Выбрать M4' }) as HTMLButtonElement).disabled).toBe(true);
     fireEvent.change(within(measure).getByRole('combobox'), { target: { value: 'nura' } });

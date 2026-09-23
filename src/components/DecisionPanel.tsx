@@ -1,43 +1,38 @@
 import { t, useLanguage } from '../i18n';
 import React, { useState } from 'react';
 import { Plus, AlertCircle, Sparkles } from 'lucide-react';
-import { DirectionId, DistrictId, SelectedDecision } from '../engine/types';
+import { DirectionId, DistrictId, IndicatorId, SelectedDecision } from '../engine/types';
 import { MEASURE_LIST, SYNERGIES } from '../data/measures';
 import { validateDecisions } from '../engine/validator';
-import { DIRECTIONS, DIRECTION_LIST } from '../data/indicators';
-import { DISTRICT_LIST, DISTRICTS } from '../data/districts';
+import { DIRECTIONS, DIRECTION_LIST, INDICATORS } from '../data/indicators';
+import { DISTRICT_LIST } from '../data/districts';
 
 interface DecisionPanelProps {
+  districtId?: DistrictId;
+  problemFocus?: IndicatorId | null;
+  onClearProblem?: () => void;
   decisions: SelectedDecision[];
   onAddDecision: (decision: SelectedDecision) => void;
   onRemoveDecision: (index: number) => void;
 }
 
 export const DecisionPanel: React.FC<DecisionPanelProps> = ({
+  districtId = 'nura',
+  problemFocus = null,
+  onClearProblem,
   decisions,
   onAddDecision,
   onRemoveDecision,
 }) => {
   useLanguage();
   const [activeDirectionFilter, setActiveDirectionFilter] = useState<DirectionId | 'all'>('all');
-  const [selectedDistricts, setSelectedDistricts] = useState<Record<string, DistrictId>>({
-    M1: 'nura',
-    M3: 'esil',
-    M4: 'esil',
-    M5: 'saryarka',
-    M7: 'nura',
-    M8: 'nura',
-    M9: 'nura',
-    M10: 'nura',
-    M11: 'nura',
-    M13: 'almaty',
-  });
+  const [selectedDistricts, setSelectedDistricts] = useState<Record<string, DistrictId>>({});
 
   const selectedMeasureIds = new Set(decisions.map((d) => d.measureId));
 
-  const filteredMeasures = activeDirectionFilter === 'all'
-    ? MEASURE_LIST
-    : MEASURE_LIST.filter((m) => m.direction === activeDirectionFilter);
+  const filteredMeasures = MEASURE_LIST.filter((m) =>
+    problemFocus ? (m.effects[problemFocus] ?? 0) > 0
+      : activeDirectionFilter === 'all' || m.direction === activeDirectionFilter);
 
   const handleDistrictChange = (measureId: string, districtId: DistrictId) => {
     setSelectedDistricts((prev) => ({ ...prev, [measureId]: districtId }));
@@ -58,7 +53,11 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
   };
 
   return (
-    <div className="glass-panel" style={{ padding: '20px' }}>
+    <div id="measure-catalog" tabIndex={-1} className="glass-panel" style={{ padding: '20px', scrollMarginTop: '20px' }}>
+      {problemFocus && <div className="journey-filter" role="status">
+        <p>{t('Меры для улучшения:')} <strong>{t(INDICATORS[problemFocus].nameRu)}</strong></p>
+        <button className="btn-secondary" onClick={() => { setActiveDirectionFilter('all'); onClearProblem?.(); }}>{t('Показать все меры')}</button>
+      </div>}
       
       {/* Header and Direction Filter Pills */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
@@ -72,7 +71,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
         {/* Filter buttons */}
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           <button
-            onClick={() => setActiveDirectionFilter('all')}
+            onClick={() => { setActiveDirectionFilter('all'); onClearProblem?.(); }}
             style={{
               fontSize: '0.72rem',
               padding: '4px 10px',
@@ -90,7 +89,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
             return (
               <button
                 key={dir.id}
-                onClick={() => setActiveDirectionFilter(dir.id)}
+                onClick={() => { setActiveDirectionFilter(dir.id); onClearProblem?.(); }}
                 style={{
                   fontSize: '0.72rem',
                   padding: '4px 10px',
@@ -123,7 +122,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
 
           const chosenDistrict =
             measure.type === 'Район'
-              ? (isSelected ? decisions[decisionIndex]?.districtId : selectedDistricts[measure.id]) || 'nura'
+              ? (isSelected ? decisions[decisionIndex]?.districtId : selectedDistricts[measure.id]) || districtId
               : undefined;
           const proposedDecision: SelectedDecision = chosenDistrict
             ? { measureId: measure.id, districtId: chosenDistrict }
@@ -196,7 +195,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
 
                 {/* Lag and realized fraction */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '8px' }}>
-                  <span>{t("Лаг:")}{' '}{measure.lag} {t("кв. (эффект:")}{' '}{((8 - measure.lag) / 8 * 100).toFixed(1)}%)</span>
+                  <span>{t('Задержка: {0} кв. Ниже — вклад за 8 кварталов, до сочетаний и ограничения 0–100.', [measure.lag])}</span>
                 </div>
 
                 {/* Direct Effects tags */}
@@ -214,7 +213,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                         fontWeight: 600,
                       }}
                     >
-                      {ind} {(val || 0) > 0 ? `+${val}` : val}
+                      {t(INDICATORS[ind as IndicatorId].nameRu)}: {(val || 0) > 0 ? '+' : ''}{((val || 0) * (8 - measure.lag) / 8).toFixed(1)}
                     </span>
                   ))}
                 </div>

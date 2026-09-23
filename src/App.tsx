@@ -1,6 +1,7 @@
 import { t, useLanguage } from './i18n';
 import React, { useCallback, useState } from 'react';
 import { Header } from './components/Header';
+import { DecisionJourney } from './components/DecisionJourney';
 import { BudgetBar } from './components/BudgetBar';
 import { ScoreDashboard } from './components/ScoreDashboard';
 import { DistrictMap } from './components/DistrictMap';
@@ -11,7 +12,7 @@ import { OptimizerCard } from './components/OptimizerCard';
 import { CompareModal } from './components/CompareModal';
 import { CrisisModal } from './components/CrisisModal';
 import { PresentationModal } from './components/PresentationModal';
-import { CityEvent, SelectedDecision } from './engine/types';
+import { CityEvent, DistrictId, IndicatorId, SelectedDecision } from './engine/types';
 import { runSimulation } from './engine/simulator';
 import { validateDecisions } from './engine/validator';
 import { RecommendationSwap } from './engine/optimizer';
@@ -28,6 +29,11 @@ export const App: React.FC = () => {
   };
   const [scenarioRevision, setScenarioRevision] = useState(0);
   const [selectionErrors, setSelectionErrors] = useState<string[]>([]);
+  const [problemFocus, setProblemFocus] = useState<IndicatorId | null>(null);
+  const selectDistrict = (id: DistrictId) => {
+    setDraft((current) => ({ ...current, selectedDistrictId: id }));
+    setProblemFocus(null);
+  };
 
   const [activeEvents, setActiveEvents] = useState<CityEvent[]>([]);
 
@@ -107,6 +113,10 @@ export const App: React.FC = () => {
         {t("Черновик сохраняет только выбранные меры. После перезагрузки экспериментальные кризисы будут отключены.")}{' '}</p>}
 
       {/* 2. Hero Score Dashboard */}
+      <DecisionJourney districtId={selectedDistrictId ?? 'nura'} focus={problemFocus}
+        simulation={simulation} savedCount={scenarios.length}
+        onDistrict={selectDistrict} onProblem={setProblemFocus}
+        onCompare={() => setIsCompareOpen(true)} />
       <ScoreDashboard simulation={simulation} />
 
       {/* 3. Budget and Decisions Slots Control Bar */}
@@ -136,6 +146,10 @@ export const App: React.FC = () => {
             }
           `}</style>
           <DecisionPanel
+            key={selectedDistrictId}
+            districtId={selectedDistrictId ?? 'nura'}
+            problemFocus={problemFocus}
+            onClearProblem={() => setProblemFocus(null)}
             decisions={decisions}
             onAddDecision={handleAddDecision}
             onRemoveDecision={handleRemoveDecision}
@@ -149,7 +163,7 @@ export const App: React.FC = () => {
           <DistrictMap
             districts={simulation.districts}
             selectedDistrictId={selectedDistrictId}
-            onSelectDistrict={(id) => setDraft((current) => ({ ...current, selectedDistrictId: id }))}
+            onSelectDistrict={selectDistrict}
             decisions={decisions}
           />
 
