@@ -87,7 +87,7 @@ export default function TransportTwin() {
   return <main className="tr-app" lang={language} ref={shell}>
     <header className="tr-topbar">
       <a className="tr-brand" href="#/transport" aria-label="Astana Urban Intelligence"><span className="tr-brand-symbol"><Box size={23} strokeWidth={1.4} /></span><span>ASTANA<span className="tr-brand-sub">URBAN INTELLIGENCE</span></span><span className="tr-version">LAB / 01</span></a>
-      <nav className="tr-nav" aria-label={t("Разделы приложения")}><a href="#">{t("Обзор города")}</a><a href="#/digital-twin">{t("Симулятор")}</a><a href="#/transport" aria-current="page">{t("Транспорт · 3D")}</a></nav>
+      <nav className="tr-nav" aria-label={t("Разделы приложения")}><a href="#">{t("Обзор города")}</a><a href="#/digital-twin">{t("Симулятор")}</a><a href="#/population">{t("Пульс города")}</a><a href="#/transport" aria-current="page">{t("Транспорт · 3D")}</a></nav>
       <div className="tr-system"><span className="tr-status-dot" />{t("Система активна")}<span className="tr-avatar">AK</span></div>
     </header>
     <div className="tr-content">

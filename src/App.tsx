@@ -9,6 +9,7 @@ import DigitalTwin from './twin/DigitalTwin';
 import './workspace.css';
 const TransportTwin = React.lazy(() => import('./transport/TransportTwin'));
 const AstanaAtlas = React.lazy(() => import('./atlas/AstanaAtlas'));
+const PopulationScreen = React.lazy(() => import('./population/PopulationScreen'));
 export const App: React.FC = () => {
   const language = useLanguage();
   const [decisions, setDecisions] = useState<SelectedDecision[]>([]);
@@ -25,9 +26,11 @@ export const App: React.FC = () => {
   const twin = hash === '#/digital-twin';
   const transport = hash === '#/transport';
   const atlas = hash === '#/astana-map';
+  const population = hash === '#/population';
   return <><header className="app-toolbar" hidden={atlas}><div className={`app-toolbar-inner${transport ? ' app-toolbar-inner--transport' : ''}`}><nav className="mode-nav" aria-label={t('Режим приложения')} hidden={transport}>
-    <a href="#" aria-current={!twin && !transport && !atlas ? 'page' : undefined}>{t('Аким на 5 часов')}</a>
+    <a href="#" aria-current={!twin && !transport && !atlas && !population ? 'page' : undefined}>{t('Аким на 5 часов')}</a>
     <a href="#/digital-twin" aria-current={twin ? 'page' : undefined}>{t('Симулятор города')}</a>
+    <a href="#/population" aria-current={population ? 'page' : undefined}>{t('Пульс города')}</a>
     <a href="#/transport" aria-current={transport ? 'page' : undefined}>{t('Транспорт')} · 3D</a>
     <a href="#/astana-map" aria-current={atlas ? 'page' : undefined}>{t('Карта Астаны')} · GIS</a>
   </nav><div className="app-preferences" role="group" aria-label={t('Настройки интерфейса')}>
@@ -36,10 +39,11 @@ export const App: React.FC = () => {
         {languages.map(item => <option key={item.code} value={item.code} lang={item.code}>{item.label}</option>)}
       </select>
     </label><ThemeToggle />
-  </div></div></header><div hidden={twin || transport || atlas}><ClassicSimulator onDecisionsChange={setDecisions} /></div>
+  </div></div></header><div hidden={twin || transport || atlas || population}><ClassicSimulator onDecisionsChange={setDecisions} /></div>
     {twinVisited && <div hidden={!twin}><DigitalTwin active={twin} decisions={decisions} /></div>}
     {transport && <React.Suspense fallback={<div role="status" style={{ padding: 40 }}>{t('Загрузка транспортной модели…')}</div>}><TransportTwin /></React.Suspense>}
     {atlas && <React.Suspense fallback={<div role="status" style={{ padding: 40 }}>Загрузка карты Астаны…</div>}><AstanaAtlas /></React.Suspense>}
+    {population && <React.Suspense fallback={<div role="status" style={{ padding: 40 }}>{t('Загрузка пульса города…')}</div>}><PopulationScreen /></React.Suspense>}
   </>;
 };
 export default App;
