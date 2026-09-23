@@ -1,3 +1,5 @@
+import { t, useLanguage } from '../i18n';
+import { Language, languages, translate } from '../i18n';
 import React, { useState } from 'react';
 import { Bot, Sparkles, AlertTriangle, CheckCircle2, Send, Key } from 'lucide-react';
 import { SimulationResult } from '../engine/types';
@@ -9,20 +11,21 @@ interface AIInsightCardProps {
 }
 
 export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
+  const language = useLanguage();
   const [activeTab, setActiveTab] = useState<'briefing' | 'advisor'>('briefing');
   const [userQuery, setUserQuery] = useState('');
-  const [chatLog, setChatLog] = useState<Array<{ sender: 'user' | 'ai'; text: string }>>([]);
+  const [chatLog, setChatLog] = useState<Array<{ sender: 'user' | 'ai'; text: string; translations?: Partial<Record<Language, string>> }>>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [apiKey, setApiKey] = useState('');
   const [provider, setProvider] = useState<'local' | 'openai'>('local');
 
   const analysis = generateAIAnalysis(simulation);
 
-  const handleAskQuestion = async (question: string) => {
-    if (!question.trim()) return;
+  const handleAskQuestion = async (question: string, preset = false) => {
+    if (!question.trim() || isLoading) return;
     const q = question.trim();
     setUserQuery('');
-    setChatLog((prev) => [...prev, { sender: 'user', text: q }]);
+    setChatLog((prev) => [...prev, { sender: 'user', text: preset ? t(q) : q, translations: preset ? Object.fromEntries(languages.map(({code}) => [code, translate(q, code)])) : undefined }]);
     setIsLoading(true);
 
     try {
@@ -30,10 +33,16 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
         provider,
         apiKey: apiKey.trim() || undefined,
       };
-      const response = await askAICityAdvisor(simulation, q, config);
-      setChatLog((prev) => [...prev, { sender: 'ai', text: response }]);
+      if (provider === 'local' || !config.apiKey) {
+        const answers = await Promise.all(languages.map(async ({code}) =>
+          [code, await askAICityAdvisor(simulation, q, { ...config, language: code })] as const));
+        setChatLog(prev => [...prev, {sender: 'ai', text: answers[0][1], translations: Object.fromEntries(answers)}]);
+      } else {
+        const response = await askAICityAdvisor(simulation, q, { ...config, language });
+        setChatLog(prev => [...prev, {sender: 'ai', text: response}]);
+      }
     } catch (e: any) {
-      setChatLog((prev) => [...prev, { sender: 'ai', text: `Ошибка: ${e.message}` }]);
+      setChatLog((prev) => [...prev, { sender: 'ai', text: t("Ошибка: {0}", [e.message]) }]);
     } finally {
       setIsLoading(false);
     }
@@ -61,11 +70,9 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
           </div>
           <div>
             <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc' }}>
-              Agentic AI Аналитик &amp; Советник Акима
-            </h3>
+              {t("Agentic AI Аналитик & Советник Акима")}</h3>
             <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Глубокий анализ последствий, компромиссов и рисков управления городом
-            </p>
+              {t("Глубокий анализ последствий, компромиссов и рисков управления городом")}</p>
           </div>
         </div>
 
@@ -83,8 +90,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
               cursor: 'pointer',
             }}
           >
-            Сводный отчет
-          </button>
+            {t("Сводный отчет")}</button>
           <button
             onClick={() => setActiveTab('advisor')}
             style={{
@@ -98,8 +104,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
               cursor: 'pointer',
             }}
           >
-            Диалог с Советником
-          </button>
+            {t("Диалог с Советником")}</button>
         </div>
       </div>
 
@@ -122,15 +127,13 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
           >
             <div>
               <div style={{ fontSize: '0.68rem', textTransform: 'uppercase', color: '#93c5fd', fontWeight: 700 }}>
-                Оценка управленческого стиля Акима
-              </div>
+                {t("Оценка управленческого стиля Акима")}</div>
               <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>
                 {analysis.akimatRatingVerdict}
               </div>
             </div>
             <span className="badge badge-purple" style={{ padding: '4px 10px' }}>
-              <Sparkles size={12} /> AI-верифицировано
-            </span>
+              <Sparkles size={12} /> {t("AI-верифицировано")}</span>
           </div>
 
           {/* Executive Summary */}
@@ -144,7 +147,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
             <div style={{ background: 'rgba(16, 185, 129, 0.05)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '10px', padding: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: '#34d399', fontSize: '0.85rem', fontWeight: 700 }}>
                 <CheckCircle2 size={16} />
-                <span>Сильные стороны сценария</span>
+                <span>{t("Сильные стороны сценария")}</span>
               </div>
               {analysis.strengths.length > 0 ? (
                 <ul style={{ paddingLeft: '18px', fontSize: '0.78rem', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -154,8 +157,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
                 </ul>
               ) : (
                 <p style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-                  Пока не выявлено ключевых преимуществ. Добавьте синергетические или точечные меры.
-                </p>
+                  {t("Пока не выявлено ключевых преимуществ. Добавьте синергетические или точечные меры.")}</p>
               )}
             </div>
 
@@ -163,7 +165,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
             <div style={{ background: 'rgba(244, 63, 94, 0.05)', border: '1px solid rgba(244, 63, 94, 0.2)', borderRadius: '10px', padding: '14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px', color: '#fb7185', fontSize: '0.85rem', fontWeight: 700 }}>
                 <AlertTriangle size={16} />
-                <span>Скрытые риски и компромиссы</span>
+                <span>{t("Скрытые риски и компромиссы")}</span>
               </div>
               {analysis.risksAndTradeoffs.length > 0 ? (
                 <ul style={{ paddingLeft: '18px', fontSize: '0.78rem', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -173,8 +175,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
                 </ul>
               ) : (
                 <p style={{ fontSize: '0.75rem', color: '#34d399' }}>
-                  Существенных скрытых рисков не обнаружено. Баланс соблюден.
-                </p>
+                  {t("Существенных скрытых рисков не обнаружено. Баланс соблюден.")}</p>
               )}
             </div>
 
@@ -184,8 +185,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
           {analysis.actionableRecommendations.length > 0 && (
             <div style={{ marginTop: '16px', background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '10px', padding: '14px' }}>
               <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#38bdf8', marginBottom: '8px' }}>
-                💡 Стратегические рекомендации по оптимизации:
-              </div>
+                {t("💡 Стратегические рекомендации по оптимизации:")}{' '}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '0.78rem', color: '#e2e8f0' }}>
                 {analysis.actionableRecommendations.map((rec, i) => (
                   <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start' }}>
@@ -205,17 +205,17 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
           {/* Quick preset questions */}
           <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
             {[
-              'Как поднять показатели Нуры?',
-              'Какие синергии можно активировать?',
-              'Как использовать остаток бюджета?',
+              "Как поднять показатели Нуры?",
+              "Какие синергии можно активировать?",
+              "Как использовать остаток бюджета?",
             ].map((prompt, i) => (
               <button
                 key={i}
-                onClick={() => handleAskQuestion(prompt)}
+                onClick={() => handleAskQuestion(prompt, true)}
                 className="btn-secondary"
                 style={{ fontSize: '0.7rem', padding: '4px 8px' }}
               >
-                {prompt}
+                {t(prompt)}
               </button>
             ))}
           </div>
@@ -237,8 +237,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
           >
             {chatLog.length === 0 ? (
               <div style={{ textAlign: 'center', margin: 'auto', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
-                Советник готов к консультации. Задайте вопрос по текущему сценарию.
-              </div>
+                {t("Советник готов к консультации. Задайте вопрос по текущему сценарию.")}</div>
             ) : (
               chatLog.map((msg, i) => (
                 <div
@@ -255,14 +254,13 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
                     whiteSpace: 'pre-line',
                   }}
                 >
-                  {msg.text}
+                  {msg.translations?.[language] ?? msg.text}
                 </div>
               ))
             )}
             {isLoading && (
               <div style={{ color: '#38bdf8', fontSize: '0.75rem', fontStyle: 'italic' }}>
-                Советник анализирует городской контекст...
-              </div>
+                {t("Советник анализирует городской контекст...")}</div>
             )}
           </div>
 
@@ -273,7 +271,7 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
               value={userQuery}
               onChange={(e) => setUserQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleAskQuestion(userQuery)}
-              placeholder="Спросите советника о компромиссах, синергиях или рисках..."
+              placeholder={t("Спросите советника о компромиссах, синергиях или рисках...")}
               style={{
                 flex: 1,
                 background: 'rgba(15, 23, 42, 0.7)',
@@ -286,6 +284,8 @@ export const AIInsightCard: React.FC<AIInsightCardProps> = ({ simulation }) => {
               }}
             />
             <button
+              aria-label={t('Отправить')}
+              disabled={isLoading || !userQuery.trim()}
               onClick={() => handleAskQuestion(userQuery)}
               className="btn-primary"
               style={{ padding: '8px 14px' }}

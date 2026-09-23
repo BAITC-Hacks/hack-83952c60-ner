@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLanguage } from './i18n';
 import { Header } from './components/Header';
 import { BudgetBar } from './components/BudgetBar';
 import { ScoreDashboard } from './components/ScoreDashboard';
@@ -15,6 +16,7 @@ import { runSimulation } from './engine/simulator';
 import { RecommendationSwap } from './engine/optimizer';
 
 export const App: React.FC = () => {
+  useLanguage();
   // Start with the official benchmark example from ТЗ Section 3:
   // M7(Нура) + M8(Нура) + M10(Нура) + M12(Город) + M5(Сарыарка)
   const [decisions, setDecisions] = useState<SelectedDecision[]>([

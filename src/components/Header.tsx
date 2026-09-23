@@ -1,3 +1,5 @@
+import { t, useLanguage } from '../i18n';
+import { languages, setLanguage } from '../i18n';
 import React, { useState, useEffect } from 'react';
 import { Clock, ShieldAlert, Award, FileText, RotateCcw, Sparkles } from 'lucide-react';
 import { SelectedDecision } from '../engine/types';
@@ -19,6 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenPresentation,
   crisisActive,
 }) => {
+  const language = useLanguage();
   // 5-hour countdown timer simulation (5:00:00)
   const [secondsRemaining, setSecondsRemaining] = useState(5 * 3600);
 
@@ -70,13 +73,11 @@ export const Header: React.FC<HeaderProps> = ({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <h1 style={{ fontSize: '1.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#f8fafc' }}>
-                «Аким на 5 часов»
-              </h1>
-              <span className="badge badge-blue">AI-СИМУЛЯТОР АСТАНЫ</span>
+                {t("«Аким на 5 часов»")}</h1>
+              <span className="badge badge-blue">{t("AI-СИМУЛЯТОР АСТАНЫ")}</span>
             </div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-              Интеллектуальная система распределения бюджета и расчета Astana Quality of Life Score
-            </p>
+              {t("Интеллектуальная система распределения бюджета и расчета Astana Quality of Life Score")}</p>
           </div>
         </div>
 
@@ -95,8 +96,7 @@ export const Header: React.FC<HeaderProps> = ({
           <Clock size={18} color="#38bdf8" />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'var(--text-dim)', fontWeight: 700 }}>
-              Смена Акима (5 часов)
-            </span>
+              {t("Смена Акима (5 часов)")}</span>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '1.1rem', fontWeight: 700, color: '#38bdf8' }}>
               {formatTime(secondsRemaining)}
             </span>
@@ -105,50 +105,53 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Action Controls */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          <div className="language-switch" role="group" aria-label={t('Язык интерфейса')}>
+            {languages.map(({ code, label }) => (
+              <button key={code} type="button" lang={code} aria-pressed={language === code}
+                onClick={() => setLanguage(code)}>{label}</button>
+            ))}
+          </div>
           <button
             onClick={handleBenchmarkPreset}
             className="btn-secondary"
-            title="Загрузить контрольный эталонный набор из ТЗ (Score ~56.5)"
+            title={t("Загрузить контрольный эталонный набор из ТЗ (Score ~56.5)")}
             style={{ fontSize: '0.8rem', padding: '7px 12px' }}
           >
             <Sparkles size={15} color="#38bdf8" />
-            Эталон ТЗ
-          </button>
+            {t("Эталон ТЗ")}</button>
 
           <button
             onClick={onOpenCrisis}
             className={`btn-secondary ${crisisActive ? 'badge-amber' : ''}`}
-            title="Смоделировать неожиданное городское событие / форс-мажор"
+            title={t("Смоделировать неожиданное городское событие / форс-мажор")}
             style={{ fontSize: '0.8rem', padding: '7px 12px' }}
           >
             <ShieldAlert size={15} color={crisisActive ? '#f59e0b' : '#94a3b8'} />
-            Форс-мажор {crisisActive && '●'}
+            {t("Форс-мажор")}{crisisActive && '●'}
           </button>
 
           <button
             onClick={onOpenCompare}
             className="btn-secondary"
-            title="Сравнение команд и сценариев (A/B тестирование)"
+            title={t("Сравнение команд и сценариев (A/B тестирование)")}
             style={{ fontSize: '0.8rem', padding: '7px 12px' }}
           >
             <Award size={15} color="#a78bfa" />
-            Команды
-          </button>
+            {t("Команды")}</button>
 
           <button
             onClick={onOpenPresentation}
             className="btn-primary"
-            title="Сгенерировать краткую презентацию решения Акима"
+            title={t("Сгенерировать краткую презентацию решения Акима")}
             style={{ fontSize: '0.8rem', padding: '7px 14px' }}
           >
             <FileText size={15} />
-            Презентация
-          </button>
+            {t("Презентация")}</button>
 
           <button
             onClick={onReset}
             className="btn-secondary"
-            title="Сбросить все решения"
+            title={t("Сбросить все решения")}
             style={{ padding: '7px 10px' }}
           >
             <RotateCcw size={15} color="#94a3b8" />

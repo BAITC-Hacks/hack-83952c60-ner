@@ -1,9 +1,10 @@
+import { t, useLanguage } from '../i18n';
 import React, { useState } from 'react';
 import { Plus, Check, AlertCircle, Sparkles, Filter, Info } from 'lucide-react';
 import { DirectionId, DistrictId, MeasureInfo, SelectedDecision } from '../engine/types';
 import { MEASURE_LIST, MEASURES, SYNERGIES, INCOMPATIBILITIES } from '../data/measures';
 import { DIRECTIONS, DIRECTION_LIST } from '../data/indicators';
-import { DISTRICT_LIST } from '../data/districts';
+import { DISTRICT_LIST, DISTRICTS } from '../data/districts';
 
 interface DecisionPanelProps {
   decisions: SelectedDecision[];
@@ -18,6 +19,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
   onRemoveDecision,
   remainingBudget,
 }) => {
+  useLanguage();
   const [activeDirectionFilter, setActiveDirectionFilter] = useState<DirectionId | 'all'>('all');
   const [selectedDistricts, setSelectedDistricts] = useState<Record<string, DistrictId>>({
     M1: 'nura',
@@ -51,11 +53,11 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
       const existingDecision = decisions.find((d) => d.measureId === otherId);
       if (existingDecision) {
         if (rule.scope === 'any_district') {
-          return { hasConflict: true, reason: rule.reasonRu };
+          return { hasConflict: true, reason: t(rule.reasonRu) };
         } else if (rule.scope === 'same_district') {
           const targetDistrict = selectedDistricts[measure.id];
           if (targetDistrict && targetDistrict === existingDecision.districtId) {
-            return { hasConflict: true, reason: `Конфликт с ${otherId} в районе ${targetDistrict}` };
+            return { hasConflict: true, reason: t("Конфликт с {0} в районе {1}", [otherId, DISTRICTS[targetDistrict].nameRu]) };
           }
         }
       }
@@ -68,7 +70,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
       if (rule.pair.includes(measureId)) {
         const partner = rule.pair.find((id) => id !== measureId)!;
         if (selectedMeasureIds.has(partner)) {
-          return `Синергия активна с ${partner}!`;
+          return t("Синергия активна с {0}!", [partner]);
         }
       }
     }
@@ -82,11 +84,9 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px', marginBottom: '18px' }}>
         <div>
           <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f8fafc' }}>
-            Каталог управленческих мероприятий (14 инициатив)
-          </h3>
+            {t("Каталог управленческих мероприятий (14 инициатив)")}</h3>
           <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            Выберите ровно 5 мер. Максимум 2 на одно направление.
-          </p>
+            {t("Выберите ровно 5 мер. Максимум 2 на одно направление.")}</p>
         </div>
 
         {/* Filter buttons */}
@@ -104,8 +104,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
               fontWeight: 600,
             }}
           >
-            Все (14)
-          </button>
+            {t("Все (14)")}</button>
           {DIRECTION_LIST.map((dir) => {
             const isActive = activeDirectionFilter === dir.id;
             return (
@@ -127,7 +126,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                 }}
               >
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: dir.color }} />
-                <span>{dir.nameRu.split(' ')[0]}</span>
+                <span>{t(dir.nameRu).split(' ')[0]}</span>
               </button>
             );
           })}
@@ -189,7 +188,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                       {measure.id}
                     </span>
                     <span className="badge" style={{ fontSize: '0.68rem', background: 'rgba(255, 255, 255, 0.06)', color: 'var(--text-muted)' }}>
-                      {measure.type}
+                      {t(measure.type)}
                     </span>
                   </div>
 
@@ -202,19 +201,18 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                         color: isSelected ? '#38bdf8' : '#f8fafc',
                       }}
                     >
-                      {measure.cost} у.е.
-                    </span>
+                      {measure.cost} {t("у.е.")}</span>
                   </div>
                 </div>
 
                 {/* Measure Name */}
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc', lineHeight: 1.35, marginBottom: '6px' }}>
-                  {measure.nameRu}
+                  {t(measure.nameRu)}
                 </h4>
 
                 {/* Lag and realized fraction */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.7rem', color: 'var(--text-dim)', marginBottom: '8px' }}>
-                  <span>Лаг: {measure.lag} кв. (эффект: {((8 - measure.lag) / 8 * 100).toFixed(1)}%)</span>
+                  <span>{t("Лаг:")}{' '}{measure.lag} {t("кв. (эффект:")}{' '}{((8 - measure.lag) / 8 * 100).toFixed(1)}%)</span>
                 </div>
 
                 {/* Direct Effects tags */}
@@ -298,14 +296,13 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                   >
                     {DISTRICT_LIST.map((d) => (
                       <option key={d.id} value={d.id}>
-                        {d.nameRu} ({(d.populationShare * 100).toFixed(0)}%)
+                        {t(d.nameRu)} ({(d.populationShare * 100).toFixed(0)}%)
                       </option>
                     ))}
                   </select>
                 ) : (
                   <div style={{ flex: 1, fontSize: '0.72rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
-                    Все 5 районов города
-                  </div>
+                    {t("Все 5 районов города")}</div>
                 )}
 
                 {isSelected ? (
@@ -322,8 +319,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                       cursor: 'pointer',
                     }}
                   >
-                    Убрать
-                  </button>
+                    {t("Убрать")}</button>
                 ) : (
                   <button
                     disabled={isLimitReached || !isAffordable || conflict.hasConflict}
@@ -342,8 +338,7 @@ export const DecisionPanel: React.FC<DecisionPanelProps> = ({
                     }}
                   >
                     <Plus size={13} />
-                    Выбрать
-                  </button>
+                    {t("Выбрать")}</button>
                 )}
               </div>
 

@@ -1,3 +1,4 @@
+import { t, useLanguage } from '../i18n';
 import React from 'react';
 import { Sparkles, ArrowRight, Zap, TrendingUp } from 'lucide-react';
 import { SelectedDecision, SimulationResult } from '../engine/types';
@@ -15,6 +16,7 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
   decisions,
   onApplySwap,
 }) => {
+  useLanguage();
   const recommendations = findBestImprovements(decisions);
 
   if (decisions.length !== 5 || !simulation.isValid) {
@@ -26,7 +28,7 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
       <div className="glass-panel" style={{ padding: '16px 20px', marginBottom: '24px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#34d399', fontSize: '0.85rem', fontWeight: 600 }}>
           <Sparkles size={16} />
-          <span>Сценарий близок к локальному оптимуму! Очевидных одиночных замен с заметным приростом Score не найдено.</span>
+          <span>{t("Сценарий близок к локальному оптимуму! Очевидных одиночных замен с заметным приростом Score не найдено.")}</span>
         </div>
       </div>
     );
@@ -50,19 +52,17 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
         </div>
         <div>
           <h3 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc' }}>
-            AI-Оптимизатор сценария (Рекомендации по улучшению)
-          </h3>
+            {t("AI-Оптимизатор сценария (Рекомендации по улучшению)")}</h3>
           <p style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>
-            Алгоритмический поиск точечных замен для максимизации Astana Quality of Life Score
-          </p>
+            {t("Алгоритмический поиск точечных замен для максимизации Astana Quality of Life Score")}</p>
         </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '12px' }}>
         {recommendations.map((rec, idx) => {
           const targetDistName = rec.addDecision.districtId
-            ? DISTRICTS[rec.addDecision.districtId]?.nameRu || rec.addDecision.districtId
-            : 'Город';
+            ? t(DISTRICTS[rec.addDecision.districtId]?.nameRu) || rec.addDecision.districtId
+            : t("Город");
 
           return (
             <div
@@ -80,7 +80,7 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
                   <span className="badge badge-blue" style={{ fontSize: '0.68rem' }}>
-                    Вариант #{idx + 1}
+                    {t("Вариант #")}{idx + 1}
                   </span>
                   <span
                     style={{
@@ -94,8 +94,7 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
                     }}
                   >
                     <TrendingUp size={13} />
-                    +{rec.scoreGain.toFixed(2)} баллов
-                  </span>
+                    +{rec.scoreGain.toFixed(2)} {t("баллов")}</span>
                 </div>
 
                 {/* Replacement flow */}
@@ -116,7 +115,7 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
 
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
                 <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)' }}>
-                  Прогноз Score: <strong style={{ color: '#f8fafc' }}>{rec.projectedScore.toFixed(2)}</strong>
+                  {t("Прогноз Score:")}{' '}<strong style={{ color: '#f8fafc' }}>{rec.projectedScore.toFixed(2)}</strong>
                 </span>
 
                 <button
@@ -124,8 +123,7 @@ export const OptimizerCard: React.FC<OptimizerCardProps> = ({
                   className="btn-primary"
                   style={{ padding: '4px 10px', fontSize: '0.72rem' }}
                 >
-                  Применить
-                </button>
+                  {t("Применить")}</button>
               </div>
             </div>
           );

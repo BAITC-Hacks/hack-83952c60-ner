@@ -1,3 +1,4 @@
+import { t, useLanguage } from '../i18n';
 import React, { useState } from 'react';
 import { Award, Plus, Trash2, X, ArrowUpRight } from 'lucide-react';
 import { SelectedDecision, SimulationResult } from '../engine/types';
@@ -26,11 +27,12 @@ export const CompareModal: React.FC<CompareModalProps> = ({
   currentSim,
   onLoadScenario,
 }) => {
-  const [teamName, setTeamName] = useState('Команда Астана-1');
+  useLanguage();
+  const [teamName, setTeamName] = useState<string | null>(null);
   const [scenarios, setScenarios] = useState<SavedScenario[]>([
     {
       id: 'default-1',
-      teamName: 'Эталон ТЗ (Benchmark Team)',
+      teamName: "Эталон ТЗ (Benchmark Team)",
       score: 56.50,
       scoreDelta: 3.94,
       cost: 95,
@@ -46,7 +48,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
     },
     {
       id: 'default-2',
-      teamName: 'Транспортный фокус (Transit First)',
+      teamName: "Транспортный фокус (Transit First)",
       score: 54.20,
       scoreDelta: 1.64,
       cost: 88,
@@ -68,7 +70,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
     if (!currentSim.isValid) return;
     const newSc: SavedScenario = {
       id: Date.now().toString(),
-      teamName: teamName.trim() || `Команда #${scenarios.length + 1}`,
+      teamName: teamName?.trim() || t("Команда Астана-1"),
       score: Number(currentSim.finalScore.toFixed(2)),
       scoreDelta: Number(currentSim.scoreDelta.toFixed(2)),
       cost: currentSim.validation.totalCost,
@@ -115,14 +117,13 @@ export const CompareModal: React.FC<CompareModalProps> = ({
             <Award size={22} color="#a78bfa" />
             <div>
               <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
-                Сравнение команд и сценариев (Лидерборд)
-              </h3>
+                {t("Сравнение команд и сценариев (Лидерборд)")}</h3>
               <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                Оценка и ранжирование различных стратегий распределения бюджета
-              </p>
+                {t("Оценка и ранжирование различных стратегий распределения бюджета")}</p>
             </div>
           </div>
           <button
+            aria-label={t('Закрыть')}
             onClick={onClose}
             style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.2rem' }}
           >
@@ -146,9 +147,9 @@ export const CompareModal: React.FC<CompareModalProps> = ({
         >
           <input
             type="text"
-            value={teamName}
+            value={teamName ?? t("Команда Астана-1")}
             onChange={(e) => setTeamName(e.target.value)}
-            placeholder="Название вашей команды..."
+            placeholder={t("Название вашей команды...")}
             style={{
               flex: 1,
               minWidth: '200px',
@@ -172,7 +173,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
             }}
           >
             <Plus size={16} />
-            Зафиксировать результат ({currentSim.isValid ? currentSim.finalScore.toFixed(2) : 'невалиден'})
+            {t("Зафиксировать результат (")}{currentSim.isValid ? currentSim.finalScore.toFixed(2) : t("невалиден")})
           </button>
         </div>
 
@@ -181,12 +182,12 @@ export const CompareModal: React.FC<CompareModalProps> = ({
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
             <thead>
               <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'left', color: 'var(--text-dim)' }}>
-                <th style={{ padding: '8px' }}>Команда</th>
-                <th style={{ padding: '8px' }}>Score</th>
-                <th style={{ padding: '8px' }}>Дельта</th>
-                <th style={{ padding: '8px' }}>Бюджет</th>
-                <th style={{ padding: '8px' }}>Штрафы</th>
-                <th style={{ padding: '8px', textAlign: 'right' }}>Действия</th>
+                <th style={{ padding: '8px' }}>{t("Команда")}</th>
+                <th style={{ padding: '8px' }}>{t("Score")}</th>
+                <th style={{ padding: '8px' }}>{t("Дельта")}</th>
+                <th style={{ padding: '8px' }}>{t("Бюджет")}</th>
+                <th style={{ padding: '8px' }}>{t("Штрафы")}</th>
+                <th style={{ padding: '8px', textAlign: 'right' }}>{t("Действия")}</th>
               </tr>
             </thead>
             <tbody>
@@ -200,8 +201,8 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                 >
                   <td style={{ padding: '10px 8px', fontWeight: 600, color: '#f8fafc' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      {i === 0 && <span title="Лидер">👑</span>}
-                      <span>{sc.teamName}</span>
+                      {i === 0 && <span title={t("Лидер")}>👑</span>}
+                      <span>{sc.id.startsWith('default-') ? t(sc.teamName) : sc.teamName}</span>
                     </div>
                   </td>
                   <td style={{ padding: '10px 8px', fontFamily: 'var(--font-mono)', fontWeight: 700, color: '#38bdf8' }}>
@@ -215,7 +216,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                   </td>
                   <td style={{ padding: '10px 8px' }}>
                     {sc.critCount === 0 ? (
-                      <span className="badge badge-green" style={{ fontSize: '0.65rem' }}>0 (OK)</span>
+                      <span className="badge badge-green" style={{ fontSize: '0.65rem' }}>{t("0 (OK)")}</span>
                     ) : (
                       <span className="badge badge-red" style={{ fontSize: '0.65rem' }}>-{sc.critCount}</span>
                     )}
@@ -229,11 +230,10 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                         }}
                         className="btn-secondary"
                         style={{ padding: '4px 8px', fontSize: '0.72rem' }}
-                        title="Загрузить этот сценарий в симулятор"
+                        title={t("Загрузить этот сценарий в симулятор")}
                       >
                         <ArrowUpRight size={13} />
-                        Загрузить
-                      </button>
+                        {t("Загрузить")}</button>
                       <button
                         onClick={() => handleDelete(sc.id)}
                         style={{
@@ -243,7 +243,7 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                           cursor: 'pointer',
                           padding: '4px',
                         }}
-                        title="Удалить"
+                        title={t("Удалить")}
                       >
                         <Trash2 size={14} />
                       </button>

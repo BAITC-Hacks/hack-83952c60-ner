@@ -176,3 +176,10 @@ body {
 .pulse-anim {
   animation: pulseGlow 2.5s infinite;
 }
+/* Language controls remain reachable as the header wraps on small screens. */
+.language-switch { display: flex; flex-wrap: wrap; gap: 3px; padding: 3px; border: 1px solid rgba(148,163,184,.3); border-radius: 10px; }
+.language-switch button { padding: 6px 9px; border: 0; border-radius: 7px; background: transparent; color: #cbd5e1; font: inherit; font-size: .75rem; cursor: pointer; }
+.language-switch button[aria-pressed="true"] { background: #0369a1; color: white; }
+.language-switch button:hover { background: #334155; }
+.language-switch button:focus-visible { outline: 2px solid #38bdf8; outline-offset: 2px; }
+@media print { .language-switch { display: none; } }
