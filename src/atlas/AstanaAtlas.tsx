@@ -4,11 +4,14 @@ import type { Map as LibreMap } from 'maplibre-gl';
 import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url';
 import { MapLibreOverlay } from '@deck.gl/maplibre';
 import { ColumnLayer, GeoJsonLayer } from '@deck.gl/layers';
-import { ArrowLeft, ArrowUpRight, Box, Building2, Check, ChevronRight, Crosshair, Database, Download, Eye, EyeOff, GraduationCap, HeartPulse, Layers3, Map, MapPin, Minus, Pause, Play, Plus, Search, SlidersHorizontal, Trees, Upload, Users, Waves, X } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Box, Building2, Check, ChevronRight, Crosshair, Database, Download, Eye, EyeOff, GraduationCap, HeartPulse, Layers3, Map, MapPin, MessageCircle, Minus, Pause, Play, Plus, Search, SlidersHorizontal, Trees, Upload, Users, Waves, X } from 'lucide-react';
 import { AMENITIES, ASTANA_CENTER, CITY_BOUNDS, COLORS, CATEGORIES, densityCells, downloadGeoJSON, featureName, geometryBounds, parseGeoJSON, type AtlasDataset, type AtlasFeature, type Category, type DensityCell } from './data';
 import { AtlasSwarmSimulation } from './swarm';
 import { animateAtlasSwarm } from './swarmLayer';
 import { PARTICLE_COUNT, POPULATION_SCALE } from '../population/data';
+import { createAtlasOpinionPlaces, type AtlasOpinionPlace } from './opinions';
+import { AtlasOpinionMarkers } from './AtlasOpinionMarkers';
+import { AtlasOpinionPanel } from './AtlasOpinionPanel';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './atlas.css';
 
@@ -44,19 +47,41 @@ export default function AstanaAtlas() {
   const [dataset, setDataset] = useState<AtlasDataset | null>(null), [dataError, setDataError] = useState('');
   const [imported, setImported] = useState<{ name: string; data: AtlasDataset } | null>(null), [importVisible, setImportVisible] = useState(true);
   const [notice, setNotice] = useState(''), [selected, setSelected] = useState<{ feature: AtlasFeature; source: string } | null>(null);
-  const [tab, setTab] = useState<'layers' | 'data'>('layers'), [query, setQuery] = useState(''), [searchOpen, setSearchOpen] = useState(false);
+  const [tab, setTab] = useState<'layers' | 'opinions' | 'data'>('layers'), [query, setQuery] = useState(''), [searchOpen, setSearchOpen] = useState(false);
   const [base, setBase] = useState<Record<BaseLayer, boolean>>({ buildings: true, roads: true, green: true, water: true, labels: true });
   const [categories, setCategories] = useState<Record<Category, boolean>>({ education: true, health: true });
   const [mode, setMode] = useState<'points' | 'density'>('points'), [is3D, setIs3D] = useState(true), [opacity, setOpacity] = useState(.85);
   const [showSwarm, setShowSwarm] = useState(true), [swarmPaused, setSwarmPaused] = useState(false);
+  const [showOpinions, setShowOpinions] = useState(true), [opinionId, setOpinionId] = useState('');
   const swarm = useRef<AtlasSwarmSimulation | null>(null);
   const [camera, setCamera] = useState({ lon: ASTANA_CENTER[0], lat: ASTANA_CENTER[1], zoom: 13.1 });
   const [sidebar, setSidebar] = useState(() => window.innerWidth > 800);
   const filtered = useMemo(() => (dataset?.features ?? []).filter(f => categories[f.properties.category as Category] && (!query.trim() || `${featureName(f)} ${f.properties['addr:street'] ?? ''} ${AMENITIES[String(f.properties.amenity)] ?? ''}`.toLocaleLowerCase('ru').includes(query.trim().toLocaleLowerCase('ru')))), [dataset, categories, query]);
   const cells = useMemo(() => densityCells(filtered), [filtered]);
   const counts = useMemo(() => ({ education: dataset?.features.filter(f => f.properties.category === 'education').length ?? 0, health: dataset?.features.filter(f => f.properties.category === 'health').length ?? 0 }), [dataset]);
+  const opinionPlaces = useMemo(() => createAtlasOpinionPlaces(dataset?.features ?? []), [dataset]);
+  const visibleOpinions = useMemo(() => opinionPlaces.filter(place => (place.category !== 'education' && place.category !== 'health' || categories[place.category])
+    && (!query.trim() || place.name.toLocaleLowerCase('ru').includes(query.trim().toLocaleLowerCase('ru')))), [opinionPlaces, categories, query]);
+  const selectedOpinion = showOpinions ? visibleOpinions.find(place => place.id === opinionId) : undefined;
+  const selectOpinion = (place: AtlasOpinionPlace) => {
+    setSelected(null); setSearchOpen(false); setShowOpinions(true); setOpinionId(place.id);
+    if (window.innerWidth <= 800) setSidebar(false);
+    mapRef.current?.easeTo({ center: place.position, zoom: Math.max(mapRef.current.getZoom(), 13.8), duration: 700,
+      offset: window.innerWidth > 800 ? [-160, 0] : [0, -100] });
+  };
+  const toggleOpinions = () => { setShowOpinions(value => !value); setOpinionId(''); };
+  const closeOpinion = () => {
+    const previousId = opinionId;
+    setOpinionId('');
+    requestAnimationFrame(() => {
+      const marker = Array.from(host.current?.querySelectorAll<HTMLButtonElement>('[data-opinion-id]') ?? []).find(element => element.dataset.opinionId === previousId && !element.hidden);
+      marker?.focus({ preventScroll: true });
+    });
+  };
 
   useEffect(() => { setSelected(null); }, [categories, mode, importVisible]);
+  useEffect(() => { if (selected) setOpinionId(''); }, [selected]);
+  useEffect(() => { if (!visibleOpinions.some(place => place.id === opinionId)) setOpinionId(''); }, [visibleOpinions, opinionId]);
 
   useEffect(() => {
     const previous = document.title;
@@ -116,6 +141,7 @@ export default function AstanaAtlas() {
       map.on('pitchend', () => { if (map) setIs3D(map.getPitch() > 10); });
       map.on('click', event => {
         if (!map || overlay.current?.pickObject({ x: event.point.x, y: event.point.y, radius: 4 })) return;
+        setOpinionId('');
         const feature = map.queryRenderedFeatures(event.point).find(f => f.source === 'openmaptiles' && f.layer.type !== 'symbol' && ['building', 'transportation', 'water', 'landuse', 'park'].includes(f.sourceLayer ?? ''));
         if (feature) setSelected({ feature: { type: 'Feature', id: feature.id, geometry: feature.geometry, properties: { ...feature.properties, tileLayer: feature.sourceLayer } }, source: 'Векторные тайлы OSM' });
         else setSelected(null);
@@ -191,15 +217,22 @@ export default function AstanaAtlas() {
     <div className={`at-workspace ${sidebar ? '' : 'at-collapsed'}`}>
       <aside className="at-sidebar" aria-label="Панель слоёв">
         <div className="at-project"><span className="at-eyebrow">ГОРОД КАК СИСТЕМА ДАННЫХ</span><h1>Астана<span>Казахстан <span>51°07′ N · 71°25′ E</span></span></h1><p>Исследуйте город. От здания до общей картины.</p></div>
-        <div className="at-tabs" role="tablist" aria-label="Инструменты карты"><button role="tab" aria-selected={tab === 'layers'} onClick={() => setTab('layers')}><Layers3 size={15} /> Слои</button><button role="tab" aria-selected={tab === 'data'} onClick={() => setTab('data')}><Database size={15} /> Данные</button></div>
+        <div className="at-tabs" role="tablist" aria-label="Инструменты карты"><button role="tab" aria-selected={tab === 'layers'} onClick={() => setTab('layers')}><Layers3 size={15} /> Слои</button><button role="tab" aria-selected={tab === 'opinions'} onClick={() => setTab('opinions')}><MessageCircle size={15} /> Мнения</button><button role="tab" aria-selected={tab === 'data'} onClick={() => setTab('data')}><Database size={15} /> Данные</button></div>
         <div className="at-side-scroll">
-          {tab === 'layers' ? <>
+          {tab === 'opinions' ? <div className="at-opinions-list">
+            <span className="at-eyebrow">ГОРОД ГЛАЗАМИ ЖИТЕЛЕЙ</span><h2>У каждого места<br />есть голоса.</h2><p>Выберите место в списке или маркер с облачком на карте.</p>
+            <div className="at-opinions-list-count"><MessageCircle size={14} />{visibleOpinions.length} мест · {visibleOpinions.reduce((total, place) => total + place.comments.length, 0)} мнений</div>
+            {visibleOpinions.map(place => <button key={place.id} className={`at-opinions-place-button ${opinionId === place.id ? 'is-selected' : ''}`} onClick={() => selectOpinion(place)}><span className="at-opinions-place-symbol"><MessageCircle size={15} /><b>{place.comments.length}</b></span><span><strong>{place.name}</strong><small>{place.comments[0]?.topic} · виртуальные жители</small></span><ChevronRight size={14} /></button>)}
+            {!visibleOpinions.length && <p>Нет мест по текущему поиску и включённым слоям.</p>}
+            <p className="at-opinions-list-note">Персонажи из модели населения. Комментарии выражают их приоритеты, а не оценивают качество реальных организаций.</p>
+          </div> : tab === 'layers' ? <>
             <div className="at-section-label">НАСЕЛЕНИЕ <span>СЦЕНАРНАЯ МОДЕЛЬ</span></div>
             <div className="at-swarm-settings">
               <button className={`at-layer ${showSwarm ? '' : 'at-muted-layer'}`} aria-label="Рой жителей" aria-pressed={showSwarm} onClick={() => setShowSwarm(v => !v)}><span className="at-layer-icon at-swarm-icon"><Users size={18} /></span><span><b>Рой жителей</b><small>{number(PARTICLE_COUNT)} частиц на улицах города</small></span>{showSwarm ? <Eye size={15} /> : <EyeOff size={15} />}</button>
               <div className="at-swarm-actions"><span>1 частица ≈ {number(POPULATION_SCALE)} жителей</span><button disabled={!showSwarm} onClick={() => setSwarmPaused(v => !v)} aria-label={swarmPaused ? 'Продолжить движение роя' : 'Приостановить движение роя'}>{swarmPaused ? <Play size={12} /> : <Pause size={12} />}{swarmPaused ? 'Продолжить' : 'Пауза'}</button></div>
               <p>Сценарная визуализация на улицах OSM, не данные о реальных поездках.</p>
             </div>
+            <div className="at-opinions-setting"><button className={`at-layer ${showOpinions ? '' : 'at-muted-layer'}`} aria-label="Мнения агентов на карте" aria-pressed={showOpinions} onClick={toggleOpinions}><span className="at-layer-icon at-opinions-icon"><MessageCircle size={18} /></span><span><b>Мнения агентов</b><small>{visibleOpinions.length} мест с комментариями</small></span>{showOpinions ? <Eye size={15} /> : <EyeOff size={15} />}</button><button className="at-opinions-browse" onClick={() => setTab('opinions')}>Посмотреть все мнения <ChevronRight size={13} /></button></div>
             <div className="at-section-label">БАЗОВАЯ КАРТА <span>OSM / VECTOR</span></div>
             <div className="at-layer-list at-basemap">{BASE_LAYERS.map(({ id, label, detail, color, icon: Icon }) => <button className={`at-layer ${base[id] ? '' : 'at-muted-layer'}`} key={id} title={detail} aria-pressed={base[id]} onClick={() => { setBase(s => ({ ...s, [id]: !s[id] })); setSelected(null); }}><span className="at-layer-icon" style={{ color }}><Icon size={17} /></span><span><b>{label}</b><small>{detail}</small></span>{base[id] ? <Eye size={15} /> : <EyeOff size={15} />}</button>)}</div>
             <div className="at-section-label">ИНФРАСТРУКТУРА <span>{dataset ? number(dataset.features.length) : '…'} ОБЪЕКТОВ</span></div>
@@ -214,6 +247,8 @@ export default function AstanaAtlas() {
       </aside>
       <section className="at-map-area" aria-label="Интерактивная карта Астаны">
         <div className="at-map-canvas" ref={host} />
+        {ready && showOpinions && <AtlasOpinionMarkers map={mapRef.current} places={visibleOpinions} selectedId={opinionId} onSelect={selectOpinion} />}
+        {selectedOpinion && <AtlasOpinionPanel place={selectedOpinion} onClose={closeOpinion} />}
         <div className="at-map-top"><button className="at-square" aria-label={sidebar ? 'Скрыть панель слоёв' : 'Показать панель слоёв'} onClick={() => setSidebar(s => !s)}>{sidebar ? <ArrowLeft size={17} /> : <Layers3 size={17} />}</button><div className="at-search"><Search size={17} /><input aria-label="Поиск по инфраструктуре" value={query} onFocus={() => setSearchOpen(true)} onKeyDown={e => { if (e.key === 'Escape') setSearchOpen(false); }} onChange={e => { setQuery(e.target.value); setSearchOpen(true); setSelected(null); }} placeholder="Найти школу, клинику, университет…" />{query && <button aria-label="Очистить поиск" onClick={() => { setQuery(''); setSearchOpen(false); }}><X size={14} /></button>}
           {searchOpen && query.trim() && <div className="at-search-results"><small>Найдено: {number(filtered.length)} · в активных слоях</small>{filtered.slice(0, 7).map((f, i) => <button key={String(f.id ?? i)} onClick={() => focusFeature(f)}><MapPin size={14} /><span>{featureName(f)}<small>{AMENITIES[String(f.properties.amenity)]}</small></span><ChevronRight size={13} /></button>)}{!filtered.length && <p>В снимке нет совпадений. Попробуйте другое название или включите слой.</p>}</div>}
         </div><button className="at-city-button" onClick={fitCity}><Crosshair size={15} /> Весь город</button></div>
@@ -222,6 +257,7 @@ export default function AstanaAtlas() {
         <div className="at-swarm-toolbar" aria-label="Управление роем">
           <button className={showSwarm ? 'at-swarm-enabled' : ''} aria-label={showSwarm ? 'Скрыть рой жителей' : 'Показать рой жителей'} aria-pressed={showSwarm} onClick={() => setShowSwarm(v => !v)}><Users size={14} /> Рой <b>{number(PARTICLE_COUNT)}</b></button>
           {showSwarm && <button aria-label={swarmPaused ? 'Запустить рой' : 'Пауза роя'} aria-pressed={swarmPaused} onClick={() => setSwarmPaused(v => !v)}>{swarmPaused ? <Play size={13} /> : <Pause size={13} />}<span>{swarmPaused ? 'Продолжить' : 'Пауза'}</span></button>}
+          <button className={showOpinions ? 'at-opinions-enabled' : ''} aria-label={showOpinions ? 'Скрыть комментарии на карте' : 'Показать комментарии на карте'} aria-pressed={showOpinions} onClick={toggleOpinions}><MessageCircle size={14} /> Мнения</button>
         </div>
         <div className="at-map-controls"><button className="at-square" aria-label="Приблизить карту" onClick={() => mapRef.current?.zoomIn()}><Plus size={19} /></button><button className="at-square" aria-label="Отдалить карту" onClick={() => mapRef.current?.zoomOut()}><Minus size={19} /></button><span /><button className="at-square at-north" aria-label="Ориентировать карту на север" onClick={() => mapRef.current?.easeTo({ bearing: 0, duration: 600 })}>N<span>↑</span></button><button className={`at-square ${is3D ? 'at-control-active' : ''}`} aria-label="Трёхмерный вид" aria-pressed={is3D} onClick={() => { setIs3D(v => !v); mapRef.current?.easeTo({ pitch: is3D ? 0 : 48, duration: 700 }); }}>{is3D ? '3D' : '2D'}</button></div>
         {!ready && !mapError && <div className="at-loading" role="status"><div className="at-loader" />Загружаем географию Астаны…</div>}

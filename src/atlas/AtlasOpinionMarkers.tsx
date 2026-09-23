@@ -18,6 +18,7 @@ export function AtlasOpinionMarkers({ map, places, selectedId, onSelect }: Props
     const markers = places.map(place => {
       const button = document.createElement('button');
       button.type = 'button';
+      button.dataset.opinionId = place.id;
       button.className = `at-opinion-marker${selectedId === place.id ? ' is-selected' : ''}`;
       button.setAttribute('aria-label', `Комментарии агентов: ${place.name} (${place.comments.length})`);
       button.setAttribute('aria-pressed', String(selectedId === place.id));
